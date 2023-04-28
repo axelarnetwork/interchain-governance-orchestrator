@@ -1,0 +1,14 @@
+{
+  "name": "crosschain-governance",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@axelar-network/axelar-gmp-sdk-solidity": "^3.3.0",
+    "@openzeppelin/contracts": "^4.8.3"
+  }
+}
