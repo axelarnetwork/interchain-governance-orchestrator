@@ -25,14 +25,14 @@ contract InterchainProposalSender is Ownable {
         string memory destinationChain,
         string memory destinationContract,
         bytes memory payload
-    ) public payable onlyOwner {
+    ) external payable onlyOwner {
         // check if payload is valid
         (
             address[] memory targets,
             uint256[] memory values,
-            bytes[] memory signatures,
+            string[] memory signatures,
             bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], bytes[], bytes[]));
+        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
 
         require(targets.length > 0, "InterchainProposalSender: no targets");
         require(

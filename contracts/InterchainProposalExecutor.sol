@@ -25,9 +25,9 @@ contract InterchainProposalExecutor is AxelarExecutable {
         (
             address[] memory targets,
             uint256[] memory values,
-            bytes[] memory signatures,
+            string[] memory signatures,
             bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], bytes[], bytes[]));
+        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
 
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
