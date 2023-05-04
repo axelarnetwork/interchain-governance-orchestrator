@@ -21,7 +21,7 @@ contract InterchainProposalSender is Ownable {
      * @param destinationContract The destination contract
      * @param payload The payload. The payload is ABI encoded array of targets, values, signatures and data.
      */
-    function executeInterchainProposal(
+    function executeRemoteProposal(
         string memory destinationChain,
         string memory destinationContract,
         bytes memory payload
