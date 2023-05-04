@@ -16,12 +16,12 @@ contract InterchainProposalSender is Ownable {
     }
 
     /**
-     * @dev Propose an interchain transaction
+     * @dev Execute an approved proposal in an interchain transaction
      * @param destinationChain The destination chain
      * @param destinationContract The destination contract
      * @param payload The payload. The payload is ABI encoded array of targets, values, signatures and data.
      */
-    function interchainPropose(
+    function executeInterchainProposal(
         string memory destinationChain,
         string memory destinationContract,
         bytes memory payload
