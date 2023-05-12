@@ -44,6 +44,10 @@ contract GovernorBravoDelegate is
     bytes32 public constant BALLOT_TYPEHASH =
         keccak256("Ballot(uint256 proposalId,uint8 support)");
 
+    constructor() {
+        admin = msg.sender;
+    }
+
     /**
      * @notice Used to initialize the contract during delegator constructor
      * @param timelock_ The address of the Timelock

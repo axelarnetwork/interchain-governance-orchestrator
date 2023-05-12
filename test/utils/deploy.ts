@@ -65,6 +65,7 @@ export async function deployGovernorBravo(
     "GovernorBravoDelegate",
     []
   );
+
   const args = [
     timelockAddress,
     compAddress,
