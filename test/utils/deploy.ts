@@ -1,7 +1,6 @@
 import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { getChains } from "./chains";
-import config from "../../hardhat.config";
 
 export async function deploy(
   wallet: Wallet,
@@ -42,7 +41,7 @@ export function deployDummyState(deployer: Wallet) {
 
 export function deployTimelock(deployer: Wallet) {
   const chains = getChains();
-  return deploy(deployer, chains[0].rpc, "Timelock", [deployer.address, "3"]);
+  return deploy(deployer, chains[0].rpc, "Timelock", [deployer.address, "1"]);
 }
 
 export function deployComp(deployer: Wallet) {
@@ -50,31 +49,17 @@ export function deployComp(deployer: Wallet) {
   return deploy(deployer, chains[0].rpc, "Comp", [deployer.address]);
 }
 
-export async function deployGovernorBravo(
+export async function deployGovernorAlpha(
   deployer: Wallet,
   timelockAddress: string,
   compAddress: string
 ) {
   const chains = getChains();
-  const votingPeriod = "5"; // 5 seconds
-  const votingDelay = "0"; // No delay
-  const proposalThreshold = ethers.utils.parseEther("1000").toString(); // 1000 COMP
-  const contract = await deploy(
-    deployer,
-    chains[0].rpc,
-    "GovernorBravoDelegate",
-    []
-  );
-
-  const args = [
+  const contract = await deploy(deployer, chains[0].rpc, "GovernorAlpha", [
     timelockAddress,
     compAddress,
-    votingPeriod,
-    votingDelay,
-    proposalThreshold,
-  ];
-
-  await contract.initialize(...args);
+    deployer.address,
+  ]);
 
   return contract;
 }
