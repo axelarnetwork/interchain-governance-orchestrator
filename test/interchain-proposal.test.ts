@@ -1,61 +1,37 @@
 import { start } from "./utils/start";
 import { expect } from "chai";
 import { Contract, Wallet } from "ethers";
-import { deploy } from "./utils/deploy";
-import { getChains } from "./utils/chains";
 import { ethers } from "hardhat";
+import { setLogger } from "@axelar-network/axelar-local-dev";
+import {
+  deployDummyProposalExecutor,
+  deployDummyState,
+  deployInterchainProposalExecutor,
+  deployInterchainProposalSender,
+} from "./utils/deploy";
+import { waitProposalExecuted } from "./utils/wait";
 
-describe("Proposal", function () {
+setLogger(() => null);
+
+describe("Interchain Proposal", function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executor: Contract;
   let dummyProposalExecutor: Contract;
   let dummyState: Contract;
 
-  function deployInterchainProposalSender() {
-    const chains = getChains();
-    return deploy(deployer, chains[0].rpc, "InterchainProposalSender", [
-      chains[0].gateway,
-      chains[0].gasService,
-    ]);
-  }
-
-  function deployInterchainProposalExecutor() {
-    const chains = getChains();
-    return deploy(deployer, chains[1].rpc, "InterchainProposalExecutor", [
-      chains[1].gateway,
-    ]);
-  }
-
-  function deployDummyProposalExecutor() {
-    const chains = getChains();
-    return deploy(deployer, chains[0].rpc, "DummyProposalExecutor", []);
-  }
-
-  function deployDummyState() {
-    const chains = getChains();
-    return deploy(deployer, chains[1].rpc, "DummyState", []);
-  }
-
-  const waitProposalExecuted = (payload: string, executorContract: Contract) =>
-    new Promise((resolve, reject) => {
-      executorContract.on(
-        executor.filters.ProposalExecuted(ethers.utils.keccak256(payload)),
-        (payloadHash) => {
-          resolve(payloadHash);
-        }
-      );
-    });
+  // redefine "slow" test for this test suite
+  this.slow(10000);
 
   before(async function () {
     // Start local chains
     await start([deployer.address]);
 
     // Deploy contracts
-    sender = await deployInterchainProposalSender();
-    executor = await deployInterchainProposalExecutor();
-    dummyProposalExecutor = await deployDummyProposalExecutor();
-    dummyState = await deployDummyState();
+    sender = await deployInterchainProposalSender(deployer);
+    executor = await deployInterchainProposalExecutor(deployer);
+    dummyProposalExecutor = await deployDummyProposalExecutor(deployer);
+    dummyState = await deployDummyState(deployer);
 
     // Transfer ownership of the InterchainProposalSender to the DummyProposalExecutor contract
     await sender.transferOwnership(dummyProposalExecutor.address);
@@ -73,10 +49,10 @@ describe("Proposal", function () {
       ]
     );
 
-    const tx = await dummyProposalExecutor.propose(
+    await dummyProposalExecutor.propose(
       [sender.address],
       [ethers.utils.parseEther("0.0001")],
-      ["interchainPropose(string,string,bytes)"],
+      ["executeRemoteProposal(string,string,bytes)"],
       [
         ethers.utils.defaultAbiCoder.encode(
           ["string", "string", "bytes"],
@@ -92,8 +68,8 @@ describe("Proposal", function () {
   });
 
   it("should be able to execute a proposal with to multiple target contracts", async function () {
-    const dummyState2 = await deployDummyState();
-    const dummyState3 = await deployDummyState();
+    const dummyState2 = await deployDummyState(deployer);
+    const dummyState3 = await deployDummyState(deployer);
 
     // Encode the payload for the destination chain
     const genMsg = (msg: string) =>
@@ -113,10 +89,10 @@ describe("Proposal", function () {
       ]
     );
 
-    const tx = await dummyProposalExecutor.propose(
+    await dummyProposalExecutor.propose(
       [sender.address],
       [ethers.utils.parseEther("0.0001")],
-      ["interchainPropose(string,string,bytes)"],
+      ["executeRemoteProposal(string,string,bytes)"],
       [
         ethers.utils.defaultAbiCoder.encode(
           ["string", "string", "bytes"],
