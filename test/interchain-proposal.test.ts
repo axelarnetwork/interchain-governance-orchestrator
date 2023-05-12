@@ -72,7 +72,7 @@ describe("Interchain Proposal", function () {
     const dummyState3 = await deployDummyState(deployer);
 
     // Encode the payload for the destination chain
-    const genMsg = (msg: string) =>
+    const encodeMsg = (msg: string) =>
       ethers.utils.defaultAbiCoder.encode(["string"], [msg]);
 
     const payload = ethers.utils.defaultAbiCoder.encode(
@@ -82,9 +82,9 @@ describe("Interchain Proposal", function () {
         [0, 0, 0],
         ["setState(string)", "setState(string)", "setState(string)"],
         [
-          genMsg("Hello World1"),
-          genMsg("Hello World2"),
-          genMsg("Hello World3"),
+          encodeMsg("Hello World1"),
+          encodeMsg("Hello World2"),
+          encodeMsg("Hello World3"),
         ],
       ]
     );
