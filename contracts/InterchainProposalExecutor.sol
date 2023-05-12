@@ -7,6 +7,8 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 contract InterchainProposalExecutor is AxelarExecutable {
     constructor(address _gateway) AxelarExecutable(_gateway) {}
 
+    event ProposalExecuted(bytes32 indexed payloadHash);
+
     /**
      * @dev Execute the proposal
      * @param payload The payload. The payload is ABI encoded array of targets, values, signatures and data.
@@ -43,5 +45,7 @@ contract InterchainProposalExecutor is AxelarExecutable {
             // Revert if the call failed
             require(success, "InterchainProposalExecutor: call failed");
         }
+
+        emit ProposalExecuted(keccak256(payload));
     }
 }

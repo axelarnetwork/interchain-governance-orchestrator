@@ -5,6 +5,6 @@ export async function start(fundAddresses: string[] = []) {
     chainOutputPath: "data/chain.json",
     accountsToFund: fundAddresses,
     chains: ["Ethereum", "Avalanche"],
-    relayInterval: 5000,
+    relayInterval: 2000,
   });
 }
