@@ -141,7 +141,7 @@ describe("Interchain Proposal", function () {
     await expect(await dummyState.message()).to.equal("Hello World");
   });
 
-  it.only("should be able to execute a proposal with to multiple target contracts", async function () {
+  it("should be able to execute a proposal with to multiple target contracts", async function () {
     const dummyState2 = await deployDummyState(deployer);
     const dummyState3 = await deployDummyState(deployer);
 
