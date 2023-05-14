@@ -1,6 +1,6 @@
 import { start } from "./utils/start";
 import { expect } from "chai";
-import { BigNumber, Contract, Wallet, providers } from "ethers";
+import { Contract, Wallet, providers } from "ethers";
 import { ethers } from "hardhat";
 import { setLogger } from "@axelar-network/axelar-local-dev";
 import {
