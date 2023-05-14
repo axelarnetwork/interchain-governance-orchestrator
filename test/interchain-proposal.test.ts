@@ -14,6 +14,7 @@ import {
 import { waitProposalExecuted } from "./utils/wait";
 import { transferTimelockAdmin } from "./utils/timelock";
 import { getChains } from "./utils/chains";
+import { voteQueueExecuteProposal } from "./utils/governance";
 
 setLogger(() => null);
 
@@ -87,52 +88,24 @@ describe("Interchain Proposal", function () {
       { value: ethers.utils.parseEther("0.0001") }
     );
 
+    // Read latest proposal ID created by deployer's address.
     const proposalId = await governorAlpha.latestProposalIds(deployer.address);
     console.log("Created Proposal ID:", proposalId.toString());
 
-    // Advance time to the proposal's start block
-    const votingDelay = await governorAlpha.votingDelay();
-    await srcChainProvider.send("evm_mine", [
-      { blocks: votingDelay.toString() },
-    ]);
-
-    // Cast vote for the proposal
-    await governorAlpha.castVote(proposalId, true);
-    const compBalance = await comp.balanceOf(deployer.address);
-    console.log(
-      "Casted Vote with",
-      ethers.utils.formatEther(compBalance),
-      "COMP"
+    // Vote, queue, and execute given proposal ID.
+    await voteQueueExecuteProposal(
+      deployer.address,
+      proposalId,
+      comp,
+      governorAlpha,
+      timelock
     );
-
-    // Advance time to the proposal's end block
-    const votingPeriod = await governorAlpha.votingPeriod();
-    await srcChainProvider.send("evm_mine", [
-      { blocks: votingPeriod.toString() },
-    ]);
 
     // Read proposal state
     const proposalState = await governorAlpha.state(proposalId);
 
     // Expect proposal to be in the succeeded state
-    expect(proposalState).to.equal(4);
-
-    // Queue the proposal
-    await governorAlpha.queue(proposalId);
-    console.log("Queued Proposal ID:", proposalId.toString());
-
-    const delay = await timelock
-      .delay()
-      .then((delay: BigNumber) => delay.toHexString());
-
-    // Advance time to the proposal's eta
-    await srcChainProvider.send("evm_increaseTime", [delay]);
-
-    // Execute the proposal
-    await governorAlpha.execute(proposalId, {
-      value: ethers.utils.parseEther("0.0001"),
-    });
-    console.log("Executed Proposal ID:", proposalId.toString());
+    expect(proposalState).to.equal(7);
 
     // Wait for the proposal to be executed on the destination chain
     await waitProposalExecuted(payload, executor);
@@ -183,49 +156,14 @@ describe("Interchain Proposal", function () {
     const proposalId = await governorAlpha.latestProposalIds(deployer.address);
     console.log("Created Proposal ID:", proposalId.toString());
 
-    // Advance time to the proposal's start block
-    const votingDelay = await governorAlpha.votingDelay();
-    await srcChainProvider.send("evm_mine", [
-      { blocks: votingDelay.toString() },
-    ]);
-
-    // Cast vote for the proposal
-    await governorAlpha.castVote(proposalId, true);
-    const compBalance = await comp.balanceOf(deployer.address);
-    console.log(
-      "Casted Vote with",
-      ethers.utils.formatEther(compBalance),
-      "COMP"
+    // Vote, queue, and execute given proposal ID.
+    await voteQueueExecuteProposal(
+      deployer.address,
+      proposalId,
+      comp,
+      governorAlpha,
+      timelock
     );
-
-    // Advance time to the proposal's end block
-    const votingPeriod = await governorAlpha.votingPeriod();
-    await srcChainProvider.send("evm_mine", [
-      { blocks: votingPeriod.toString() },
-    ]);
-
-    // Read proposal state
-    const proposalState = await governorAlpha.state(proposalId);
-
-    // Expect proposal to be in the succeeded state
-    expect(proposalState).to.equal(4);
-
-    // Queue the proposal
-    await governorAlpha.queue(proposalId);
-    console.log("Queued Proposal ID:", proposalId.toString());
-
-    const delay = await timelock
-      .delay()
-      .then((delay: BigNumber) => delay.toHexString());
-
-    // Advance time to the proposal's eta
-    await srcChainProvider.send("evm_increaseTime", [delay]);
-
-    // Execute the proposal
-    await governorAlpha.execute(proposalId, {
-      value: ethers.utils.parseEther("0.0001"),
-    });
-    console.log("Executed Proposal ID:", proposalId.toString());
 
     // Wait for the proposal to be executed on the destination chain
     await waitProposalExecuted(payload, executor);
