@@ -1,11 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
-contract InterchainProposalSender is Ownable {
+contract InterchainProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
 
@@ -24,7 +23,7 @@ contract InterchainProposalSender is Ownable {
         string memory destinationChain,
         string memory destinationContract,
         bytes memory payload
-    ) external payable onlyOwner {
+    ) external payable {
         // check if payload is valid
         (
             address[] memory targets,
