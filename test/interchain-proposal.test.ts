@@ -15,8 +15,9 @@ import { waitProposalExecuted } from "./utils/wait";
 import { transferTimelockAdmin } from "./utils/timelock";
 import { getChains } from "./utils/chains";
 import { voteQueueExecuteProposal } from "./utils/governance";
+import { sleep } from "./utils/sleep";
 
-// setLogger(() => null);
+setLogger(() => null);
 
 describe("Interchain Proposal", function () {
   const deployer = Wallet.createRandom();
@@ -26,15 +27,13 @@ describe("Interchain Proposal", function () {
   let timelock: Contract;
   let governorAlpha: Contract;
   let dummyState: Contract;
-  let srcChainProvider: providers.JsonRpcProvider;
 
   // redefine "slow" test for this test suite
-  this.slow(10000);
+  this.slow(15000);
 
   before(async function () {
     // Start local chains
     await start([deployer.address]);
-    srcChainProvider = new ethers.providers.JsonRpcProvider(getChains()[0].rpc);
 
     // Deploy contracts
     sender = await deployInterchainProposalSender(deployer);
@@ -57,9 +56,6 @@ describe("Interchain Proposal", function () {
     await governorAlpha.__acceptAdmin();
 
     dummyState = await deployDummyState(deployer);
-
-    // Transfer ownership of the InterchainProposalSender to the Timelock contract
-    await sender.transferOwnership(timelock.address);
   });
 
   it("should be able to execute a proposal with to a single target contract", async function () {
@@ -113,10 +109,8 @@ describe("Interchain Proposal", function () {
     // Wait for the proposal to be executed on the destination chain
     await waitProposalExecuted(timelock.address, payload, executor);
 
-    console.log(await executor.debugSrcAddress());
-
     // Expect the dummy state to be updated
-    // await expect(await dummyState.message()).to.equal("Hello World");
+    await expect(await dummyState.message()).to.equal("Hello World");
   });
 
   it("should be able to execute a proposal with to multiple target contracts", async function () {
@@ -176,5 +170,71 @@ describe("Interchain Proposal", function () {
     expect(await dummyState.message()).to.equal("Hello World1");
     expect(await dummyState2.message()).to.equal("Hello World2");
     expect(await dummyState3.message()).to.equal("Hello World3");
+  });
+
+  it("should not be executed if the call is initiated by an invalid InterchainProposalSender contract address", async function () {
+    const maliciousSender = await deployInterchainProposalSender(deployer);
+    const dummyContract = await deployDummyState(deployer);
+
+    // Encode the payload for the destination chain
+    const payload = ethers.utils.defaultAbiCoder.encode(
+      ["address[]", "uint256[]", "string[]", "bytes[]"],
+      [
+        [dummyContract.address],
+        [0],
+        ["setState(string)"],
+        [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
+      ]
+    );
+
+    await maliciousSender.executeRemoteProposal(
+      "Avalanche",
+      executor.address,
+      payload,
+      { value: ethers.utils.parseEther("0.0001") }
+    );
+
+    await sleep(5000);
+
+    expect(await dummyContract.message()).to.equal("");
+  });
+
+  it("should not be executed if the call is initiated by a non-whitelisted proposal caller address", async function () {
+    const dummyContract = await deployDummyState(deployer);
+
+    // Encode the payload for the destination chain
+    const payload = ethers.utils.defaultAbiCoder.encode(
+      ["address[]", "uint256[]", "string[]", "bytes[]"],
+      [
+        [dummyContract.address],
+        [0],
+        ["setState(string)"],
+        [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
+      ]
+    );
+
+    // try to execute the proposal
+    await sender.executeRemoteProposal("Avalanche", executor.address, payload, {
+      value: ethers.utils.parseEther("0.001"),
+    });
+
+    await sleep(5000);
+
+    // Expect the dummy state to not be updated
+    expect(await dummyContract.message()).to.equal("");
+
+    // try to set the sender as a whitelisted proposal caller
+    await executor.setWhitelistedProposalCaller(deployer.address, true);
+
+    // try to execute the proposal again
+    await sender.executeRemoteProposal("Avalanche", executor.address, payload, {
+      value: ethers.utils.parseEther("0.001"),
+    });
+
+    // Wait for the proposal to be executed on the destination chain
+    await waitProposalExecuted(deployer.address, payload, executor);
+
+    // Expect the dummy state to be updated
+    expect(await dummyContract.message()).to.equal("Hello World");
   });
 });
