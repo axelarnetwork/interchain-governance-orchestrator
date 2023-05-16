@@ -3,7 +3,9 @@
 This project takes a representative on-chain governance protocol and extends its functionality to be able to execute a cross-chain proposal, once that proposal has been passed on the protocol on the source chain. The example used here builds on top of the `Compound` governance protocol, but with the following implementation below, the concepts can apply to any governance protocol.
 
 The cross-chain extension of the protocol will require two contracts:
-* `InterchainProposalSender` to be deployed on the source chain. It will include the method, `executeRemoteProposal`, that 1. encodes the proposal into a payload to be sent to a remote chain for execution (once the proposal has been approved on the source chain), and 2. pays the Axelar Gas Service the requisite amount of gas for automated execution of the cross-chain call on the destination chain
+* `InterchainProposalSender` to be deployed on the source chain. It will include the method, `executeRemoteProposal`, that 
+    1. encodes the proposal into a payload to be sent to a remote chain for execution (once the proposal has been approved on the source chain), and 
+    2. pays the Axelar Gas Service the requisite amount of gas for automated execution of the cross-chain call on the destination chain
 * `InterchainProposalExecutor` is an `AxelarExecutable` to be deployed on the destination chain. The `_execute` method is the callback invoked that executes the passed proposal on the target contracts
 
 The diagram below is an indicative transaction flow for the execution of the cross-chain proposal:
@@ -14,22 +16,24 @@ The diagram below is an indicative transaction flow for the execution of the cro
 
 ```shell
 yarn install
-npm run test
+yarn test
 ```
 ## Execute your own cross-chain proposal!
 
-You can either deploy your own instances of `InterchainProposalSender` and/or `InterchainProposalExecutor` or use our existing instantiations here:
+You can either deploy your own instance of `InterchainProposalSender` or use our existing instantiations here:
 
 ### Testnet
-| Chain      | InterchainProposalSender address  | InterchainProposalExecutor address  |
-| ---------- | --------------------------------- | ----------------------------------- |
-| Avalanche  | 0xTBD                             | 0xTBD                               |
-| Ethereum   | 0xTBD                             | 0xTBD                               |
-| Polygon    | 0xTBD                             | 0xTBD                               |
-| Moonbeam   | 0xTBD                             | 0xTBD                               |
-| etc        | 0xTBD                             | 0xTBD                               |
+| Chain      | InterchainProposalSender address  |
+| ---------- | --------------------------------- |
+| Avalanche  | 0xTBD                             |
+| Ethereum   | 0xTBD                             |
+| Polygon    | 0xTBD                             |
+| Moonbeam   | 0xTBD                             |
+| etc        | 0xTBD                             |
 
-Specifically, you could craft your proposal to invoke the `executeInterchainProposal` method on the `InterchainProposalSender` contract on the source chain to execute your callback inside the `_execute` function of the `InterchainProposalExecutor` method on the destination chain.
+You will then need to deploy your own instance of `InterchainProposalExecutor` that implements the `_execute` function and sets up access control for whitelisted sender of messages incoming from the source chain.
+
+Once your contracts are deployed, you could craft your proposal to invoke the `executeInterchainProposal` method on the `InterchainProposalSender` contract on the source chain that will then execute your callback inside the `_execute` function of the `InterchainProposalExecutor` method on the destination chain.
 
 Let's say you want to introduce a proposal on Ethereum to change the value of a state variable `string` on the `DummyContract.sol` contract deployed on Avalanche to a new value "Hello World". 
 
@@ -39,68 +43,14 @@ The proposal would be written on Ethereum as follows:
 
 import { Contract, Wallet } from "ethers";
 
-const senderABI = [{
-    "inputs": [
-    {
-        "internalType": "string",
-        "name": "destinationChain",
-        "type": "string"
-    },
-    {
-        "internalType": "string",
-        "name": "destinationContract",
-        "type": "string"
-    },
-    {
-        "internalType": "bytes",
-        "name": "payload",
-        "type": "bytes"
-    }
-    ],
-    "name": "executeRemoteProposal",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-}];
-const governorAlphaABI = [{
-    "inputs": [
-    {
-        "internalType": "address[]",
-        "name": "targets",
-        "type": "address[]"
-    },
-    {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
-    },
-    {
-        "internalType": "string[]",
-        "name": "signatures",
-        "type": "string[]"
-    },
-    {
-        "internalType": "bytes[]",
-        "name": "calldatas",
-        "type": "bytes[]"
-    },
-    {
-        "internalType": "string",
-        "name": "description",
-        "type": "string"
-    }
-    ],
-    "name": "propose",
-    "outputs": [
-    {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-    }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-}];
+const senderABI = [
+  "constructor(address _gateway, address _gasService)",
+  "function executeRemoteProposal(string destinationChain, string destinationContract, bytes payload)"
+];
+const governorAlphaABI = [
+    "constructor(address timelock_, address comp_, address guardian_)",
+    "function propose(address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, string description)"
+];
 const DummyContractAddressOnAvalanche = "0xDUMMY_CONTRACT_ADDRESS_ON_AVALANCHE";
 const InterchainProposalExecutorAddressOnAvalanche = "0xINTERCHAIN_PROPOSAL_EXECUTOR_ADDRESS_ON_AVALANCHE";
 const GovernorAlphaAddressOnEthereum = "0xGOVERNOR_ALPHA_ADDRESS_ON_ETHEREUM";
@@ -116,7 +66,7 @@ async function createProposal() {
     const proposalPayload = ethers.utils.defaultAbiCoder.encode(
       ["address[]", "uint256[]", "string[]", "bytes[]"],
       [
-        [DummyContractAddressOnPolygon],
+        [DummyContractAddressOnAvalanche],
         [0],
         ["setState(string)"],
         [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
@@ -165,12 +115,14 @@ After the proposal is created, it follows the normal governance procedures in th
             CHAINS.MAINNET.ETHEREUM,
             CHAINS.MAINNET.AVALANCHE,
             GasToken.ETH,
-            5_000_000,
+            5_000_000, // See (A) below
             1.2,
             undefined
         );
 
         await governorAlpha.execute(proposalId, {
-        value: BigNumber.from(crossChainRelayerFee),
+        value: crossChainRelayerFee,
         });
+
+        // (A): You need to ensure you pass an sufficient gas limit estimate for the execution of your transaction on the destination chain.
     ```
