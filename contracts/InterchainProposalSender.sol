@@ -41,15 +41,17 @@ contract InterchainProposalSender is Ownable {
             "InterchainProposalSender: invalid payload"
         );
 
+        bytes memory encodedSenderPayload = abi.encode(msg.sender, payload);
+
         if (msg.value > 0) {
             gasService.payNativeGasForContractCall{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationContract,
-                payload,
+                encodedSenderPayload,
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationContract, payload);
+        gateway.callContract(destinationChain, destinationContract, encodedSenderPayload);
     }
 }
