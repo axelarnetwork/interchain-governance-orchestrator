@@ -36,8 +36,8 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
      * - `data` is the encoded function arguments.
      */
     function _execute(
-        string calldata sourceAddress,
         string calldata,
+        string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
         // Check that the source address is the same as the source interchain sender
@@ -47,36 +47,28 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
         );
 
         // Decode the payload
-        (
-            address interchainProposalCaller,
-            address[] memory targets,
-            uint256[] memory values,
-            string[] memory signatures,
-            bytes[] memory data
-        ) = abi.decode(
-                payload,
-                (address, address[], uint256[], string[], bytes[])
-            );
+        (address interchainProposalCaller, bytes memory _payload) = abi.decode(
+            payload,
+            (address, bytes)
+        );
 
         // Execute the proposal
-        _executeProposal(
-            interchainProposalCaller,
-            targets,
-            values,
-            signatures,
-            data
-        );
+        _executeProposal(interchainProposalCaller, _payload);
 
         emit ProposalExecuted(keccak256(payload));
     }
 
     function _executeProposal(
         address proposalCaller,
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
+        bytes memory payload
     ) internal onlyWhitelistedCaller(proposalCaller) {
+        (
+            address[] memory targets,
+            uint256[] memory values,
+            string[] memory signatures,
+            bytes[] memory data
+        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
+
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
             // Construct the call data

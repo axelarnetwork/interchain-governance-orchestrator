@@ -22,10 +22,11 @@ export function deployInterchainProposalSender(deployer: Wallet) {
   ]);
 }
 
-export function deployInterchainProposalExecutor(deployer: Wallet) {
+export function deployInterchainProposalExecutor(deployer: Wallet, interchainSenderAddress: string) {
   const chains = getChains();
   return deploy(deployer, chains[1].rpc, "InterchainProposalExecutor", [
     chains[1].gateway,
+    interchainSenderAddress
   ]);
 }
 

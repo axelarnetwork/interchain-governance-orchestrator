@@ -33,14 +33,6 @@ contract InterchainProposalSender is Ownable {
             bytes[] memory data
         ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
 
-        bytes memory _payload = abi.encode(
-            msg.sender,
-            targets,
-            values,
-            signatures,
-            data
-        );
-
         require(targets.length > 0, "InterchainProposalSender: no targets");
         require(
             targets.length == values.length &&
@@ -49,15 +41,17 @@ contract InterchainProposalSender is Ownable {
             "InterchainProposalSender: invalid payload"
         );
 
+        bytes memory encodedSenderPayload = abi.encode(msg.sender, payload);
+
         if (msg.value > 0) {
             gasService.payNativeGasForContractCall{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationContract,
-                _payload,
+                encodedSenderPayload,
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationContract, _payload);
+        gateway.callContract(destinationChain, destinationContract, encodedSenderPayload);
     }
 }
