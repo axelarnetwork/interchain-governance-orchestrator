@@ -33,6 +33,14 @@ contract InterchainProposalSender is Ownable {
             bytes[] memory data
         ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
 
+        bytes memory _payload = abi.encode(
+            msg.sender,
+            targets,
+            values,
+            signatures,
+            data
+        );
+
         require(targets.length > 0, "InterchainProposalSender: no targets");
         require(
             targets.length == values.length &&
@@ -46,10 +54,10 @@ contract InterchainProposalSender is Ownable {
                 address(this),
                 destinationChain,
                 destinationContract,
-                payload,
+                _payload,
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationContract, payload);
+        gateway.callContract(destinationChain, destinationContract, _payload);
     }
 }
