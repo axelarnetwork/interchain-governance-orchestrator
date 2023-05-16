@@ -28,12 +28,14 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
 
     /**
      * @dev Execute the proposal
-     * @param payload The payload. The payload is ABI encoded array of targets, values, signatures and data.
+     * @param sourceAddress The source address
+     * @param payload The payload. The payload is ABI encoded array of interchainProposalCaller, targets, values, signatures and data.
      * Where:
      * - `targets` are the contracts to call
      * - `values` are the amounts of native tokens to send
      * - `signatures` are the function signatures to call
      * - `data` is the encoded function arguments.
+     *
      */
     function _execute(
         string calldata,
