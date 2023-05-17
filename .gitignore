@@ -10,3 +10,5 @@ cache
 artifacts
 
 data/*.json
+
+.DS_Store
