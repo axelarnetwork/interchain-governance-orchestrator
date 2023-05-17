@@ -1,12 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// import ownable from openzeppelin
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
-contract InterchainProposalSender is Ownable {
+contract InterchainProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
 
@@ -25,14 +23,14 @@ contract InterchainProposalSender is Ownable {
         string memory destinationChain,
         string memory destinationContract,
         bytes memory payload
-    ) public payable onlyOwner {
+    ) external payable {
         // check if payload is valid
         (
             address[] memory targets,
             uint256[] memory values,
-            bytes[] memory signatures,
+            string[] memory signatures,
             bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], bytes[], bytes[]));
+        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
 
         require(targets.length > 0, "InterchainProposalSender: no targets");
         require(
@@ -42,15 +40,17 @@ contract InterchainProposalSender is Ownable {
             "InterchainProposalSender: invalid payload"
         );
 
+        bytes memory encodedSenderPayload = abi.encode(msg.sender, payload);
+
         if (msg.value > 0) {
             gasService.payNativeGasForContractCall{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationContract,
-                payload,
+                encodedSenderPayload,
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationContract, payload);
+        gateway.callContract(destinationChain, destinationContract, encodedSenderPayload);
     }
 }
