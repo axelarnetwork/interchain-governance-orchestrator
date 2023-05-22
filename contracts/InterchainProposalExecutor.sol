@@ -3,9 +3,14 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 
-contract InterchainProposalExecutor is AxelarExecutable, Ownable {
+contract InterchainProposalExecutor is
+    AxelarExecutable,
+    Ownable,
+    ReentrancyGuard
+{
     address public sourceInterchainSender;
     mapping(address => bool) public whitelistedProposalCallers;
 
@@ -63,7 +68,7 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
     function _executeProposal(
         address proposalCaller,
         bytes memory payload
-    ) internal onlyWhitelistedCaller(proposalCaller) {
+    ) internal onlyWhitelistedCaller(proposalCaller) nonReentrant {
         (
             address[] memory targets,
             uint256[] memory values,
