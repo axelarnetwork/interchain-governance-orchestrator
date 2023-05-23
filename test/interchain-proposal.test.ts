@@ -18,6 +18,7 @@ import { sleep } from "./utils/sleep";
 import { getChains } from "./utils/chains";
 
 setLogger(() => null);
+console.log = () => null;
 
 describe("Interchain Proposal", function () {
   const deployer = Wallet.createRandom();
