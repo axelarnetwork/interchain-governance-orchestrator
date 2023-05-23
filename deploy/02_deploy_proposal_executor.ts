@@ -7,10 +7,6 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [deployer] = await hre.getUnnamedAccounts();
   const chainName = hre.network.name;
 
-  const proposalSenderContract = await hre.deployments.get(
-    "InterchainProposalSender"
-  );
-
   const args = [contracts[chainName].gateway];
   const result = await deploy("InterchainProposalExecutor", {
     from: deployer,
