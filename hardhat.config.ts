@@ -1,8 +1,11 @@
 import "dotenv/config";
 import "hardhat-deploy";
+import "@nomiclabs/hardhat-ethers";
+import "@typechain/hardhat";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-verify";
+import "./tasks/whitelistProposalSender";
 
 const privateKey = process.env.PRIVATE_KEY || "";
 const apiKey = {
