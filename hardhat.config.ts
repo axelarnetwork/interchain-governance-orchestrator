@@ -32,13 +32,13 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: `https://mainnet.infura.io/v3/a3a667b533f34fd48ca350546454ea05`,
+        url: `https://1rpc.io/eth`,
       },
     },
     ethereum: {
       chainId: 5,
       gasMultiplier: 2,
-      url: "https://goerli.infura.io/v3/a3a667b533f34fd48ca350546454ea05",
+      url: "https://1rpc.io/eth",
       accounts: [privateKey],
     },
     avalanche: {
