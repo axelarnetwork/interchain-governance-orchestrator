@@ -3,13 +3,24 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract InterchainProposalExecutor is AxelarExecutable, Ownable {
+contract InterchainProposalExecutor is
+    Ownable,
+    IAxelarExecutable,
+    Initializable
+{
+    IAxelarGateway public gateway;
+    bool public initialized;
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    constructor(address _gateway) AxelarExecutable(_gateway) {}
+    function initialize(address _gateway) public initializer {
+        gateway = IAxelarGateway(_gateway);
+        initialized = true;
+    }
 
     event ProposalExecuted(bytes32 indexed payloadHash);
 
@@ -19,6 +30,26 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
             "InterchainProposalExecutor: caller is not whitelisted"
         );
         _;
+    }
+
+    function execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) external {
+        bytes32 payloadHash = keccak256(payload);
+
+        if (
+            !gateway.validateContractCall(
+                commandId,
+                sourceChain,
+                sourceAddress,
+                payloadHash
+            )
+        ) revert NotApprovedByGateway();
+
+        _execute(sourceChain, sourceAddress, payload);
     }
 
     /**
@@ -36,7 +67,7 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
-    ) internal override {
+    ) internal {
         // Check that the source address is the same as the source interchain sender
         require(
             chainWhitelistedSender[sourceChain][
@@ -98,6 +129,17 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
         address sourceInterchainSender,
         bool whitelisted
     ) external onlyOwner {
-        chainWhitelistedSender[sourceChain][sourceInterchainSender] = whitelisted;
+        chainWhitelistedSender[sourceChain][
+            sourceInterchainSender
+        ] = whitelisted;
     }
+
+    function executeWithToken(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload,
+        string calldata tokenSymbol,
+        uint256 amount
+    ) external {}
 }
