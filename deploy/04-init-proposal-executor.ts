@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { contracts } from "../constants";
 
-const contractName = "InterchainProposalSender";
+const contractName = "InterchainProposalExecutor";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { execute, read } = hre.deployments;
@@ -15,10 +15,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log(`${contractName} already initialized`);
   } else {
     console.log(`${contractName} is not initialized, initializing...`);
-    const initArgs = [
-      contracts[chainName].gateway,
-      contracts[chainName].gasService,
-    ];
+    const initArgs = [contracts[chainName].gateway];
     const executeTx = await execute(
       contractName,
       {
