@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { chainIds, chainInfos, multiSenderAddress } from "../config";
 import { contracts } from "../constants";
 
 const contractName = "InterchainProposalSender";

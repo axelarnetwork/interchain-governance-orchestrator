@@ -1,6 +1,5 @@
 import { DeployFunction } from "hardhat-deploy/dist/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { contracts } from "../constants";
 
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   // const { deploy } = hre.deployments;
@@ -12,7 +11,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const { deploy } = await deterministic("InterchainProposalSender", {
     from: deployer,
-    salt: hre.ethers.utils.id("v1"),
+    salt: hre.ethers.utils.id(deployer + "v1"),
     args,
   });
 
