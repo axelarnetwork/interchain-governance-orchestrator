@@ -3,14 +3,21 @@ pragma solidity ^0.8.9;
 
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
+// import Initializable contract
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract InterchainProposalSender {
+contract InterchainProposalSender is Initializable {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
+    bool public initialized;
 
-    constructor(address _gateway, address _gasService) {
+    function initialize(
+        address _gateway,
+        address _gasService
+    ) external initializer {
         gateway = IAxelarGateway(_gateway);
         gasService = IAxelarGasService(_gasService);
+        initialized = true;
     }
 
     /**
@@ -51,6 +58,10 @@ contract InterchainProposalSender {
                 msg.sender
             );
         }
-        gateway.callContract(destinationChain, destinationContract, encodedSenderPayload);
+        gateway.callContract(
+            destinationChain,
+            destinationContract,
+            encodedSenderPayload
+        );
     }
 }

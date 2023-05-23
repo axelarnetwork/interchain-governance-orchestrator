@@ -3,22 +3,26 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { contracts } from "../constants";
 
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const { deploy } = hre.deployments;
+  // const { deploy } = hre.deployments;
+  const { deterministic } = hre.deployments;
   const [deployer] = await hre.getUnnamedAccounts();
   const chainName = hre.network.name;
 
-  const args = [contracts[chainName].gateway, contracts[chainName].gasService];
-  const result = await deploy("InterchainProposalSender", {
+  const args: any[] = [];
+
+  const { deploy } = await deterministic("InterchainProposalSender", {
     from: deployer,
+    salt: hre.ethers.utils.id("v1"),
     args,
   });
 
-  console.log("Deployed InterchainProposalSender:", result.address);
+  const receipt = await deploy();
+  console.log("Deployed InterchainProposalSender:", receipt.address);
 
   if (chainName === "hardhat") return;
   await hre
     .run("verify:verify", {
-      address: result.address,
+      address: receipt.address,
       constructorArguments: args,
     })
     .catch((e) => console.log(e.message));

@@ -7,6 +7,7 @@ import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-verify";
 import "./tasks/whitelistProposalSender";
 import "./tasks/whitelistProposalCaller";
+import { ethers } from "ethers";
 
 const privateKey = process.env.PRIVATE_KEY || "";
 const apiKey = {
@@ -69,6 +70,14 @@ const config: HardhatUserConfig = {
       polygonMumbai: apiKey.MUMBAISCAN_API_KEY,
       ftmTestnet: apiKey.FTMSCAN_API_KEY,
     },
+  },
+  deterministicDeployment: (network: string) => {
+    return {
+      deployer: new ethers.Wallet(privateKey).address,
+      factory: "",
+      funding: "",
+      signedTx: "",
+    };
   },
 };
 
