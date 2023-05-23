@@ -1,10 +1,10 @@
 import "dotenv/config";
+import "hardhat-deploy";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
-import "hardhat-deploy";
 import "@nomicfoundation/hardhat-verify";
 
-const privateKey = process.env.privateKey || "";
+const privateKey = process.env.PRIVATE_KEY || "";
 const apiKey = {
   ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || "",
   SNOWTRACE_API_KEY: process.env.SNOWTRACE_API_KEY || "",
@@ -14,6 +14,7 @@ const apiKey = {
 };
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -24,6 +25,11 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
+    hardhat: {
+      forking: {
+        url: `https://mainnet.infura.io/v3/a3a667b533f34fd48ca350546454ea05`,
+      },
+    },
     ethereum: {
       chainId: 5,
       gasMultiplier: 2,

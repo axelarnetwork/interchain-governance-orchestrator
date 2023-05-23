@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "deploy": "hardhat deploy",
     "test": "hardhat test"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@axelar-network/axelar-cgp-solidity": "^4.3.2",
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.3.0",
     "@axelar-network/axelar-local-dev": "^1.4.4",
     "@openzeppelin/contracts": "^4.8.3",
