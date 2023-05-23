@@ -1,11 +1,12 @@
 import { task } from "hardhat/config";
 import { InterchainProposalExecutor } from "../typechain-types/contracts/InterchainProposalExecutor";
 
-task("whitelistSender", "Whitelist proposal sender")
+task("whitelistCaller", "Whitelist proposal caller")
   .addPositionalParam("sourceChain")
-  .addPositionalParam("sourceInterchainSender")
+  .addPositionalParam("sourceCaller")
   .setAction(async (taskArgs, hre) => {
-    const { sourceChain, sourceInterchainSender } = taskArgs;
+    const { sourceChain, sourceCaller } = taskArgs;
+    // get signer
     const ethers = hre.ethers;
 
     // get executor contract
@@ -13,11 +14,11 @@ task("whitelistSender", "Whitelist proposal sender")
       "InterchainProposalExecutor"
     );
 
-    const tx = await executor.setSourceInterchainSender(
+    const tx = await executor.setWhitelistedProposalCaller(
       sourceChain,
-      sourceInterchainSender,
+      sourceCaller,
       true
     );
 
-    console.log(`setSourceInterchainSender: ${tx.hash}`);
+    console.log(`setWhitelistedProposalCaller: ${tx.hash}`);
   });

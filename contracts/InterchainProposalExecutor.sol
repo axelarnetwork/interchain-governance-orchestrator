@@ -86,18 +86,18 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
     }
 
     function setWhitelistedProposalCaller(
-        address caller,
-        string calldata chain,
+        string calldata sourceChain,
+        address sourceCaller,
         bool whitelisted
     ) external onlyOwner {
-        chainWhitelistedCallers[chain][caller] = whitelisted;
+        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
     }
 
     function setSourceInterchainSender(
-        string calldata chain,
-        address _sourceInterchainSender,
+        string calldata sourceChain,
+        address sourceInterchainSender,
         bool whitelisted
     ) external onlyOwner {
-        chainWhitelistedSender[chain][_sourceInterchainSender] = whitelisted;
+        chainWhitelistedSender[sourceChain][sourceInterchainSender] = whitelisted;
     }
 }

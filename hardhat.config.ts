@@ -6,6 +6,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-verify";
 import "./tasks/whitelistProposalSender";
+import "./tasks/whitelistProposalCaller";
 
 const privateKey = process.env.PRIVATE_KEY || "";
 const apiKey = {
