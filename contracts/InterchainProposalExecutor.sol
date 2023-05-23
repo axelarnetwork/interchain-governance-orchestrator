@@ -6,21 +6,16 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 
 contract InterchainProposalExecutor is AxelarExecutable, Ownable {
-    address public sourceInterchainSender;
-    mapping(address => bool) public whitelistedProposalCallers;
+    mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
+    mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    constructor(
-        address _gateway,
-        address _sourceInterchainSender
-    ) AxelarExecutable(_gateway) {
-        sourceInterchainSender = _sourceInterchainSender;
-    }
+    constructor(address _gateway) AxelarExecutable(_gateway) {}
 
     event ProposalExecuted(bytes32 indexed payloadHash);
 
-    modifier onlyWhitelistedCaller(address caller) {
+    modifier onlyWhitelistedCaller(string calldata chain, address caller) {
         require(
-            whitelistedProposalCallers[caller],
+            chainWhitelistedCallers[chain][caller],
             "InterchainProposalExecutor: caller is not whitelisted"
         );
         _;
@@ -38,14 +33,16 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
      *
      */
     function _execute(
-        string calldata,
+        string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
         // Check that the source address is the same as the source interchain sender
         require(
-            StringToAddress.toAddress(sourceAddress) == sourceInterchainSender,
-            "InterchainProposalExecutor: source address is not the same as the source interchain sender"
+            chainWhitelistedSender[sourceChain][
+                StringToAddress.toAddress(sourceAddress)
+            ],
+            "InterchainProposalExecutor: source address is not whitelisted"
         );
 
         // Decode the payload
@@ -55,15 +52,16 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
         );
 
         // Execute the proposal
-        _executeProposal(interchainProposalCaller, _payload);
+        _executeProposal(sourceChain, interchainProposalCaller, _payload);
 
         emit ProposalExecuted(keccak256(payload));
     }
 
     function _executeProposal(
+        string calldata chain,
         address proposalCaller,
         bytes memory payload
-    ) internal onlyWhitelistedCaller(proposalCaller) {
+    ) internal onlyWhitelistedCaller(chain, proposalCaller) {
         (
             address[] memory targets,
             uint256[] memory values,
@@ -89,14 +87,17 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
 
     function setWhitelistedProposalCaller(
         address caller,
+        string calldata chain,
         bool whitelisted
     ) external onlyOwner {
-        whitelistedProposalCallers[caller] = whitelisted;
+        chainWhitelistedCallers[chain][caller] = whitelisted;
     }
 
     function setSourceInterchainSender(
-        address _sourceInterchainSender
+        string calldata chain,
+        address _sourceInterchainSender,
+        bool whitelisted
     ) external onlyOwner {
-        sourceInterchainSender = _sourceInterchainSender;
+        chainWhitelistedSender[chain][_sourceInterchainSender] = whitelisted;
     }
 }
