@@ -1,6 +1,6 @@
 import { start } from "./utils/start";
 import { expect } from "chai";
-import { Contract, Wallet, providers } from "ethers";
+import { Contract, Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { setLogger } from "@axelar-network/axelar-local-dev";
 import {
@@ -13,9 +13,9 @@ import {
 } from "./utils/deploy";
 import { waitProposalExecuted } from "./utils/wait";
 import { transferTimelockAdmin } from "./utils/timelock";
-import { getChains } from "./utils/chains";
 import { voteQueueExecuteProposal } from "./utils/governance";
 import { sleep } from "./utils/sleep";
+import { getChains } from "./utils/chains";
 
 setLogger(() => null);
 
@@ -35,19 +35,32 @@ describe("Interchain Proposal", function () {
     // Start local chains
     await start([deployer.address]);
 
+    const chains = getChains();
+
     // Deploy contracts
     sender = await deployInterchainProposalSender(deployer);
-    executor = await deployInterchainProposalExecutor(deployer, sender.address);
+    executor = await deployInterchainProposalExecutor(deployer);
     comp = await deployComp(deployer);
     timelock = await deployTimelock(deployer);
+
     governorAlpha = await deployGovernorAlpha(
       deployer,
       timelock.address,
       comp.address
     );
 
+    await executor.setWhitelistedProposalSender(
+      chains[0].name,
+      sender.address,
+      true
+    );
+
     // Whitelist the Governor contract to execute proposals
-    await executor.setWhitelistedProposalCaller(timelock.address, true);
+    await executor.setWhitelistedProposalCaller(
+      chains[0].name,
+      timelock.address,
+      true
+    );
 
     // Transfer ownership of the Timelock contract to the Governor contract
     await transferTimelockAdmin(timelock, governorAlpha.address);
@@ -223,8 +236,14 @@ describe("Interchain Proposal", function () {
     // Expect the dummy state to not be updated
     expect(await dummyContract.message()).to.equal("");
 
+    const sourceChain = getChains()[0].name;
+
     // try to set the sender as a whitelisted proposal caller
-    await executor.setWhitelistedProposalCaller(deployer.address, true);
+    await executor.setWhitelistedProposalCaller(
+      sourceChain,
+      deployer.address,
+      true
+    );
 
     // try to execute the proposal again
     await sender.executeRemoteProposal("Avalanche", executor.address, payload, {

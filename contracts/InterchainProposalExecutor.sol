@@ -124,7 +124,7 @@ contract InterchainProposalExecutor is
         chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
     }
 
-    function setSourceInterchainSender(
+    function setWhitelistedProposalSender(
         string calldata sourceChain,
         address sourceInterchainSender,
         bool whitelisted

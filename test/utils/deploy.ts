@@ -14,20 +14,32 @@ export async function deploy(
   return contract.deploy(...contractArgs);
 }
 
-export function deployInterchainProposalSender(deployer: Wallet) {
+export async function deployInterchainProposalSender(deployer: Wallet) {
   const chains = getChains();
-  return deploy(deployer, chains[0].rpc, "InterchainProposalSender", [
-    chains[0].gateway,
-    chains[0].gasService,
-  ]);
+  const contract = await deploy(
+    deployer,
+    chains[0].rpc,
+    "InterchainProposalSender",
+    []
+  );
+
+  await contract.initialize(chains[0].gateway, chains[0].gasService);
+
+  return contract;
 }
 
-export function deployInterchainProposalExecutor(deployer: Wallet, interchainSenderAddress: string) {
+export async function deployInterchainProposalExecutor(deployer: Wallet) {
   const chains = getChains();
-  return deploy(deployer, chains[1].rpc, "InterchainProposalExecutor", [
-    chains[1].gateway,
-    interchainSenderAddress
-  ]);
+  const contract = await deploy(
+    deployer,
+    chains[1].rpc,
+    "InterchainProposalExecutor",
+    []
+  );
+
+  await contract.initialize(chains[1].gateway);
+
+  return contract;
 }
 
 export function deployDummyProposalExecutor(deployer: Wallet) {

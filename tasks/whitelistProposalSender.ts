@@ -13,11 +13,11 @@ task("whitelistSender", "Whitelist proposal sender")
       "InterchainProposalExecutor"
     );
 
-    const tx = await executor.setSourceInterchainSender(
+    const tx = await executor.setWhitelistedProposalSender(
       sourceChain,
       sourceInterchainSender,
       true
     );
 
-    console.log(`setSourceInterchainSender: ${tx.hash}`);
+    console.log(`setWhitelistedProposalSender: ${tx.hash}`);
   });
