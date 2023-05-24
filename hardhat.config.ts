@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
     ethereum: {
       chainId: 5,
       gasMultiplier: 2,
-      url: "https://1rpc.io/eth",
+      url: "https://rpc.ankr.com/eth_goerli",
       accounts: [privateKey],
     },
     avalanche: {
