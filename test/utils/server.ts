@@ -1,4 +1,7 @@
-import { createAndExport } from "@axelar-network/axelar-local-dev";
+import {
+  createAndExport,
+  destroyExported,
+} from "@axelar-network/axelar-local-dev";
 
 export async function start(fundAddresses: string[] = []) {
   await createAndExport({
@@ -7,4 +10,8 @@ export async function start(fundAddresses: string[] = []) {
     chains: ["Ethereum", "Avalanche"],
     relayInterval: 2000,
   });
+}
+
+export async function stop() {
+  await destroyExported();
 }

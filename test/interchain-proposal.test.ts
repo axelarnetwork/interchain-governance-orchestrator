@@ -1,7 +1,6 @@
-import { start } from "./utils/start";
+import { start, stop } from "./utils/server";
 import { expect } from "chai";
-import { Contract, Wallet } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, Contract, Wallet } from "ethers";
 import { setLogger } from "@axelar-network/axelar-local-dev";
 import {
   deployComp,
@@ -16,6 +15,7 @@ import { transferTimelockAdmin } from "./utils/timelock";
 import { voteQueueExecuteProposal } from "./utils/governance";
 import { sleep } from "./utils/sleep";
 import { getChains } from "./utils/chains";
+import { after } from "mocha";
 
 setLogger(() => null);
 console.log = () => null;
@@ -31,8 +31,9 @@ describe("Interchain Proposal", function () {
 
   // redefine "slow" test for this test suite
   this.slow(15000);
+  this.timeout(20000);
 
-  before(async function () {
+  before(async () => {
     // Start local chains
     await start([deployer.address]);
 
@@ -70,6 +71,10 @@ describe("Interchain Proposal", function () {
     await governorAlpha.__acceptAdmin();
 
     dummyState = await deployDummyState(deployer);
+  });
+
+  after(async () => {
+    await stop();
   });
 
   it("should be able to execute a proposal with to a single target contract", async function () {

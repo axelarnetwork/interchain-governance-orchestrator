@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "deploy": "hardhat deploy",
-    "test": "hardhat test",
+    "test": "TEST=true hardhat test",
     "compile": "hardhat typechain",
     "task": "hardhat"
   },

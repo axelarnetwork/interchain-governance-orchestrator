@@ -17,6 +17,7 @@ const apiKey = {
   MUMBAISCAN_API_KEY: process.env.MUMBAISCAN_API_KEY || "",
   FTMSCAN_API_KEY: process.env.FTMSCAN_API_KEY || "",
 };
+const isTest = process.env.TEST === "true" ? true : false;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -32,6 +33,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
+        enabled: !isTest,
         url: `https://1rpc.io/eth`,
       },
     },
