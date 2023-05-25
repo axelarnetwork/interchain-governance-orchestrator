@@ -25,6 +25,13 @@ Here's how you can deploy the contracts:
 yarn deploy --network {chainName}
 ```
 
+## Verify Contract
+
+Run the following command:
+```bash
+yarn deploy --tags VerifyContract --network {chainName}
+```
+
 ## Setting Up the InterchainProposalExecutor Contract
 
 You may need to whitelist certain contracts for your `InterchainProposalExecutor` contract. Here's how you can do that:
