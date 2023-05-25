@@ -22,7 +22,6 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   }
 };
 
-deploy.tags = ["verify"];
 deploy.skip = (env) => Promise.resolve(env.network.name === "hardhat");
 
 export default deploy;
