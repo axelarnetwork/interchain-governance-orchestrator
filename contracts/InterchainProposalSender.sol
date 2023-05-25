@@ -3,7 +3,6 @@ pragma solidity ^0.8.9;
 
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
-// import Initializable contract
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract InterchainProposalSender is Initializable {
