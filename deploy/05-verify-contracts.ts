@@ -3,7 +3,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const chainName = hre.network.name;
-  if (chainName === "hardhat") return;
 
   const verifyContractNames = [
     "InterchainProposalSender",
@@ -23,5 +22,6 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 deploy.skip = (env) => Promise.resolve(env.network.name === "hardhat");
+deploy.tags = ["VerifyContract"];
 
 export default deploy;

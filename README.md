@@ -26,13 +26,13 @@ You can either deploy your own instance of `InterchainProposalSender` or use our
 
 ### Testnet
 
-| Chain     | InterchainProposalSender address |
-| --------- | -------------------------------- |
-| Avalanche | 0xTBD                            |
-| Ethereum  | 0xTBD                            |
-| Polygon   | 0xTBD                            |
-| Moonbeam  | 0xTBD                            |
-| etc       | 0xTBD                            |
+| Chain     | InterchainProposalSender address           |
+| --------- | ------------------------------------------ |
+| Avalanche | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
+| Ethereum  | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
+| Polygon   | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
+| Moonbeam  | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
+| Fantom    | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
 
 You will then need to deploy your own instance of `InterchainProposalExecutor` that sets up access control for whitelisted sender of messages incoming from the source chain.
 
