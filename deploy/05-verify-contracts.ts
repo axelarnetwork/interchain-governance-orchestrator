@@ -10,7 +10,11 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   ];
 
   for (const contractName of verifyContractNames) {
-    const contract = await hre.deployments.get(contractName);
+    const contract = await hre.deployments
+      .get(contractName)
+      .catch((e) => undefined);
+    if (!contract) continue;
+
     console.log(`Verifying ${contractName}...`);
     await hre
       .run("verify:verify", {
