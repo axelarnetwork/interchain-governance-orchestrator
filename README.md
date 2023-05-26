@@ -1,6 +1,6 @@
 # Axelar Interchain Governance
 
-This project takes a representative on-chain governance protocol and extends its functionality to be able to execute a interchain proposal, once that proposal has been passed on the protocol on the source chain. The example used here builds on top of the `Compound` governance protocol, but with the following implementation below, the concepts can apply to any governance protocol.
+This project takes a representative on-chain governance protocol and extends its functionality to be able to execute a cross-chain proposal, once that proposal has been passed on the protocol on the source chain. The example used here builds on top of the `Compound` governance contracts, but with the following implementation below, the concepts can apply to any governance protocol.
 
 The interchain extension of the protocol will require two contracts:
 
@@ -11,7 +11,33 @@ The interchain extension of the protocol will require two contracts:
 
 The diagram below is an indicative transaction flow for the execution of the interchain proposal:
 
-![Crosschain Governance Schematic](./interchain_schematic.png)
+```mermaid
+flowchart
+    subgraph "Destination Chain Contracts"
+        direction TB
+        PE{{ProposalExecutor Contract}}
+        PE -.->|Calls| TargetA
+        PE -->|Calls| TargetB
+        PE -.->|Calls| Target
+        TargetA[Contract ..]
+        TargetB[Contract A]
+        Target[Contract ..]
+    end
+
+    subgraph "Axelar Interchain Proposal Sender"
+        direction TB
+        IPS -->|Encode & Submit| AxelarGateway
+        AxelarGateway -.->|Emit Events| Relayer
+        Relayer -.->|Execute| PE
+    end
+
+    subgraph "Source Chain Governance"
+        direction TB
+        Dev -->|Propose| Gov[Governor Contract]
+        Gov -->|Vote & Queue| Timelock[Timelock Contract]
+        Timelock -.->|Execute Proposal| IPS{{InterchainProposalSender Contract}}
+    end
+```
 
 ## Set up and run the local end-to-end tests
 
