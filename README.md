@@ -1,21 +1,22 @@
 # Axelar Interchain Governance
 
-This project takes a representative on-chain governance protocol and extends its functionality to be able to execute a cross-chain proposal, once that proposal has been passed on the protocol on the source chain. The example used here builds on top of the `Compound` governance contracts, but with the following implementation below, the concepts can apply to any governance protocol.
+Axelar Interchain Governance is a project that enhances on-chain governance protocols to facilitate interchain proposal execution. We demonstrate the extension using Compound's governance contracts, but the approach can be applied to any governance protocol.
 
-The interchain extension of the protocol will require two contracts:
+## Key Components
 
-- `InterchainProposalSender` to be deployed on the source chain. It will include the method, `executeRemoteProposal`, that
-  1. encodes the proposal into a payload to be sent to a remote chain for execution (once the proposal has been approved on the source chain), and
-  2. pays the Axelar Gas Service the requisite amount of gas for automated execution of the interchain call on the destination chain
-- `InterchainProposalExecutor` is an `AxelarExecutable` to be deployed on the destination chain. The `_execute` method is the callback invoked that executes the passed proposal on the target contracts
+There are two essential contracts in this interchain extension:
 
-The diagram below is an indicative transaction flow for the execution of the interchain proposal:
+1. `InterchainProposalSender`: Deployed on the source chain, this contract has a method called `executeRemoteProposal`. This method encodes a proposal into a payload for a remote chain and pays the Axelar Gas Service for the execution of the interchain call on the destination chain.
+
+2. `InterchainProposalExecutor`: Deployed on the destination chain, this contract has a callback method `_execute` that executes the proposal on the target contracts.
+
+For a visual transaction flow of the interchain proposal, see the mermaid diagram below.
 
 ```mermaid
 flowchart
     subgraph "Destination Chain Contracts"
         direction TB
-        PE{{ProposalExecutor Contract}}
+        PE{{InterchainProposalExecutor Contract}}
         PE -.->|Calls| TargetA
         PE -->|Calls| TargetB
         PE -.->|Calls| Target
@@ -39,18 +40,30 @@ flowchart
     end
 ```
 
-## Set up and run the local end-to-end tests
+## Getting Started
+
+Get up and running with integrating your governance system using Axelar. Here are a few approaches to help you understand the process:
+
+### 1. Local Testing
+
+To get a feel for the process, start by running local tests. This will help you understand the expected behavior of the system:
 
 ```shell
 yarn install
 yarn test
 ```
 
-## Execute your own interchain proposal
+### 2. Code Review and Experimentation
 
-You can either deploy your own instance of `InterchainProposalSender` or use our existing instantiations here:
+Understand the codebase better by checking out our sample code. It provides an example of creating a proposal, such as updating a state variable in the [DummyState.sol](contracts/test/DummyState.sol) contract on `Avalanche` from `Ethereum`. You can find this in [sample.md](docs/sample.md).
 
-### Testnet
+### 3. Integration
+
+Once you're comfortable with the process, use the deployed addresses to integrate your governance system with Axelar.
+
+## Interchain Proposal Execution
+
+In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the testnet listed below. On the destination chain, deploy `InterchainProposalExecutor` and set up access control for whitelisted senders from the source chain.
 
 | Chain     | InterchainProposalSender address           |
 | --------- | ------------------------------------------ |
@@ -60,118 +73,6 @@ You can either deploy your own instance of `InterchainProposalSender` or use our
 | Moonbeam  | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
 | Fantom    | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
 
-You will then need to deploy your own instance of `InterchainProposalExecutor` that sets up access control for whitelisted sender of messages incoming from the source chain.
-
-Once your contracts are deployed, you could craft your proposal to invoke the `executeInterchainProposal` method on the `InterchainProposalSender` contract on the source chain that will then execute your callback inside the `_execute` function of the `InterchainProposalExecutor` method on the destination chain.
-
-Let's say you want to introduce a proposal on Ethereum to change the value of a state variable `string` on the `DummyContract.sol` contract deployed on Avalanche to a new value "Hello World".
-
-The proposal would be written on Ethereum as follows:
-
-```typescript
-import { Contract, Wallet } from "ethers";
-
-const senderABI = [
-  "constructor(address _gateway, address _gasService)",
-  "function executeRemoteProposal(string destinationChain, string destinationContract, bytes payload)",
-];
-const governorAlphaABI = [
-  "constructor(address timelock_, address comp_, address guardian_)",
-  "function propose(address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, string description)",
-];
-const DummyContractAddressOnAvalanche = "0xDUMMY_CONTRACT_ADDRESS_ON_AVALANCHE";
-const InterchainProposalExecutorAddressOnAvalanche =
-  "0xINTERCHAIN_PROPOSAL_EXECUTOR_ADDRESS_ON_AVALANCHE";
-const GovernorAlphaAddressOnEthereum = "0xGOVERNOR_ALPHA_ADDRESS_ON_ETHEREUM";
-const InterchainProposalSenderAddressOnEthereum =
-  "0xINTERCHAIN_PROPOSAL_SENDER_ADDRESS_ON_ETHEREUM";
-
-async function createProposal() {
-  const signer = Wallet.fromMnemonic("YOUR_EVM_PRIVATE_KEY");
-  const governorAlphaContract = new Contract(
-    GovernorAlphaAddressOnEthereum,
-    governorAlphaABI,
-    signer
-  );
-  const sender = new Contract(
-    InterchainProposalSenderAddressOnEthereum,
-    senderABI,
-    signer
-  );
-
-  // Encode the payload for the destination chain
-  const proposalPayload = ethers.utils.defaultAbiCoder.encode(
-    ["address[]", "uint256[]", "string[]", "bytes[]"],
-    [
-      [DummyContractAddressOnAvalanche],
-      [0],
-      ["setState(string)"],
-      [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
-    ]
-  );
-
-  // Propose the payload to the Governor contract
-  await governorAlphaContract.propose(
-    [sender.address],
-    [ethers.utils.parseEther("0.0001")],
-    ["executeRemoteProposal(string,string,bytes)"],
-    [
-      ethers.utils.defaultAbiCoder.encode(
-        ["string", "string", "bytes"],
-        [
-          "Avalanche",
-          InterchainProposalExecutorAddressOnPolygon,
-          proposalPayload,
-        ]
-      ),
-    ],
-    { value: ethers.utils.parseEther("0.0001") }
-  );
-}
-
-createProposal();
-```
-
-The `createProposal` method above creates a proposal in the `GovernorAlpha` contract to invoke the `executeRemotePayload` function on the `InterchainProposalSender` contract on Ethereum that would call a interchain method sent interchain. This specific proposal is to call the `setState` method on the `DummyContract.sol` contract on `Avalanche`, setting the new value to "Hello World".
-
-After the proposal is created, it follows the normal governance procedures in the Compound `GovernorAlpha` contracts. Specifically:
-
-1. The proposal is open for a (configurable) 7-day voting period.
-2. If the proposal passes, it is queued in a timelock contract for a (configurable) period of ~two days, a period in which it can also be cancelled. It can be queued as follows:
-
-```typescript
-const proposalId = await governorAlpha.latestProposalIds(signer.address);
-await governorAlpha.queue(proposalId);
-```
-
-3. If the approved proposal is not cancelled after the ~two-day period, the proposal can be executed on the timelock contract by calling the `execute` method on the `GovernorAlpha` contract on Ethereum. Note that the (payable) `execute` function must be paid enough gas for the interchain call. The execute method could be invoked as follows:
-
-```typescript
-import {
-  CHAINS,
-  Environment,
-  AxelarQueryAPI,
-} from "@axelar-network/axelarjs-sdk";
-
-const axelarJsApi = new AxelarQueryAPI({ environment: Environment.MAINNET });
-const proposalId = await governorAlpha.latestProposalIds(signer.address);
-
-const relayerFee = await axelarJsApi.estimateGasFee(
-  CHAINS.MAINNET.ETHEREUM,
-  CHAINS.MAINNET.AVALANCHE,
-  GasToken.ETH,
-  5_000_000, // See (A) below
-  1.2,
-  undefined
-);
-
-await governorAlpha.execute(proposalId, {
-  value: relayerFee,
-});
-
-// (A): You need to ensure you pass an sufficient gas limit estimate for the execution of your transaction on the destination chain.
-```
-
 ## Deployment Guide
 
-Please follows [this guide](docs/deployment.md)
+To learn more about the deployment process, please follows [this guide](docs/deployment.md)
