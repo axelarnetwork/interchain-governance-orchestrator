@@ -106,7 +106,7 @@ await governorAlphaContract.propose(
 );
 ```
 
-Lastly, the proposal payload is submitted to the Governor contract, requesting to invoke the `executeRemoteProposal` function on the `InterchainProposalSender` contract on Ethereum. This will trigger the interchain method call.
+Ultimately, the proposal payload is submitted to the Governor contract, setting off a series of events: `voting`, `queuing`, and `execution`. The culmination of this process is the invocation of the `executeRemoteProposal` function on the `InterchainProposalSender` contract on `Ethereum`, thus initiating the interchain method call.
 
 ## Summary
 
