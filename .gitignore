@@ -9,6 +9,6 @@ typechain-types
 cache
 artifacts
 
-data/*.json
-
 .DS_Store
+deployments
+data

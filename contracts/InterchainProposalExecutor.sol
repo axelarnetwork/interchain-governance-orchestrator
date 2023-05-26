@@ -3,27 +3,53 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract InterchainProposalExecutor is AxelarExecutable, Ownable {
-    address public sourceInterchainSender;
-    mapping(address => bool) public whitelistedProposalCallers;
+contract InterchainProposalExecutor is
+    Ownable,
+    IAxelarExecutable,
+    Initializable
+{
+    IAxelarGateway public gateway;
+    bool public initialized;
+    mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
+    mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    constructor(
-        address _gateway,
-        address _sourceInterchainSender
-    ) AxelarExecutable(_gateway) {
-        sourceInterchainSender = _sourceInterchainSender;
+    function initialize(address _gateway) public initializer {
+        gateway = IAxelarGateway(_gateway);
+        initialized = true;
     }
 
     event ProposalExecuted(bytes32 indexed payloadHash);
 
-    modifier onlyWhitelistedCaller(address caller) {
+    modifier onlyWhitelistedCaller(string calldata chain, address caller) {
         require(
-            whitelistedProposalCallers[caller],
+            chainWhitelistedCallers[chain][caller],
             "InterchainProposalExecutor: caller is not whitelisted"
         );
         _;
+    }
+
+    function execute(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) external {
+        bytes32 payloadHash = keccak256(payload);
+
+        if (
+            !gateway.validateContractCall(
+                commandId,
+                sourceChain,
+                sourceAddress,
+                payloadHash
+            )
+        ) revert NotApprovedByGateway();
+
+        _execute(sourceChain, sourceAddress, payload);
     }
 
     /**
@@ -38,14 +64,16 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
      *
      */
     function _execute(
-        string calldata,
+        string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
-    ) internal override {
+    ) internal {
         // Check that the source address is the same as the source interchain sender
         require(
-            StringToAddress.toAddress(sourceAddress) == sourceInterchainSender,
-            "InterchainProposalExecutor: source address is not the same as the source interchain sender"
+            chainWhitelistedSender[sourceChain][
+                StringToAddress.toAddress(sourceAddress)
+            ],
+            "InterchainProposalExecutor: source address is not whitelisted"
         );
 
         // Decode the payload
@@ -55,15 +83,16 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
         );
 
         // Execute the proposal
-        _executeProposal(interchainProposalCaller, _payload);
+        _executeProposal(sourceChain, interchainProposalCaller, _payload);
 
         emit ProposalExecuted(keccak256(payload));
     }
 
     function _executeProposal(
+        string calldata chain,
         address proposalCaller,
         bytes memory payload
-    ) internal onlyWhitelistedCaller(proposalCaller) {
+    ) internal onlyWhitelistedCaller(chain, proposalCaller) {
         (
             address[] memory targets,
             uint256[] memory values,
@@ -88,15 +117,29 @@ contract InterchainProposalExecutor is AxelarExecutable, Ownable {
     }
 
     function setWhitelistedProposalCaller(
-        address caller,
+        string calldata sourceChain,
+        address sourceCaller,
         bool whitelisted
     ) external onlyOwner {
-        whitelistedProposalCallers[caller] = whitelisted;
+        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
     }
 
-    function setSourceInterchainSender(
-        address _sourceInterchainSender
+    function setWhitelistedProposalSender(
+        string calldata sourceChain,
+        address sourceInterchainSender,
+        bool whitelisted
     ) external onlyOwner {
-        sourceInterchainSender = _sourceInterchainSender;
+        chainWhitelistedSender[sourceChain][
+            sourceInterchainSender
+        ] = whitelisted;
     }
+
+    function executeWithToken(
+        bytes32 commandId,
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload,
+        string calldata tokenSymbol,
+        uint256 amount
+    ) external {}
 }

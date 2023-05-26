@@ -1,7 +1,6 @@
-import { start } from "./utils/start";
+import { start, stop } from "./utils/server";
 import { expect } from "chai";
-import { Contract, Wallet, providers } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, Contract, Wallet } from "ethers";
 import { setLogger } from "@axelar-network/axelar-local-dev";
 import {
   deployComp,
@@ -13,11 +12,13 @@ import {
 } from "./utils/deploy";
 import { waitProposalExecuted } from "./utils/wait";
 import { transferTimelockAdmin } from "./utils/timelock";
-import { getChains } from "./utils/chains";
 import { voteQueueExecuteProposal } from "./utils/governance";
 import { sleep } from "./utils/sleep";
+import { getChains } from "./utils/chains";
+import { after } from "mocha";
 
 setLogger(() => null);
+console.log = () => null;
 
 describe("Interchain Proposal", function () {
   const deployer = Wallet.createRandom();
@@ -30,24 +31,38 @@ describe("Interchain Proposal", function () {
 
   // redefine "slow" test for this test suite
   this.slow(15000);
+  this.timeout(20000);
 
-  before(async function () {
+  before(async () => {
     // Start local chains
     await start([deployer.address]);
 
+    const chains = getChains();
+
     // Deploy contracts
     sender = await deployInterchainProposalSender(deployer);
-    executor = await deployInterchainProposalExecutor(deployer, sender.address);
+    executor = await deployInterchainProposalExecutor(deployer);
     comp = await deployComp(deployer);
     timelock = await deployTimelock(deployer);
+
     governorAlpha = await deployGovernorAlpha(
       deployer,
       timelock.address,
       comp.address
     );
 
+    await executor.setWhitelistedProposalSender(
+      chains[0].name,
+      sender.address,
+      true
+    );
+
     // Whitelist the Governor contract to execute proposals
-    await executor.setWhitelistedProposalCaller(timelock.address, true);
+    await executor.setWhitelistedProposalCaller(
+      chains[0].name,
+      timelock.address,
+      true
+    );
 
     // Transfer ownership of the Timelock contract to the Governor contract
     await transferTimelockAdmin(timelock, governorAlpha.address);
@@ -58,7 +73,11 @@ describe("Interchain Proposal", function () {
     dummyState = await deployDummyState(deployer);
   });
 
-  it("should be able to execute a proposal with to a single target contract", async function () {
+  after(async () => {
+    await stop();
+  });
+
+  it("should execute a proposal with a single destination target contract", async function () {
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
       ["address[]", "uint256[]", "string[]", "bytes[]"],
@@ -113,7 +132,7 @@ describe("Interchain Proposal", function () {
     await expect(await dummyState.message()).to.equal("Hello World");
   });
 
-  it("should be able to execute a proposal with to multiple target contracts", async function () {
+  it("should execute a proposal with multiple destination target contracts", async function () {
     const dummyState2 = await deployDummyState(deployer);
     const dummyState3 = await deployDummyState(deployer);
 
@@ -172,7 +191,7 @@ describe("Interchain Proposal", function () {
     expect(await dummyState3.message()).to.equal("Hello World3");
   });
 
-  it("should not be executed if the call is initiated by an invalid InterchainProposalSender contract address", async function () {
+  it("should not execute if the call is initiated by an invalid InterchainProposalSender contract address", async function () {
     const maliciousSender = await deployInterchainProposalSender(deployer);
     const dummyContract = await deployDummyState(deployer);
 
@@ -199,7 +218,7 @@ describe("Interchain Proposal", function () {
     expect(await dummyContract.message()).to.equal("");
   });
 
-  it("should not be executed if the call is initiated by a non-whitelisted proposal caller address", async function () {
+  it("should not execute if the call is initiated by a non-whitelisted proposal caller address", async function () {
     const dummyContract = await deployDummyState(deployer);
 
     // Encode the payload for the destination chain
@@ -223,8 +242,14 @@ describe("Interchain Proposal", function () {
     // Expect the dummy state to not be updated
     expect(await dummyContract.message()).to.equal("");
 
+    const sourceChain = getChains()[0].name;
+
     // try to set the sender as a whitelisted proposal caller
-    await executor.setWhitelistedProposalCaller(deployer.address, true);
+    await executor.setWhitelistedProposalCaller(
+      sourceChain,
+      deployer.address,
+      true
+    );
 
     // try to execute the proposal again
     await sender.executeRemoteProposal("Avalanche", executor.address, payload, {
