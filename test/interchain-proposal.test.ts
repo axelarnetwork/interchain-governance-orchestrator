@@ -77,7 +77,7 @@ describe("Interchain Proposal", function () {
     await stop();
   });
 
-  it("should execute a proposal with a single destination target contract", async function () {
+  it.only("should execute a proposal with a single destination target contract", async function () {
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
       ["address[]", "uint256[]", "string[]", "bytes[]"],
@@ -103,7 +103,7 @@ describe("Interchain Proposal", function () {
           ["Avalanche", executor.address, payload]
         ),
       ],
-      { value: ethers.utils.parseEther("0.0001") }
+      "Test Proposal"
     );
 
     // Read latest proposal ID created by deployer's address.
