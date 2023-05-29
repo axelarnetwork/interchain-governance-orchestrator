@@ -6,10 +6,13 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./executor/AxelarProposalExecutor.sol";
 
-contract ProposalExecutor is AxelarProposalExecutor {
-    function _executeProposal(bytes memory payload) internal override {
+contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
+    function _executeProposal(
+        bytes memory payload
+    ) internal override nonReentrant {
         (
             address[] memory targets,
             uint256[] memory values,
@@ -26,10 +29,23 @@ contract ProposalExecutor is AxelarProposalExecutor {
             );
 
             // Call the target
-            (bool success, ) = targets[i].call{value: values[i]}(callData);
+            (bool success, bytes memory result) = targets[i].call{
+                value: values[i]
+            }(callData);
 
-            // Revert if the call failed
-            require(success, "ProposalExecutor: call failed");
+            if (!success) {
+                // Propagate the failure information.
+                if (result.length > 0) {
+                    // The failure data is a revert reason string.
+                    assembly {
+                        let resultSize := mload(result)
+                        revert(add(32, result), resultSize)
+                    }
+                } else {
+                    // There is no failure data, just revert with no reason.
+                    revert("ProposalExecutor: call failed");
+                }
+            }
         }
     }
 }

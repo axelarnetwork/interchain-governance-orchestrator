@@ -8,16 +8,26 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.so
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
-    IAxelarGateway public gateway;
-    bool public initialized;
+    IAxelarGateway private _gateway;
+    bool private _initialized;
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    function initialize(address _gateway) public initializer {
-        gateway = IAxelarGateway(_gateway);
-        initialized = true;
+    function initialize(address gatewayAddress) public initializer {
+        _gateway = IAxelarGateway(gatewayAddress);
+        _initialized = true;
     }
 
+    event WhitelistedProposalCallerSet(
+        string indexed sourceChain,
+        address indexed sourceCaller,
+        bool whitelisted
+    );
+    event WhitelistedProposalSenderSet(
+        string indexed sourceChain,
+        address indexed sourceInterchainSender,
+        bool whitelisted
+    );
     event ProposalExecuted(bytes32 indexed payloadHash);
 
     modifier onlyWhitelistedCaller(string calldata chain, address caller) {
@@ -26,6 +36,14 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
             "ProposalExecutor: caller is not whitelisted"
         );
         _;
+    }
+
+    function gateway() public view returns (IAxelarGateway) {
+        return _gateway;
+    }
+
+    function initialized() public view returns (bool) {
+        return _initialized;
     }
 
     function execute(
@@ -37,7 +55,7 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
         bytes32 payloadHash = keccak256(payload);
 
         if (
-            !gateway.validateContractCall(
+            !_gateway.validateContractCall(
                 commandId,
                 sourceChain,
                 sourceAddress,
@@ -98,6 +116,11 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
         bool whitelisted
     ) external onlyOwner {
         chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
+        emit WhitelistedProposalCallerSet(
+            sourceChain,
+            sourceCaller,
+            whitelisted
+        );
     }
 
     function setWhitelistedProposalSender(
@@ -108,6 +131,11 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
         chainWhitelistedSender[sourceChain][
             sourceInterchainSender
         ] = whitelisted;
+        emit WhitelistedProposalSenderSet(
+            sourceChain,
+            sourceInterchainSender,
+            whitelisted
+        );
     }
 
     function executeWithToken(
