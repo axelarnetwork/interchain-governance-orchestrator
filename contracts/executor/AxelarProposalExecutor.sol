@@ -30,6 +30,8 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
     );
     event ProposalExecuted(bytes32 indexed payloadHash);
 
+    error ProposalExecuteFailed();
+
     modifier onlyWhitelistedCaller(string calldata chain, address caller) {
         require(
             chainWhitelistedCallers[chain][caller],

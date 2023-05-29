@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./executor/AxelarProposalExecutor.sol";
 
 contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
+
+
     function _executeProposal(
         bytes memory payload
     ) internal override nonReentrant {
@@ -43,7 +45,7 @@ contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
                     }
                 } else {
                     // There is no failure data, just revert with no reason.
-                    revert("ProposalExecutor: call failed");
+                    revert ProposalExecuteFailed();
                 }
             }
         }
