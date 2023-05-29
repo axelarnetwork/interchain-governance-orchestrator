@@ -7,14 +7,14 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [deployer] = await hre.getUnnamedAccounts();
 
   if (process.env.test === "true") {
-    const { address } = await deploy("InterchainProposalExecutor", {
+    const { address } = await deploy("ProposalExecutor", {
       from: deployer,
       args: [],
     });
 
-    console.log("Deployed InterchainProposalExecutor:", address);
+    console.log("Deployed ProposalExecutor:", address);
   } else {
-    const { deploy } = await deterministic("InterchainProposalExecutor", {
+    const { deploy } = await deterministic("ProposalExecutor", {
       from: deployer,
       salt: hre.ethers.utils.id(deployer + "v1"),
       args: [],
@@ -22,10 +22,10 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
     const receipt = await deploy();
 
-    console.log("Deployed InterchainProposalExecutor:", receipt.address);
+    console.log("Deployed ProposalExecutor:", receipt.address);
   }
 };
 
-deploy.tags = ["InterchainProposalExecutor"];
+deploy.tags = ["ProposalExecutor"];
 
 export default deploy;

@@ -28,12 +28,12 @@ export async function deployInterchainProposalSender(deployer: Wallet) {
   return contract;
 }
 
-export async function deployInterchainProposalExecutor(deployer: Wallet) {
+export async function deployProposalExecutor(deployer: Wallet) {
   const chains = getChains();
   const contract = await deploy(
     deployer,
     chains[1].rpc,
-    "InterchainProposalExecutor",
+    "ProposalExecutor",
     []
   );
 

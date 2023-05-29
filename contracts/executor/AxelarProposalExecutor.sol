@@ -7,11 +7,7 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExec
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract InterchainProposalExecutor is
-    Ownable,
-    IAxelarExecutable,
-    Initializable
-{
+contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
     IAxelarGateway public gateway;
     bool public initialized;
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
@@ -27,7 +23,7 @@ contract InterchainProposalExecutor is
     modifier onlyWhitelistedCaller(string calldata chain, address caller) {
         require(
             chainWhitelistedCallers[chain][caller],
-            "InterchainProposalExecutor: caller is not whitelisted"
+            "ProposalExecutor: caller is not whitelisted"
         );
         _;
     }
@@ -68,12 +64,12 @@ contract InterchainProposalExecutor is
         string calldata sourceAddress,
         bytes calldata payload
     ) internal {
-        // Check that the source address is the same as the source interchain sender
+        // Check that the source address is whitelisted
         require(
             chainWhitelistedSender[sourceChain][
                 StringToAddress.toAddress(sourceAddress)
             ],
-            "InterchainProposalExecutor: source address is not whitelisted"
+            "ProposalExecutor: source address is not whitelisted"
         );
 
         // Decode the payload
@@ -82,39 +78,19 @@ contract InterchainProposalExecutor is
             (address, bytes)
         );
 
+        // Check that the caller is whitelisted
+        require(
+            chainWhitelistedCallers[sourceChain][interchainProposalCaller],
+            "ProposalExecutor: caller is not whitelisted"
+        );
+
         // Execute the proposal
-        _executeProposal(sourceChain, interchainProposalCaller, _payload);
+        _executeProposal(_payload);
 
         emit ProposalExecuted(keccak256(payload));
     }
 
-    function _executeProposal(
-        string calldata chain,
-        address proposalCaller,
-        bytes memory payload
-    ) internal onlyWhitelistedCaller(chain, proposalCaller) {
-        (
-            address[] memory targets,
-            uint256[] memory values,
-            string[] memory signatures,
-            bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
-
-        // Iterate over all targets and call them with the given data
-        for (uint256 i = 0; i < targets.length; i++) {
-            // Construct the call data
-            bytes memory callData = abi.encodePacked(
-                bytes4(keccak256(bytes(signatures[i]))),
-                data[i]
-            );
-
-            // Call the target
-            (bool success, ) = targets[i].call{value: values[i]}(callData);
-
-            // Revert if the call failed
-            require(success, "InterchainProposalExecutor: call failed");
-        }
-    }
+    function _executeProposal(bytes memory payload) internal virtual {}
 
     function setWhitelistedProposalCaller(
         string calldata sourceChain,
@@ -135,11 +111,13 @@ contract InterchainProposalExecutor is
     }
 
     function executeWithToken(
-        bytes32 commandId,
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        bytes calldata payload,
-        string calldata tokenSymbol,
-        uint256 amount
-    ) external {}
+        bytes32,
+        string calldata,
+        string calldata,
+        bytes calldata,
+        string calldata,
+        uint256
+    ) external pure override {
+        revert("not implemented");
+    }
 }

@@ -6,7 +6,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   const verifyContractNames = [
     "InterchainProposalSender",
-    "InterchainProposalExecutor",
+    "ProposalExecutor",
   ];
 
   for (const contractName of verifyContractNames) {

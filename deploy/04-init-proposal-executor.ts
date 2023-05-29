@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { contracts } from "../constants";
 
-const contractName = "InterchainProposalExecutor";
+const contractName = "ProposalExecutor";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { execute, read } = hre.deployments;
