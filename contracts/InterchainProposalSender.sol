@@ -3,20 +3,14 @@ pragma solidity ^0.8.9;
 
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract InterchainProposalSender is Initializable {
+contract InterchainProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
-    bool public initialized;
 
-    function initialize(
-        address _gateway,
-        address _gasService
-    ) external initializer {
+    constructor(address _gateway, address _gasService) {
         gateway = IAxelarGateway(_gateway);
         gasService = IAxelarGasService(_gasService);
-        initialized = true;
     }
 
     /**
@@ -28,16 +22,11 @@ contract InterchainProposalSender is Initializable {
     function executeRemoteProposal(
         string memory destinationChain,
         string memory destinationContract,
-        bytes memory payload
+        address[] memory targets,
+        uint256[] memory values,
+        string[] memory signatures,
+        bytes[] memory data
     ) external payable {
-        // check if payload is valid
-        (
-            address[] memory targets,
-            uint256[] memory values,
-            string[] memory signatures,
-            bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
-
         require(targets.length > 0, "InterchainProposalSender: no targets");
         require(
             targets.length == values.length &&
@@ -46,7 +35,13 @@ contract InterchainProposalSender is Initializable {
             "InterchainProposalSender: invalid payload"
         );
 
-        bytes memory encodedSenderPayload = abi.encode(msg.sender, payload);
+        bytes memory encodedSenderPayload = abi.encode(
+            msg.sender,
+            targets,
+            values,
+            signatures,
+            data
+        );
 
         if (msg.value > 0) {
             gasService.payNativeGasForContractCall{value: msg.value}(

@@ -10,18 +10,12 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./executor/AxelarProposalExecutor.sol";
 
 contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
-
-
     function _executeProposal(
-        bytes memory payload
+        address[] memory targets,
+        uint256[] memory values,
+        string[] memory signatures,
+        bytes[] memory data
     ) internal override nonReentrant {
-        (
-            address[] memory targets,
-            uint256[] memory values,
-            string[] memory signatures,
-            bytes[] memory data
-        ) = abi.decode(payload, (address[], uint256[], string[], bytes[]));
-
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
             // Construct the call data

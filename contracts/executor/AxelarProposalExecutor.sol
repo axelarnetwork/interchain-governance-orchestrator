@@ -3,20 +3,17 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
-import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
-    IAxelarGateway private _gateway;
-    bool private _initialized;
+error ProposalExecuteFailed();
+error NonWhitelistCaller();
+
+contract AxelarProposalExecutor is Ownable, AxelarExecutable {
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    function initialize(address gatewayAddress) public initializer {
-        _gateway = IAxelarGateway(gatewayAddress);
-        _initialized = true;
-    }
+    constructor(address _gateway) AxelarExecutable(_gateway) {}
 
     event WhitelistedProposalCallerSet(
         string indexed sourceChain,
@@ -30,42 +27,12 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
     );
     event ProposalExecuted(bytes32 indexed payloadHash);
 
-    error ProposalExecuteFailed();
-
     modifier onlyWhitelistedCaller(string calldata chain, address caller) {
         require(
             chainWhitelistedCallers[chain][caller],
             "ProposalExecutor: caller is not whitelisted"
         );
         _;
-    }
-
-    function gateway() public view returns (IAxelarGateway) {
-        return _gateway;
-    }
-
-    function initialized() public view returns (bool) {
-        return _initialized;
-    }
-
-    function execute(
-        bytes32 commandId,
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        bytes calldata payload
-    ) external {
-        bytes32 payloadHash = keccak256(payload);
-
-        if (
-            !_gateway.validateContractCall(
-                commandId,
-                sourceChain,
-                sourceAddress,
-                payloadHash
-            )
-        ) revert NotApprovedByGateway();
-
-        _execute(sourceChain, sourceAddress, payload);
     }
 
     /**
@@ -93,10 +60,16 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
         );
 
         // Decode the payload
-        (address interchainProposalCaller, bytes memory _payload) = abi.decode(
-            payload,
-            (address, bytes)
-        );
+        (
+            address interchainProposalCaller,
+            address[] memory targets,
+            uint256[] memory values,
+            string[] memory signatures,
+            bytes[] memory data
+        ) = abi.decode(
+                payload,
+                (address, address[], uint256[], string[], bytes[])
+            );
 
         // Check that the caller is whitelisted
         require(
@@ -105,7 +78,7 @@ contract AxelarProposalExecutor is Ownable, IAxelarExecutable, Initializable {
         );
 
         // Execute the proposal
-        _executeProposal(_payload);
+        _executeProposal(targets, values, signatures, data);
 
         emit ProposalExecuted(keccak256(payload));
     }
