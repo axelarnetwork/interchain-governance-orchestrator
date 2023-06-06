@@ -2,12 +2,13 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
-import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "../interfaces/IProposalExecutor.sol";
 
-contract AxelarProposalExecutor is
+abstract contract AxelarProposalExecutor is
     IProposalExecutor,
     AxelarExecutable,
     Ownable,
@@ -66,8 +67,7 @@ contract AxelarProposalExecutor is
         // Execute the proposal with the given arguments
         _executeProposal(targets, values, signatures, data);
 
-        // Emit the event
-        emit ProposalExecuted(keccak256(payload));
+        onProposalExecuted(sourceChain, sourceAddress, payload);
     }
 
     function _executeProposal(
@@ -75,7 +75,7 @@ contract AxelarProposalExecutor is
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
-    ) internal override nonReentrant {
+    ) internal nonReentrant {
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
             // Construct the call data
@@ -104,4 +104,22 @@ contract AxelarProposalExecutor is
             }
         }
     }
+
+    function onProposalExecuted(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal virtual;
+
+    function setWhitelistedProposalSender(
+        string calldata sourceChain,
+        address sourceSender,
+        bool whitelisted
+    ) external virtual {}
+
+    function setWhitelistedProposalCaller(
+        string calldata sourceChain,
+        address sourceCaller,
+        bool whitelisted
+    ) external virtual {}
 }
