@@ -81,6 +81,13 @@ describe("Interchain Proposal", function () {
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
 
+    const targets = [dummyState.address];
+    const values = [0];
+    const signatures = ["setState(string)"];
+    const calldatas = [
+      ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"]),
+    ];
+
     // Propose the payload to the Governor contract
     await governorAlpha.propose(
       [sender.address],
@@ -94,10 +101,10 @@ describe("Interchain Proposal", function () {
           [
             "Avalanche",
             executor.address,
-            [dummyState.address],
-            [0],
-            ["setState(string)"],
-            [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
+            targets,
+            values,
+            signatures,
+            calldatas,
           ]
         ),
       ],
@@ -127,13 +134,7 @@ describe("Interchain Proposal", function () {
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
       ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
-      [
-        timelock.address,
-        [dummyState.address],
-        [0],
-        ["setState(string)"],
-        [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
-      ]
+      [timelock.address, targets, values, signatures, calldatas]
     );
     await waitProposalExecuted(payload, executor);
 
