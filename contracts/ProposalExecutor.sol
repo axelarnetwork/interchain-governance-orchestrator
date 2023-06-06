@@ -12,38 +12,41 @@ import "./executor/AxelarProposalExecutor.sol";
 contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
     constructor(address _gateway) AxelarProposalExecutor(_gateway) {}
 
-    function _executeProposal(
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) internal override nonReentrant {
-        // Iterate over all targets and call them with the given data
-        for (uint256 i = 0; i < targets.length; i++) {
-            // Construct the call data
-            bytes memory callData = abi.encodePacked(
-                bytes4(keccak256(bytes(signatures[i]))),
-                data[i]
-            );
+    /**
+     * @dev Set the proposal caller whitelist status
+     * @param sourceChain The source chain
+     * @param sourceCaller The source caller
+     * @param whitelisted The whitelist status
+     */
+    function setWhitelistedProposalCaller(
+        string calldata sourceChain,
+        address sourceCaller,
+        bool whitelisted
+    ) external override onlyOwner {
+        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
+        emit WhitelistedProposalCallerSet(
+            sourceChain,
+            sourceCaller,
+            whitelisted
+        );
+    }
 
-            // Call the target
-            (bool success, bytes memory result) = targets[i].call{
-                value: values[i]
-            }(callData);
-
-            if (!success) {
-                // Propagate the failure information.
-                if (result.length > 0) {
-                    // The failure data is a revert reason string.
-                    assembly {
-                        let resultSize := mload(result)
-                        revert(add(32, result), resultSize)
-                    }
-                } else {
-                    // There is no failure data, just revert with no reason.
-                    revert ProposalExecuteFailed();
-                }
-            }
-        }
+    /**
+     * @dev Set the proposal sender whitelist status
+     * @param sourceChain The source chain
+     * @param sourceSender The source sender
+     * @param whitelisted The whitelist status
+     */
+    function setWhitelistedProposalSender(
+        string calldata sourceChain,
+        address sourceSender,
+        bool whitelisted
+    ) external override onlyOwner {
+        chainWhitelistedSender[sourceChain][sourceSender] = whitelisted;
+        emit WhitelistedProposalSenderSet(
+            sourceChain,
+            sourceSender,
+            whitelisted
+        );
     }
 }

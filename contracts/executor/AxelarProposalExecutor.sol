@@ -8,11 +8,15 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../interfaces/IProposalExecutor.sol";
 
 contract AxelarProposalExecutor is
-    Ownable,
+    IProposalExecutor,
     AxelarExecutable,
-    IProposalExecutor
+    Ownable,
+    ReentrancyGuard
 {
+    // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
+
+    // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
     constructor(address _gateway) AxelarExecutable(_gateway) {}
@@ -20,13 +24,13 @@ contract AxelarProposalExecutor is
     /**
      * @dev Execute the proposal
      * @param sourceAddress The source address
-     * @param payload The payload. The payload is ABI encoded array of interchainProposalCaller, targets, values, signatures and data.
+     * @param payload The payload. The payload is ABI encoded array of proposalCaller, targets, values, signatures and data.
      * Where:
+     * - `proposalCaller` is the contract that calls the `InterchainProposalSender` at the source chain.
      * - `targets` are the contracts to call
      * - `values` are the amounts of native tokens to send
      * - `signatures` are the function signatures to call
      * - `data` is the encoded function arguments.
-     *
      */
     function _execute(
         string calldata sourceChain,
@@ -59,9 +63,10 @@ contract AxelarProposalExecutor is
             revert NotWhitelistedCaller();
         }
 
-        // Execute the proposal
+        // Execute the proposal with the given arguments
         _executeProposal(targets, values, signatures, data);
 
+        // Emit the event
         emit ProposalExecuted(keccak256(payload));
     }
 
@@ -70,33 +75,33 @@ contract AxelarProposalExecutor is
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
-    ) internal virtual {}
+    ) internal override nonReentrant {
+        // Iterate over all targets and call them with the given data
+        for (uint256 i = 0; i < targets.length; i++) {
+            // Construct the call data
+            bytes memory callData = abi.encodePacked(
+                bytes4(keccak256(bytes(signatures[i]))),
+                data[i]
+            );
 
-    function setWhitelistedProposalCaller(
-        string calldata sourceChain,
-        address sourceCaller,
-        bool whitelisted
-    ) external override onlyOwner {
-        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
-        emit WhitelistedProposalCallerSet(
-            sourceChain,
-            sourceCaller,
-            whitelisted
-        );
-    }
+            // Call the target
+            (bool success, bytes memory result) = targets[i].call{
+                value: values[i]
+            }(callData);
 
-    function setWhitelistedProposalSender(
-        string calldata sourceChain,
-        address sourceInterchainSender,
-        bool whitelisted
-    ) external override onlyOwner {
-        chainWhitelistedSender[sourceChain][
-            sourceInterchainSender
-        ] = whitelisted;
-        emit WhitelistedProposalSenderSet(
-            sourceChain,
-            sourceInterchainSender,
-            whitelisted
-        );
+            if (!success) {
+                // Propagate the failure information.
+                if (result.length > 0) {
+                    // The failure data is a revert reason string.
+                    assembly {
+                        let resultSize := mload(result)
+                        revert(add(32, result), resultSize)
+                    }
+                } else {
+                    // There is no failure data, just revert with no reason.
+                    revert ProposalExecuteFailed();
+                }
+            }
+        }
     }
 }

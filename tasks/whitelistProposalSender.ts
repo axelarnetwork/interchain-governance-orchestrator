@@ -3,9 +3,9 @@ import { ProposalExecutor } from "../typechain-types/contracts/ProposalExecutor"
 
 task("whitelistSender", "Whitelist proposal sender")
   .addPositionalParam("sourceChain")
-  .addPositionalParam("sourceInterchainSender")
+  .addPositionalParam("sourceSender")
   .setAction(async (taskArgs, hre) => {
-    const { sourceChain, sourceInterchainSender } = taskArgs;
+    const { sourceChain, sourceSender } = taskArgs;
     const ethers = hre.ethers;
 
     // get executor contract
@@ -15,7 +15,7 @@ task("whitelistSender", "Whitelist proposal sender")
 
     const tx = await executor.setWhitelistedProposalSender(
       sourceChain,
-      sourceInterchainSender,
+      sourceSender,
       true
     );
 
