@@ -6,7 +6,7 @@ import {
   deployComp,
   deployDummyState,
   deployGovernorAlpha,
-  deployInterchainProposalExecutor,
+  deployProposalExecutor,
   deployInterchainProposalSender,
   deployTimelock,
 } from "./utils/deploy";
@@ -41,7 +41,7 @@ describe("Interchain Proposal", function () {
 
     // Deploy contracts
     sender = await deployInterchainProposalSender(deployer);
-    executor = await deployInterchainProposalExecutor(deployer);
+    executor = await deployProposalExecutor(deployer);
     comp = await deployComp(deployer);
     timelock = await deployTimelock(deployer);
 
@@ -77,7 +77,7 @@ describe("Interchain Proposal", function () {
     await stop();
   });
 
-  it.only("should execute a proposal with a single destination target contract", async function () {
+  it("should execute a proposal with a single destination target contract", async function () {
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
       ["address[]", "uint256[]", "string[]", "bytes[]"],

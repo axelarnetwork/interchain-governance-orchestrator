@@ -4,7 +4,7 @@ This document outlines how to create a proposal that sets a new string value in 
 
 ## Prerequisites
 
-You must have deployed instances of `InterchainProposalSender` and `InterchainProposalExecutor`. Your `InterchainProposalSender` must be whitelisted for the `InterchainProposalExecutor`.
+You must have deployed instances of `InterchainProposalSender` and `ProposalExecutor`. Your `InterchainProposalSender` must be whitelisted for the `ProposalExecutor`.
 
 ## Code Snippet
 
@@ -24,8 +24,8 @@ const governorAlphaABI = [...];
 
 // Contract addresses
 const DummyContractAddressOnAvalanche = "0xDummyContractAddressOnAvalanche";
-const InterchainProposalExecutorAddressOnAvalanche =
-  "0xInterchainProposalExecutorAddressOnAvalanche";
+const ProposalExecutorAddressOnAvalanche =
+  "0xProposalExecutorAddressOnAvalanche";
 const GovernorAlphaAddressOnEthereum = "0xGovernorAlphaAddressOnEthereum";
 const InterchainProposalSenderAddressOnEthereum =
   "0xInterchainProposalSenderAddressOnEthereum";
@@ -97,7 +97,7 @@ await governorAlphaContract.propose(
       ["string", "string", "bytes"],
       [
         "Avalanche",
-        InterchainProposalExecutorAddressOnAvalanche,
+        ProposalExecutorAddressOnAvalanche,
         proposalPayload,
       ]
     ),
