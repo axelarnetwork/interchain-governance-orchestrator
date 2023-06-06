@@ -20,24 +20,17 @@ export async function deployInterchainProposalSender(deployer: Wallet) {
     deployer,
     chains[0].rpc,
     "InterchainProposalSender",
-    []
+    [chains[0].gateway, chains[0].gasService]
   );
-
-  await contract.initialize(chains[0].gateway, chains[0].gasService);
 
   return contract;
 }
 
 export async function deployProposalExecutor(deployer: Wallet) {
   const chains = getChains();
-  const contract = await deploy(
-    deployer,
-    chains[1].rpc,
-    "ProposalExecutor",
-    []
-  );
-
-  await contract.initialize(chains[1].gateway);
+  const contract = await deploy(deployer, chains[1].rpc, "ProposalExecutor", [
+    chains[1].gateway,
+  ]);
 
   return contract;
 }

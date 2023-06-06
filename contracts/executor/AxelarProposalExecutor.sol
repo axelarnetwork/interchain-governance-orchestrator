@@ -50,7 +50,7 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
-    ) internal {
+    ) internal override {
         // Check that the source address is whitelisted
         require(
             chainWhitelistedSender[sourceChain][
@@ -83,7 +83,12 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
         emit ProposalExecuted(keccak256(payload));
     }
 
-    function _executeProposal(bytes memory payload) internal virtual {}
+    function _executeProposal(
+        address[] memory targets,
+        uint256[] memory values,
+        string[] memory signatures,
+        bytes[] memory data
+    ) internal virtual {}
 
     function setWhitelistedProposalCaller(
         string calldata sourceChain,
@@ -111,16 +116,5 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
             sourceInterchainSender,
             whitelisted
         );
-    }
-
-    function executeWithToken(
-        bytes32,
-        string calldata,
-        string calldata,
-        bytes calldata,
-        string calldata,
-        uint256
-    ) external pure override {
-        revert("not implemented");
     }
 }

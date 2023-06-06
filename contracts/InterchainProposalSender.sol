@@ -17,7 +17,10 @@ contract InterchainProposalSender {
      * @dev Execute an approved proposal in an interchain transaction
      * @param destinationChain The destination chain
      * @param destinationContract The destination contract
-     * @param payload The payload. The payload is ABI encoded array of targets, values, signatures and data.
+     * @param targets The contracts to call
+     * @param values The amounts of native tokens to send
+     * @param signatures The function signatures to call
+     * @param data The encoded function arguments.
      */
     function executeRemoteProposal(
         string memory destinationChain,

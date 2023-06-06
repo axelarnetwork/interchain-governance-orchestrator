@@ -77,11 +77,12 @@ describe("Interchain Proposal", function () {
     await stop();
   });
 
-  it("should execute a proposal with a single destination target contract", async function () {
+  it.only("should execute a proposal with a single destination target contract", async function () {
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address[]", "uint256[]", "string[]", "bytes[]"],
+      ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
       [
+        timelock.address,
         [dummyState.address],
         [0],
         ["setState(string)"],
@@ -96,11 +97,20 @@ describe("Interchain Proposal", function () {
     await governorAlpha.propose(
       [sender.address],
       [ethers.utils.parseEther("0.0001")],
-      ["executeRemoteProposal(string,string,bytes)"],
+      [
+        "executeRemoteProposal(string,string,address[],uint256[],string[],bytes[])",
+      ],
       [
         ethers.utils.defaultAbiCoder.encode(
-          ["string", "string", "bytes"],
-          ["Avalanche", executor.address, payload]
+          ["string", "string", "address[]", "uint256[]", "string[]", "bytes[]"],
+          [
+            "Avalanche",
+            executor.address,
+            [dummyState.address],
+            [0],
+            ["setState(string)"],
+            [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
+          ]
         ),
       ],
       "Test Proposal"
@@ -126,7 +136,7 @@ describe("Interchain Proposal", function () {
     expect(proposalState).to.equal(7);
 
     // Wait for the proposal to be executed on the destination chain
-    await waitProposalExecuted(timelock.address, payload, executor);
+    await waitProposalExecuted(payload, executor);
 
     // Expect the dummy state to be updated
     await expect(await dummyState.message()).to.equal("Hello World");

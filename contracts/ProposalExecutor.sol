@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./executor/AxelarProposalExecutor.sol";
 
 contract ProposalExecutor is AxelarProposalExecutor, ReentrancyGuard {
+    constructor(address _gateway) AxelarProposalExecutor(_gateway) {}
+
     function _executeProposal(
         address[] memory targets,
         uint256[] memory values,
