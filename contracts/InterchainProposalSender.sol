@@ -3,8 +3,9 @@ pragma solidity ^0.8.9;
 
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
+import "./interfaces/IProposalSender.sol";
 
-contract InterchainProposalSender {
+contract InterchainProposalSender is IProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
 
@@ -29,14 +30,8 @@ contract InterchainProposalSender {
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
-    ) external payable {
-        require(targets.length > 0, "InterchainProposalSender: no targets");
-        require(
-            targets.length == values.length &&
-                targets.length == signatures.length &&
-                targets.length == data.length,
-            "InterchainProposalSender: invalid payload"
-        );
+    ) external payable override {
+        revertIfInvalidArgs(targets, values, signatures, data);
 
         bytes memory encodedSenderPayload = abi.encode(
             msg.sender,
@@ -60,5 +55,21 @@ contract InterchainProposalSender {
             destinationContract,
             encodedSenderPayload
         );
+    }
+
+    function revertIfInvalidArgs(
+        address[] memory targets,
+        uint256[] memory values,
+        string[] memory signatures,
+        bytes[] memory data
+    ) private pure {
+        if (
+            targets.length == 0 ||
+            targets.length != values.length ||
+            targets.length != signatures.length ||
+            targets.length != data.length
+        ) {
+            revert InvalidArgs();
+        }
     }
 }

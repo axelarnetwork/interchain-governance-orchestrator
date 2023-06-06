@@ -5,35 +5,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "../interfaces/IProposalExecutor.sol";
 
-error ProposalExecuteFailed();
-error NonWhitelistCaller();
-
-contract AxelarProposalExecutor is Ownable, AxelarExecutable {
+contract AxelarProposalExecutor is
+    Ownable,
+    AxelarExecutable,
+    IProposalExecutor
+{
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
     constructor(address _gateway) AxelarExecutable(_gateway) {}
-
-    event WhitelistedProposalCallerSet(
-        string indexed sourceChain,
-        address indexed sourceCaller,
-        bool whitelisted
-    );
-    event WhitelistedProposalSenderSet(
-        string indexed sourceChain,
-        address indexed sourceInterchainSender,
-        bool whitelisted
-    );
-    event ProposalExecuted(bytes32 indexed payloadHash);
-
-    modifier onlyWhitelistedCaller(string calldata chain, address caller) {
-        require(
-            chainWhitelistedCallers[chain][caller],
-            "ProposalExecutor: caller is not whitelisted"
-        );
-        _;
-    }
 
     /**
      * @dev Execute the proposal
@@ -52,12 +34,13 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
         bytes calldata payload
     ) internal override {
         // Check that the source address is whitelisted
-        require(
-            chainWhitelistedSender[sourceChain][
+        if (
+            !chainWhitelistedSender[sourceChain][
                 StringToAddress.toAddress(sourceAddress)
-            ],
-            "ProposalExecutor: source address is not whitelisted"
-        );
+            ]
+        ) {
+            revert NotWhitelistedSourceAddress();
+        }
 
         // Decode the payload
         (
@@ -72,10 +55,9 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
             );
 
         // Check that the caller is whitelisted
-        require(
-            chainWhitelistedCallers[sourceChain][interchainProposalCaller],
-            "ProposalExecutor: caller is not whitelisted"
-        );
+        if (!chainWhitelistedCallers[sourceChain][interchainProposalCaller]) {
+            revert NotWhitelistedCaller();
+        }
 
         // Execute the proposal
         _executeProposal(targets, values, signatures, data);
@@ -94,7 +76,7 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
         string calldata sourceChain,
         address sourceCaller,
         bool whitelisted
-    ) external onlyOwner {
+    ) external override onlyOwner {
         chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
         emit WhitelistedProposalCallerSet(
             sourceChain,
@@ -107,7 +89,7 @@ contract AxelarProposalExecutor is Ownable, AxelarExecutable {
         string calldata sourceChain,
         address sourceInterchainSender,
         bool whitelisted
-    ) external onlyOwner {
+    ) external override onlyOwner {
         chainWhitelistedSender[sourceChain][
             sourceInterchainSender
         ] = whitelisted;
