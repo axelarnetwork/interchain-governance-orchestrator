@@ -100,7 +100,7 @@ contract InterchainProposalSender is IProposalSender {
     ) internal {
         revertIfInvalidProposalArgs(targets, values, signatures, data);
 
-        bytes memory encodedSenderPayload = abi.encode(
+        bytes memory payload = abi.encode(
             msg.sender,
             targets,
             values,
@@ -113,7 +113,7 @@ contract InterchainProposalSender is IProposalSender {
                 address(this),
                 destinationChain,
                 destinationContract,
-                encodedSenderPayload,
+                payload,
                 msg.sender
             );
         }
@@ -121,7 +121,7 @@ contract InterchainProposalSender is IProposalSender {
         gateway.callContract(
             destinationChain,
             destinationContract,
-            encodedSenderPayload
+            payload
         );
     }
 
