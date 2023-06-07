@@ -3,7 +3,9 @@ pragma solidity ^0.8.9;
 
 interface IProposalSender {
     // An error emitted when the given arguments to executeRemoteProposal function is invalid
-    error InvalidArgs();
+    error ProposalArgsMisMatched();
+
+    error ArgsLengthMisMatched();
 
     // An error emitted when the given fee is invalid
     error InvalidFee();

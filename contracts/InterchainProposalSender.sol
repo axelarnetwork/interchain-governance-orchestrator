@@ -23,6 +23,7 @@ contract InterchainProposalSender is IProposalSender {
      * @param values A 2d array of amounts of native tokens to send. The first dimension is the destination chain index, the second dimension is the destination target contract index.
      * @param signatures A 2d array of function signatures to call. The first dimension is the destination chain index, the second dimension is the destination target contract index.
      * @param data A 2d array of encoded function arguments. The first dimension is the destination chain index, the second dimension is the destination target contract index.
+     * Note that the destination chain must be unique in the destinationChains array.
      */
     function batchExecuteRemoteProposal(
         string[] memory destinationChains,
@@ -33,7 +34,19 @@ contract InterchainProposalSender is IProposalSender {
         string[][] memory signatures,
         bytes[][] memory data
     ) external payable override {
+        // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(fees);
+
+        // revert if the length of given arrays are not equal
+        revertIfInvalidLength(
+            destinationChains,
+            destinationContracts,
+            fees,
+            targets,
+            values,
+            signatures,
+            data
+        );
 
         for (uint i = 0; i < destinationChains.length; i++) {
             _executeRemoteProposal(
@@ -85,7 +98,7 @@ contract InterchainProposalSender is IProposalSender {
         string[] memory signatures,
         bytes[] memory data
     ) internal {
-        revertIfInvalidArgs(targets, values, signatures, data);
+        revertIfInvalidProposalArgs(targets, values, signatures, data);
 
         bytes memory encodedSenderPayload = abi.encode(
             msg.sender,
@@ -112,7 +125,7 @@ contract InterchainProposalSender is IProposalSender {
         );
     }
 
-    function revertIfInvalidArgs(
+    function revertIfInvalidProposalArgs(
         address[] memory targets,
         uint256[] memory values,
         string[] memory signatures,
@@ -124,7 +137,28 @@ contract InterchainProposalSender is IProposalSender {
             targets.length != signatures.length ||
             targets.length != data.length
         ) {
-            revert InvalidArgs();
+            revert ProposalArgsMisMatched();
+        }
+    }
+
+    function revertIfInvalidLength(
+        string[] memory destinationChains,
+        string[] memory destinationContracts,
+        uint[] memory fees,
+        address[][] memory targets,
+        uint256[][] memory values,
+        string[][] memory signatures,
+        bytes[][] memory data
+    ) private pure {
+        if (
+            destinationChains.length != destinationContracts.length ||
+            destinationChains.length != fees.length ||
+            destinationChains.length != targets.length ||
+            destinationChains.length != values.length ||
+            destinationChains.length != signatures.length ||
+            destinationChains.length != data.length
+        ) {
+            revert ArgsLengthMisMatched();
         }
     }
 
