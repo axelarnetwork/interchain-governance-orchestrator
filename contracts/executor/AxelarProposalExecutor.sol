@@ -168,8 +168,8 @@ abstract contract AxelarProposalExecutor is
     }
 
     /**
-     * @dev Set the paused status
-     * @param _paused The paused status
+     * @dev Pause the contract. Only callable by the contract owner.
+     * @param _paused The new paused state.
      */
     function setPaused(bool _paused) external override onlyOwner {
         paused = _paused;
@@ -177,10 +177,11 @@ abstract contract AxelarProposalExecutor is
     }
 
     /**
-     * @dev This function is called when a proposal is executed. To be implemented in a derived contract.
+     * @dev Called after a proposal is executed. The derived contract should implement this function.
+     * This function should do some post-execution work, such as emitting events.
      * @param sourceChain The source chain
-     * @param sourceAddress The address on the source chain
-     * @param payload The payload
+     * @param sourceAddress The source address
+     * @param payload The payload that has been executed.
      */
     function onProposalExecuted(
         string calldata sourceChain,
@@ -188,12 +189,28 @@ abstract contract AxelarProposalExecutor is
         bytes calldata payload
     ) internal virtual;
 
+    /**
+     * @dev Called when the execution of a target has failed. The derived contract should implement this function.
+     * This function should handle the failure. It could revert the transaction, ignore the failure, or do something else.
+     * @param target The target contract
+     * @param value The amount of native tokens that was attempted to send
+     * @param signature The function signature that was attempted to call
+     * @param data The encoded function arguments that was attempted to use.
+     */
     function onTargetExecutionFailed(
         address target,
         bytes memory callData,
         bytes memory result
     ) internal virtual;
 
+    /**
+     * @dev Called after a target is successfully executed. The derived contract should implement this function.
+     * This function should do some post-execution work, such as emitting events.
+     * @param target The target contract
+     * @param value The amount of native tokens sent
+     * @param signature The function signature called
+     * @param data The encoded function arguments used.
+     */
     function onTargetExecuted(
         address target,
         bytes memory callData
