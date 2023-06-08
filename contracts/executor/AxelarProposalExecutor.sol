@@ -94,8 +94,7 @@ abstract contract AxelarProposalExecutor is
                 if (result.length > 0) {
                     // The failure data is a revert reason string.
                     assembly {
-                        let resultSize := mload(result)
-                        revert(add(32, result), resultSize)
+                        revert(add(32, result), mload(result))
                     }
                 } else {
                     // There is no failure data, just revert with no reason.

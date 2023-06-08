@@ -100,6 +100,10 @@ contract InterchainProposalSender is IProposalSender {
     ) internal {
         revertIfInvalidProposalArgs(targets, values, signatures, data);
 
+        if (fee == 0) {
+            revert InvalidFee();
+        }
+
         bytes memory payload = abi.encode(
             msg.sender,
             targets,
@@ -108,21 +112,15 @@ contract InterchainProposalSender is IProposalSender {
             data
         );
 
-        if (msg.value > 0) {
-            gasService.payNativeGasForContractCall{value: fee}(
-                address(this),
-                destinationChain,
-                destinationContract,
-                payload,
-                msg.sender
-            );
-        }
-
-        gateway.callContract(
+        gasService.payNativeGasForContractCall{value: fee}(
+            address(this),
             destinationChain,
             destinationContract,
-            payload
+            payload,
+            msg.sender
         );
+
+        gateway.callContract(destinationChain, destinationContract, payload);
     }
 
     function revertIfInvalidProposalArgs(
