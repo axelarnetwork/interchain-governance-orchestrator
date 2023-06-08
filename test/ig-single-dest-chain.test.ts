@@ -89,9 +89,10 @@ describe("Interchain Governance For Single Destination Chain", function () {
     ];
 
     // Propose the payload to the Governor contract
+    const axelarFee = ethers.utils.parseEther("0.0001");
     await governorAlpha.propose(
       [sender.address],
-      [ethers.utils.parseEther("0.0001")],
+      [axelarFee],
       [
         "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
       ],
@@ -121,7 +122,8 @@ describe("Interchain Governance For Single Destination Chain", function () {
       proposalId,
       comp,
       governorAlpha,
-      timelock
+      timelock,
+      axelarFee
     );
 
     // Read proposal state
@@ -171,9 +173,10 @@ describe("Interchain Governance For Single Destination Chain", function () {
     await comp.delegate(deployer.address);
 
     // Propose the payload to the Governor contract
+    const axelarFee = ethers.utils.parseEther("0.0001");
     await governorAlpha.propose(
       [sender.address],
-      [ethers.utils.parseEther("0.0001")],
+      [axelarFee],
       [
         "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
       ],
@@ -202,7 +205,8 @@ describe("Interchain Governance For Single Destination Chain", function () {
       proposalId,
       comp,
       governorAlpha,
-      timelock
+      timelock,
+      axelarFee
     );
 
     // Wait for the proposal to be executed on the destination chain

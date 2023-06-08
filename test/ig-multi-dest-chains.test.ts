@@ -21,7 +21,7 @@ import { Chain } from "./types/chain";
 setLogger(() => null);
 console.log = () => null;
 
-describe.only("Interchain Governance for Multiple Destination Chains", function () {
+describe("Interchain Governance for Multiple Destination Chains", function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executors: Contract[] = [];
