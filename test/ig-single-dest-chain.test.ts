@@ -20,7 +20,7 @@ import { after } from "mocha";
 setLogger(() => null);
 console.log = () => null;
 
-describe("Interchain Proposal", function () {
+describe("Interchain Governance For Single Destination Chain", function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executor: Contract;
