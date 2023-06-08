@@ -93,7 +93,7 @@ describe("Interchain Proposal", function () {
       [sender.address],
       [ethers.utils.parseEther("0.0001")],
       [
-        "executeRemoteProposal(string,string,address[],uint256[],string[],bytes[])",
+        "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
       ],
       [
         ethers.utils.defaultAbiCoder.encode(
@@ -175,7 +175,7 @@ describe("Interchain Proposal", function () {
       [sender.address],
       [ethers.utils.parseEther("0.0001")],
       [
-        "executeRemoteProposal(string,string,address[],uint256[],string[],bytes[])",
+        "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
       ],
       [
         ethers.utils.defaultAbiCoder.encode(
@@ -228,7 +228,7 @@ describe("Interchain Proposal", function () {
       ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"]),
     ];
 
-    await maliciousSender.executeRemoteProposal(
+    await maliciousSender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
       targets,
@@ -255,7 +255,7 @@ describe("Interchain Proposal", function () {
     ];
 
     // try to execute the proposal
-    await sender.executeRemoteProposal(
+    await sender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
       targets,
@@ -280,7 +280,7 @@ describe("Interchain Proposal", function () {
     );
 
     // try to execute the proposal again
-    await sender.executeRemoteProposal(
+    await sender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
       targets,
