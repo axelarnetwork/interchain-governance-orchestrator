@@ -113,12 +113,7 @@ abstract contract AxelarProposalExecutor is
             }(callData);
 
             if (!success) {
-                onTargetExecutionFailed(
-                    targets[i],
-                    callData,
-                    result
-                );
-
+                onTargetExecutionFailed(targets[i], callData, result);
             }
         }
     }
