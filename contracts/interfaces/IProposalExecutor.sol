@@ -16,6 +16,9 @@ interface IProposalExecutor {
         bool whitelisted
     );
 
+    // An event emitted when the contract is paused or unpaused
+    event PausedSet(bool paused);
+
     // An event emitted when the proposal is executed
     event ProposalExecuted(bytes32 indexed payloadHash);
 
@@ -27,6 +30,9 @@ interface IProposalExecutor {
 
     // An error emitted when the proposal sender is not whitelisted
     error NotWhitelistedSourceAddress();
+
+    // An error emitted when the contract is paused and the _execute function is called
+    error Paused();
 
     /**
      * @notice set the whitelisted status of a proposal sender which is the `InterchainProposalSender` contract address on the source chain
@@ -51,4 +57,6 @@ interface IProposalExecutor {
         address sourceCaller,
         bool whitelisted
     ) external;
+
+    function setPaused(bool _paused) external;
 }

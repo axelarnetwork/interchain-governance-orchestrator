@@ -35,7 +35,11 @@ abstract contract AxelarProposalExecutor is
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    constructor(address _gateway) AxelarExecutable(_gateway) {}
+    bool public paused;
+
+    constructor(address _gateway) AxelarExecutable(_gateway) {
+        paused = false;
+    }
 
     /**
      * @dev Executes the proposal. The source address must be a whitelisted sender.
@@ -53,6 +57,11 @@ abstract contract AxelarProposalExecutor is
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
+        // Check that the contract is not paused
+        if (paused) {
+            revert Paused();
+        }
+
         // Check that the source address is whitelisted
         if (
             !chainWhitelistedSender[sourceChain][
@@ -114,6 +123,8 @@ abstract contract AxelarProposalExecutor is
 
             if (!success) {
                 onTargetExecutionFailed(targets[i], callData, result);
+            } else {
+                onTargetExecuted(targets[i], callData);
             }
         }
     }
@@ -157,6 +168,15 @@ abstract contract AxelarProposalExecutor is
     }
 
     /**
+     * @dev Set the paused status
+     * @param _paused The paused status
+     */
+    function setPaused(bool _paused) external override onlyOwner {
+        paused = _paused;
+        emit PausedSet(_paused);
+    }
+
+    /**
      * @dev This function is called when a proposal is executed. To be implemented in a derived contract.
      * @param sourceChain The source chain
      * @param sourceAddress The address on the source chain
@@ -172,5 +192,10 @@ abstract contract AxelarProposalExecutor is
         address target,
         bytes memory callData,
         bytes memory result
+    ) internal virtual;
+
+    function onTargetExecuted(
+        address target,
+        bytes memory callData
     ) internal virtual;
 }
