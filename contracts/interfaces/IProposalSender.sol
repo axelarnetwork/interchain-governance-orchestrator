@@ -11,7 +11,7 @@ interface IProposalSender {
     error InvalidFee();
 
     /**
-     * @notice Send the proposal to the destination chain via Axelar Gateway
+     * @dev Broadcast the proposal to be executed at multiple destination chains
      * @param destinationChains The destination chain
      * @param destinationContracts The destination contract address. The contract must implement the `IProposalExecutor` interfacea
      * @param fees The fee to pay for the interchain transaction
@@ -20,7 +20,7 @@ interface IProposalSender {
      * @param signatures An array of function signatures to call
      * @param data An array of encoded function arguments.
      */
-    function batchExecuteRemoteProposal(
+    function broadcastProposalToChains(
         string[] memory destinationChains,
         string[] memory destinationContracts,
         uint[] memory fees,
@@ -31,7 +31,7 @@ interface IProposalSender {
     ) external payable;
 
     /**
-     * @dev Execute an approved proposal at a single destination chain
+     * @dev Broadcast the proposal to be executed at single destination chain
      * @param destinationChain destination chain
      * @param destinationContract destination contract
      * @param targets An array of contracts to call
@@ -39,7 +39,7 @@ interface IProposalSender {
      * @param signatures An array of function signatures
      * @param data An array of encoded function arguments
      */
-    function executeRemoteProposal(
+    function broadcastProposalToChain(
         string memory destinationChain,
         string memory destinationContract,
         address[] memory targets,
