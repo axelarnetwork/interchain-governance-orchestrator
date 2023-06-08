@@ -12,44 +12,6 @@ contract ProposalExecutor is AxelarProposalExecutor {
     constructor(address _gateway) AxelarProposalExecutor(_gateway) {}
 
     /**
-     * @dev Set the proposal caller whitelist status
-     * @param sourceChain The source chain
-     * @param sourceCaller The source caller
-     * @param whitelisted The whitelist status
-     */
-    function setWhitelistedProposalCaller(
-        string calldata sourceChain,
-        address sourceCaller,
-        bool whitelisted
-    ) external override onlyOwner {
-        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
-        emit WhitelistedProposalCallerSet(
-            sourceChain,
-            sourceCaller,
-            whitelisted
-        );
-    }
-
-    /**
-     * @dev Set the proposal sender whitelist status
-     * @param sourceChain The source chain
-     * @param sourceSender The source sender
-     * @param whitelisted The whitelist status
-     */
-    function setWhitelistedProposalSender(
-        string calldata sourceChain,
-        address sourceSender,
-        bool whitelisted
-    ) external override onlyOwner {
-        chainWhitelistedSender[sourceChain][sourceSender] = whitelisted;
-        emit WhitelistedProposalSenderSet(
-            sourceChain,
-            sourceSender,
-            whitelisted
-        );
-    }
-
-    /**
      * @dev A callback function that is called after the proposal is executed
      * @param sourceChain The source chain
      * @param sourceAddress The source address
@@ -66,7 +28,24 @@ contract ProposalExecutor is AxelarProposalExecutor {
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
-        // You can add your own logic here to handle the payload after the proposal is executed
+        // You can add your own logic here to handle the payload after the proposal is executed.
         emit ProposalExecuted(keccak256(payload));
+    }
+
+    function onTargetExecutionFailed(
+        address target,
+        bytes memory callData,
+        bytes memory result
+    ) internal override {
+        // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
+        if (result.length > 0) {
+            // The failure data is a revert reason string.
+            assembly {
+                revert(add(32, result), mload(result))
+            }
+        } else {
+            // There is no failure data, just revert with no reason.
+            revert ProposalExecuteFailed();
+        }
     }
 }

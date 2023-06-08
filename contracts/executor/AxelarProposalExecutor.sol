@@ -8,6 +8,21 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.so
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "../interfaces/IProposalExecutor.sol";
 
+/**
+ * @title AxelarProposalExecutor
+ * @dev This contract is intended to be the destination contract for `InterchainProposalSender` contract.
+ * The proposal will be finally executed from this contract on the destination chain.
+ *
+ * The contract maintains whitelists for proposal senders and proposal callers. Proposal senders
+ * are InterchainProposalSender contracts at the source chain and proposal callers are contracts
+ * that call the InterchainProposalSender at the source chain.
+ * For most governance system, the proposal caller should be the Timelock contract.
+ *
+ * This contract is abstract and some of its functions need to be implemented in a derived contract.
+ *
+ * Note that due to the inherent dangers of calls with arbitrary data, extra caution should be taken
+ * to avoid reentrancy attacks and ensure that the calling contracts are trusted.
+ */
 abstract contract AxelarProposalExecutor is
     IProposalExecutor,
     AxelarExecutable,
@@ -23,11 +38,11 @@ abstract contract AxelarProposalExecutor is
     constructor(address _gateway) AxelarExecutable(_gateway) {}
 
     /**
-     * @dev Execute the proposal
+     * @dev Executes the proposal. The source address must be a whitelisted sender.
      * @param sourceAddress The source address
-     * @param payload The payload. The payload is ABI encoded array of proposalCaller, targets, values, signatures and data.
+     * @param payload The payload. It is ABI encoded array of caller, targets, values, signatures and data.
      * Where:
-     * - `proposalCaller` is the contract that calls the `InterchainProposalSender` at the source chain.
+     * - `caller` is the contract that calls the `InterchainProposalSender` at the source chain.
      * - `targets` are the contracts to call
      * - `values` are the amounts of native tokens to send
      * - `signatures` are the function signatures to call
@@ -70,6 +85,14 @@ abstract contract AxelarProposalExecutor is
         onProposalExecuted(sourceChain, sourceAddress, payload);
     }
 
+    /**
+     * @dev Executes the proposal. Calls each target with the respective value, signature, and data.
+     * @param targets The contracts to call
+     * @param values The amounts of native tokens to send
+     * @param signatures The function signatures to call
+     * @param data The encoded function arguments
+     * @notice This function uses the nonReentrant modifier to prevent reentrancy attack.
+     */
     function _executeProposal(
         address[] memory targets,
         uint256[] memory values,
@@ -90,35 +113,69 @@ abstract contract AxelarProposalExecutor is
             }(callData);
 
             if (!success) {
-                // Propagate the failure information.
-                if (result.length > 0) {
-                    // The failure data is a revert reason string.
-                    assembly {
-                        revert(add(32, result), mload(result))
-                    }
-                } else {
-                    // There is no failure data, just revert with no reason.
-                    revert ProposalExecuteFailed();
-                }
+                onTargetExecutionFailed(
+                    targets[i],
+                    callData,
+                    result
+                );
+
             }
         }
     }
 
+    /**
+     * @dev Set the proposal caller whitelist status
+     * @param sourceChain The source chain
+     * @param sourceCaller The source caller
+     * @param whitelisted The whitelist status
+     */
+    function setWhitelistedProposalCaller(
+        string calldata sourceChain,
+        address sourceCaller,
+        bool whitelisted
+    ) external override onlyOwner {
+        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
+        emit WhitelistedProposalCallerSet(
+            sourceChain,
+            sourceCaller,
+            whitelisted
+        );
+    }
+
+    /**
+     * @dev Set the proposal sender whitelist status
+     * @param sourceChain The source chain
+     * @param sourceSender The source sender
+     * @param whitelisted The whitelist status
+     */
+    function setWhitelistedProposalSender(
+        string calldata sourceChain,
+        address sourceSender,
+        bool whitelisted
+    ) external override onlyOwner {
+        chainWhitelistedSender[sourceChain][sourceSender] = whitelisted;
+        emit WhitelistedProposalSenderSet(
+            sourceChain,
+            sourceSender,
+            whitelisted
+        );
+    }
+
+    /**
+     * @dev This function is called when a proposal is executed. To be implemented in a derived contract.
+     * @param sourceChain The source chain
+     * @param sourceAddress The address on the source chain
+     * @param payload The payload
+     */
     function onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
     ) internal virtual;
 
-    function setWhitelistedProposalSender(
-        string calldata sourceChain,
-        address sourceSender,
-        bool whitelisted
-    ) external virtual {}
-
-    function setWhitelistedProposalCaller(
-        string calldata sourceChain,
-        address sourceCaller,
-        bool whitelisted
-    ) external virtual {}
+    function onTargetExecutionFailed(
+        address target,
+        bytes memory callData,
+        bytes memory result
+    ) internal virtual;
 }
