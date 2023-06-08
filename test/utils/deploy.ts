@@ -1,6 +1,7 @@
 import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { getChains } from "./chains";
+import { Chain } from "../types/chain";
 
 export async function deploy(
   wallet: Wallet,
@@ -14,35 +15,36 @@ export async function deploy(
   return contract.deploy(...contractArgs);
 }
 
-export async function deployInterchainProposalSender(deployer: Wallet) {
-  const chains = getChains();
+export async function deployInterchainProposalSender(
+  deployer: Wallet,
+  chain: Chain = getChains()[0]
+) {
   const contract = await deploy(
     deployer,
-    chains[0].rpc,
+    chain.rpc,
     "InterchainProposalSender",
-    [chains[0].gateway, chains[0].gasService]
+    [chain.gateway, chain.gasService]
   );
 
   return contract;
 }
 
-export async function deployProposalExecutor(deployer: Wallet) {
-  const chains = getChains();
-  const contract = await deploy(deployer, chains[1].rpc, "ProposalExecutor", [
-    chains[1].gateway,
+export async function deployProposalExecutor(
+  deployer: Wallet,
+  chain: Chain = getChains()[1]
+) {
+  const contract = await deploy(deployer, chain.rpc, "ProposalExecutor", [
+    chain.gateway,
   ]);
 
   return contract;
 }
 
-export function deployDummyProposalExecutor(deployer: Wallet) {
-  const chains = getChains();
-  return deploy(deployer, chains[0].rpc, "DummyProposalExecutor", []);
-}
-
-export function deployDummyState(deployer: Wallet) {
-  const chains = getChains();
-  return deploy(deployer, chains[1].rpc, "DummyState", []);
+export function deployDummyState(
+  deployer: Wallet,
+  chain: Chain = getChains()[1]
+) {
+  return deploy(deployer, chain.rpc, "DummyState", []);
 }
 
 export function deployTimelock(deployer: Wallet) {

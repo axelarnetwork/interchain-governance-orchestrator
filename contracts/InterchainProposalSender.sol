@@ -56,7 +56,7 @@ contract InterchainProposalSender is IProposalSender {
     function broadcastProposalToChains(
         string[] memory destinationChains,
         string[] memory destinationContracts,
-        uint[] memory fees,
+        uint256[] memory fees,
         address[][] memory targets,
         uint256[][] memory values,
         string[][] memory signatures,

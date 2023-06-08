@@ -3,11 +3,14 @@ import {
   destroyExported,
 } from "@axelar-network/axelar-local-dev";
 
-export async function start(fundAddresses: string[] = []) {
+export async function start(
+  fundAddresses: string[] = [],
+  chains = ["Ethereum", "Avalanche"]
+) {
   await createAndExport({
     chainOutputPath: "data/chain.json",
     accountsToFund: fundAddresses,
-    chains: ["Ethereum", "Avalanche"],
+    chains,
     relayInterval: 2000,
   });
 }
