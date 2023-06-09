@@ -44,6 +44,10 @@ flowchart
 
 Get up and running with integrating your governance system using Axelar. Here are a few approaches to help you understand the process:
 
+### Prerequisite
+
+- Requires Node v16
+
 ### 1. Local Testing
 
 To get a feel for the process, start by running local tests. This will help you understand the expected behavior of the system:
