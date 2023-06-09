@@ -9,7 +9,7 @@
   "scripts": {
     "deploy": "hardhat deploy",
     "test": "TEST=true hardhat test",
-    "compile": "hardhat typechain",
+    "compile": "hardhat clean && hardhat typechain",
     "task": "hardhat"
   },
   "devDependencies": {
