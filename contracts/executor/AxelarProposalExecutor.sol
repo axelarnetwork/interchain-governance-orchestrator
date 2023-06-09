@@ -193,9 +193,8 @@ abstract contract AxelarProposalExecutor is
      * @dev Called when the execution of a target has failed. The derived contract should implement this function.
      * This function should handle the failure. It could revert the transaction, ignore the failure, or do something else.
      * @param target The target contract
-     * @param value The amount of native tokens that was attempted to send
-     * @param signature The function signature that was attempted to call
-     * @param data The encoded function arguments that was attempted to use.
+     * @param callData The encoded function arguments that was attempted to use.
+     * @param result The result of the call.
      */
     function onTargetExecutionFailed(
         address target,
@@ -207,9 +206,7 @@ abstract contract AxelarProposalExecutor is
      * @dev Called after a target is successfully executed. The derived contract should implement this function.
      * This function should do some post-execution work, such as emitting events.
      * @param target The target contract
-     * @param value The amount of native tokens sent
-     * @param signature The function signature called
-     * @param data The encoded function arguments used.
+     * @param callData The encoded function arguments used.
      */
     function onTargetExecuted(
         address target,

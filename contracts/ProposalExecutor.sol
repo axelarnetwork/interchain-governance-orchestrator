@@ -72,7 +72,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
      */
     function onTargetExecuted(
         address target,
-        bytes memory callData,
+        bytes memory callData
     ) internal override {
         // You can add your own logic here to handle the success of each target contract execution.
     }
