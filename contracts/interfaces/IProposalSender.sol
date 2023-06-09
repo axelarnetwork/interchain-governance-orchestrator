@@ -5,6 +5,7 @@ interface IProposalSender {
     // An error emitted when the given arguments to broadcastProposalToChain function is invalid
     error ProposalArgsMisMatched();
 
+    // An error emitted when the given arguments to broadcastProposalToChains function is invalid
     error ArgsLengthMisMatched();
 
     // An error emitted when the given fee is invalid

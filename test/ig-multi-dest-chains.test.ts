@@ -13,7 +13,6 @@ import {
 import { waitProposalExecuted } from "./utils/wait";
 import { transferTimelockAdmin } from "./utils/timelock";
 import { voteQueueExecuteProposal } from "./utils/governance";
-import { sleep } from "./utils/sleep";
 import { getChains } from "./utils/chains";
 import { after } from "mocha";
 import { Chain } from "./types/chain";
