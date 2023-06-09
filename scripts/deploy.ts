@@ -1,23 +1,38 @@
 import { ethers } from "hardhat";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { contracts } from "../constants";
+import { chains } from "../constants/chains";
+const {
+  deployCreate3Contract,
+} = require("@axelar-network/axelar-gmp-sdk-solidity");
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+export async function deploy3(
+  hre: HardhatRuntimeEnvironment,
+  contractName: string,
+  salt: string,
+  args: string[]
+) {
+  const [deployer] = await hre.getUnnamedAccounts();
+  const signer = await hre.ethers.getSigner(deployer);
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  const create3Address = await hre.deployments
+    .get("Deployer")
+    .then((d) => d.address);
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const artifact = await hre.artifacts.readArtifact(contractName);
+  const result = await deployCreate3Contract(
+    create3Address,
+    signer,
+    artifact,
+    salt,
+    args
+  );
 
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log(`Deployed ${contractName}:`, result.address);
+  await hre.deployments.save(contractName, {
+    address: result.address,
+    abi: artifact.abi,
+    args,
+    bytecode: artifact.bytecode,
+  });
 }
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
