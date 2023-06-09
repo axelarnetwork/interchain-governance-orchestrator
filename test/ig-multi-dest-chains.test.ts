@@ -91,7 +91,7 @@ describe("Interchain Governance for Multiple Destination Chains", function () {
     await stop();
   });
 
-  it("should be able to execute proposal at multiple destination chains", async function () {
+  it("should execute proposal at multiple destination chains", async function () {
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
     const targets = dummyStates.map((dummyState) => dummyState.address);
