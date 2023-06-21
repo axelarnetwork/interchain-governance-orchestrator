@@ -1,4 +1,4 @@
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
 import { getChains } from "./chains";
 
 // Hide unnecessary details in a single function call for completing the voting process including vote, queue and execute transaction.
@@ -7,7 +7,8 @@ export async function voteQueueExecuteProposal(
   proposalId: string,
   comp: Contract,
   governorAlpha: Contract,
-  timelock: Contract
+  timelock: Contract,
+  value: BigNumberish
 ) {
   const srcChainProvider = new ethers.providers.JsonRpcProvider(
     getChains()[0].rpc
@@ -45,7 +46,7 @@ export async function voteQueueExecuteProposal(
 
   // Execute the proposal
   await governorAlpha.execute(proposalId, {
-    value: ethers.utils.parseEther("0.0001"),
+    value,
   });
 
   console.log("Executed Proposal ID:", proposalId.toString());

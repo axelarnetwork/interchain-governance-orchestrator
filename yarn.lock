@@ -2,16 +2,6 @@
 # yarn lockfile v1
 
 
-"@axelar-network/axelar-cgp-aptos@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-aptos/-/axelar-cgp-aptos-1.0.5.tgz#6dbc4b867ff63786c44f1eb375c462913215b7fc"
-  integrity sha512-C6ItxuSaADE7dDfEFOaijnc/Dx3JxfGhE5eXw2SrMx7N0MYG2NB0S4H4aQ+U5P9CVBh6AQet6c8prE/dTUu0ow==
-
-"@axelar-network/axelar-cgp-near@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-near/-/axelar-cgp-near-1.0.0.tgz#6b024a4524bc452aac21d48280f4b436979b73bf"
-  integrity sha512-FzExtfKWzw5OLSMr/kpbm+fcCt94fb0JmypRtIWHs1trYZoNhTFlqNF9fIDLR30rcITixTV46DWSg3R5okiq1g==
-
 "@axelar-network/axelar-cgp-solidity@^4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.2.tgz#517c38de5f52ab1b0b4e041ceeb612508cd8f96d"
@@ -31,21 +21,19 @@
     fs-extra "^11.1.1"
     ganache "^7.7.7"
 
-"@axelar-network/axelar-local-dev@^1.4.4":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-local-dev/-/axelar-local-dev-1.4.4.tgz#b208dc72cc8495ebf173b23e9aa2c048ea26cfde"
-  integrity sha512-ZLkKG5BwkgOUeU1ry0tRLDS0doRr2r4nESbbLY3K3NkAGqdcWJ9DF8vAz/R1pT+SpDmrJJrUHiFqSuq2R5n+Kw==
+"@axelar-network/axelar-local-dev@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-local-dev/-/axelar-local-dev-2.0.1.tgz#f7477a685b563355833629496865d1fa03a13cc3"
+  integrity sha512-HakNTH2yvZJ1LPruubx87s8lKfmZWOuJlo0azeOU7qkws6PX/N6s5x4FYsSjv7mChOMqJ7zjlmY7Xb8mfYb6nQ==
   dependencies:
-    "@axelar-network/axelar-cgp-aptos" "^1.0.5"
-    "@axelar-network/axelar-cgp-near" "^1.0.0"
     "@axelar-network/axelar-cgp-solidity" "github:axelarnetwork/axelar-cgp-solidity#feat/forecaller-service"
     "@axelar-network/axelar-gmp-sdk-solidity" "^3.2.1"
-    aptos "^1.3.16"
     ethers "^5.6.5"
     fs-extra "^10.1.0"
     ganache "^7.1.0"
     lodash "^4.17.21"
-    near-workspaces "^3.2.2"
+  optionalDependencies:
+    near-workspaces "^3.3.0"
 
 "@chainsafe/as-sha256@^0.3.1":
   version "0.3.1"
@@ -469,20 +457,10 @@
     lodash "^4.17.16"
     uuid "^7.0.3"
 
-"@noble/hashes@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.3.tgz#360afc77610e0a61f3417e497dcf36862e4f8111"
-  integrity sha512-CE0FCR57H2acVI5UOzIGSSIYxZ6v/HOhDR0Ro9VLyhnzLwx0o8W1mmgaqlEUx4049qJDlIBRztv5k+MM8vbO3A==
-
 "@noble/hashes@1.2.0", "@noble/hashes@~1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.2.0.tgz#a3150eeb09cc7ab207ebf6d7b9ad311a9bdbed12"
   integrity sha512-FZfhjEDbT5GRswV3C6uvLPHMiVD6lQBmpoX5+eSiPaMTXte/IKqI5dykDxzZB/WBeK/CDuQRBWarPdi3FNY2zQ==
-
-"@noble/hashes@~1.1.1":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.5.tgz#1a0377f3b9020efe2fae03290bd2a12140c95c11"
-  integrity sha512-LTMZiiLc+V4v1Yi16TD6aX2gmtKszNye0pQgbaLqkvhIqP7nVsSaJsWloGQjJfJ8offaoP5GtX3yY5swbcJxxQ==
 
 "@noble/secp256k1@1.7.1", "@noble/secp256k1@~1.7.0":
   version "1.7.1"
@@ -750,14 +728,6 @@
   dependencies:
     "@noble/hashes" "~1.2.0"
     "@noble/secp256k1" "~1.7.0"
-    "@scure/base" "~1.1.0"
-
-"@scure/bip39@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@scure/bip39/-/bip39-1.1.0.tgz#92f11d095bae025f166bef3defcc5bf4945d419a"
-  integrity sha512-pwrPOS16VeTKg98dYXQyIjJEcWfz7/1YJIwxUEPFfQPtc86Ym/1sVgQ2RLoD43AazMk2l/unK4ITySSpW2+82w==
-  dependencies:
-    "@noble/hashes" "~1.1.1"
     "@scure/base" "~1.1.0"
 
 "@scure/bip39@1.1.1":
@@ -1128,17 +1098,6 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-aptos@^1.3.16:
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/aptos/-/aptos-1.8.5.tgz#a17ac721066914785902b03cf1e7304495f6cd9d"
-  integrity sha512-iQxliWesNHjGQ5YYXCyss9eg4+bDGQWqAZa73vprqGQ9tungK0cRjUI2fmnp63Ed6UG6rurHrL+b0ckbZAOZZQ==
-  dependencies:
-    "@noble/hashes" "1.1.3"
-    "@scure/bip39" "1.1.0"
-    axios "0.27.2"
-    form-data "4.0.0"
-    tweetnacl "1.0.3"
-
 arg@^4.1.0:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
@@ -1192,14 +1151,6 @@ at-least-node@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
-
-axios@0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
-  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
-  dependencies:
-    follow-redirects "^1.14.9"
-    form-data "^4.0.0"
 
 axios@^0.21.1:
   version "0.21.4"
@@ -1962,12 +1913,12 @@ fmix@^0.1.0:
   dependencies:
     imul "^1.0.0"
 
-follow-redirects@^1.12.1, follow-redirects@^1.14.0, follow-redirects@^1.14.9:
+follow-redirects@^1.12.1, follow-redirects@^1.14.0:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
-form-data@4.0.0, form-data@^4.0.0:
+form-data@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
   integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
@@ -2866,7 +2817,7 @@ near-units@^0.1.9:
   dependencies:
     bn.js "^5.2.0"
 
-near-workspaces@^3.2.2:
+near-workspaces@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/near-workspaces/-/near-workspaces-3.3.0.tgz#bc522d2330e709c3edc6b44601797a89863e5711"
   integrity sha512-0mOzQs2QFUI1fYYh2EVcxb1hCHHrKihMTcypr2qoiofgtb7Kv/6QA6lVC5RyyhvXxLULRHkvnG6Uwx4s/g/D8Q==
@@ -3519,7 +3470,7 @@ tweetnacl-util@^0.15.1:
   resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.1.tgz#b80fcdb5c97bcc508be18c44a4be50f022eea00b"
   integrity sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==
 
-tweetnacl@1.0.3, tweetnacl@^1.0.1, tweetnacl@^1.0.3:
+tweetnacl@^1.0.1, tweetnacl@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
