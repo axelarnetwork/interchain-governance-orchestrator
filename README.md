@@ -71,11 +71,11 @@ In order to execute interchain proposals, deploy your instance of `InterchainPro
 
 | Chain     | InterchainProposalSender address           |
 | --------- | ------------------------------------------ |
-| Avalanche | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
-| Ethereum  | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
-| Polygon   | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
-| Moonbeam  | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
-| Fantom    | 0xAD41b0B7385380Ca032cB3aF121Ef3E525550aE4 |
+| Avalanche | 0x1DD07197f721F34659923ec54af8cb997eBD255e |
+| Ethereum  | 0x1DD07197f721F34659923ec54af8cb997eBD255e |
+| Polygon   | 0x1DD07197f721F34659923ec54af8cb997eBD255e |
+| Moonbeam  | 0x1DD07197f721F34659923ec54af8cb997eBD255e |
+| Fantom    | 0x1DD07197f721F34659923ec54af8cb997eBD255e |
 
 ## Deployment Guide
 
