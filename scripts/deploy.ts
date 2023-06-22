@@ -1,7 +1,4 @@
-import { ethers } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { contracts } from "../constants";
-import { chains } from "../constants/chains";
 const {
   deployCreate3Contract,
 } = require("@axelar-network/axelar-gmp-sdk-solidity");
