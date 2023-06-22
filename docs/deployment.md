@@ -29,7 +29,7 @@ yarn deploy --network {chainName}
 
 Run the following command:
 ```bash
-yarn deploy --tags VerifyContract --network {chainName}
+yarn deploy --tags Verify --network {chainName}
 ```
 
 ## Setting Up the ProposalExecutor Contract
