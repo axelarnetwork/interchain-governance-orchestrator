@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -51,7 +51,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
         address target,
         bytes memory callData,
         bytes memory result
-    ) internal override {
+    ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
         if (result.length > 0) {
             // The failure data is a revert reason string.

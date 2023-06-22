@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.19;
 
 interface IProposalSender {
     // An error emitted when the given arguments to broadcastProposalToChain function is invalid

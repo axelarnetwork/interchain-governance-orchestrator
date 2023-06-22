@@ -22,7 +22,7 @@ const isTest = process.env.TEST === "true" ? true : false;
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   solidity: {
-    version: "0.8.20",
+    version: "0.8.19",
     settings: {
       optimizer: {
         enabled: true,
