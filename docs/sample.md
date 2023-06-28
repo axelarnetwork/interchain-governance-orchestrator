@@ -30,10 +30,10 @@ const GovernorAlphaAddressOnEthereum = "0xGovernorAlphaAddressOnEthereum";
 const InterchainProposalSenderAddressOnEthereum =
   "0xInterchainProposalSenderAddressOnEthereum";
 
-// Wallet setup
+// Set up your wallet
 const signer = new ethers.Wallet("YOUR_EVM_PRIVATE_KEY");
 
-// Contracts setup
+// Initialize the contracts
 const governorAlphaContract = new Contract(
   GovernorAlphaAddressOnEthereum,
   governorAlphaABI,
@@ -67,10 +67,16 @@ const relayerFee = await axelarApi.estimateGasFee(
 
 Here, the script estimates the gas fee for the execution of your transaction on the destination chain using Axelar API.
 
-### 3. Proposal Payload Encoding
+### 3. Choose Which Chains Will Execute the Proposal
+
+You can opt to execute your proposal on a single destination chain or multiple chains.
+
+#### Single Destination Chain
+
+**Proposal Payload Encoding**
 
 ```ts
-// Payload for the destination chain
+// Formulate the payload for the destination chain
 const proposalPayload = ethers.utils.defaultAbiCoder.encode(
   ["address[]", "uint256[]", "string[]", "bytes[]"],
   [
@@ -82,32 +88,44 @@ const proposalPayload = ethers.utils.defaultAbiCoder.encode(
 );
 ```
 
-In this section, the proposal payload to be dispatched to the destination chain is encoded. This payload represents your specific transaction.
+This step encodes the proposal payload, which is then dispatched to the destination chain. This payload represents the specific transaction you want to execute.
 
-### 4. Proposing Transaction to the Governor Contract
+**Proposing Transaction to the Governor Contract**
 
 ```ts
 // Propose the payload to the Governor contract
 await governorAlphaContract.propose(
   [sender.address],
-  [relayerFee], // Use the `relayerFee` retrieved at the [Step 2](#2-gas-fee-estimation) here.
+  [relayerFee], // The `relayerFee` from step 2 is used here.
   ["broadcastProposalToChain(string,string,bytes)"],
   [
     ethers.utils.defaultAbiCoder.encode(
       ["string", "string", "bytes"],
-      [
-        "Avalanche",
-        ProposalExecutorAddressOnAvalanche,
-        proposalPayload,
-      ]
+      ["Avalanche", ProposalExecutorAddressOnAvalanche, proposalPayload]
     ),
   ],
   `A proposal to set "Hello World" message at Avalanche chain`
 );
 ```
 
-Ultimately, the proposal payload is submitted to the Governor contract, setting off a series of events: `voting`, `queuing`, and `execution`. The culmination of this process is the invocation of the `broadcastProposalToChain` function on the `InterchainProposalSender` contract on `Ethereum`, thus initiating the interchain method call.
+#### Multiple Destination Chains
+
+If you wish to propose to multiple chains, use a similar approach to the single destination chain, but use the `broadcastProposalToChains` function:
+
+```solidity
+function broadcastProposalToChains(
+    string[] memory destinationChains,
+    string[] memory destinationContracts,
+    uint256[] memory fees,
+    address[][] memory targets,
+    uint256[][] memory values,
+    string[][] memory signatures,
+    bytes[][] memory data
+) external payable override
+```
+
+This results in the proposal payload being submitted to the Governor contract, which triggers the subsequent stages of voting, queuing, and execution. This culminates in the invocation of the `broadcastProposalToChain` function on the InterchainProposalSender contract on Ethereum, setting off the interchain method call.
 
 ## Summary
 
-The snippet generates a proposal for the `GovernorAlpha` contract. This proposal requests the `InterchainProposalSender` contract on Ethereum to dispatch a interchain method via Axelar Network. Specifically, it seeks to modify the `DummyContract.sol` on Avalanche, updating a string to "Hello World". Following proposal creation, it undergoes standard governance procedures.
+The sample code snippet instructs the `InterchainProposalSender` contract on Ethereum to initiate an interchain method call via the Axelar Network. Specifically, the proposal aims to alter the `DummyContract.sol` on Avalanche, updating a string to "Hello World". Upon proposal creation, it follows the typical governance process.

@@ -1,19 +1,25 @@
 # Deployment Guide
 
-This guide will walk you through the process of deploying `ProposalExecutor` and `InterchainProposalSender` contracts.
+Welcome to this comprehensive guide that outlines the deployment process for `ProposalExecutor` and (optionally) `InterchainProposalSender` contracts. We aim to ensure a seamless and reliable deployment experience.
+
+Our deployment script adopts the `CREATE3` approach, an innovative strategy that ensures the deployed contract address remains consistent across varying EVM chains.
+
+This methodology enhances consistency and synchronization across chains, streamlining the deployment process and reducing the complexity of contract management.
+
+Let's dive into the steps required.
 
 ## Prerequisites
 
-Before starting, make sure to complete the following steps:
+Before we begin, ensure the following steps are complete:
 
-1. Install necessary packages using the command: `yarn install`.
+1. Install the necessary packages using the command: `yarn install`.
 2. Set up the environment variables. This can be done by creating a `.env` file based on the provided `.env.example`.
 
 ## Deployment Steps
 
-Here's how you can deploy the contracts:
+Here are the steps to deploy the contracts:
 
-- To deploy the `ProposalExecutor` contract only, use the following command:
+- To deploy the `ProposalExecutor` contract exclusively, use the following command:
 
 ```bash
  yarn deploy --tags ProposalExecutor --network {chainName}
@@ -25,11 +31,12 @@ Here's how you can deploy the contracts:
 yarn deploy --network {chainName}
 ```
 
-## Verify Contract
+## Contract Verification
 
-Run the following command:
+To verify your contract, run the following command:
+
 ```bash
-yarn deploy --tags VerifyContract --network {chainName}
+yarn deploy --tags Verify --network {chainName}
 ```
 
 ## Setting Up the ProposalExecutor Contract
