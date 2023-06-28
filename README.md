@@ -1,6 +1,6 @@
-# Axelar Interchain Governance
+# Axelar Interchain Governance Executor
 
-Axelar Interchain Governance is a project that enhances on-chain governance protocols to facilitate interchain proposal execution. We demonstrate the extension using Compound's governance contracts, but the approach can be applied to any governance protocol.
+Axelar Interchain Governance Executor is a project that enhances on-chain governance protocols to facilitate interchain proposal execution. We demonstrate the extension using Compound's governance contracts, but the approach can be applied to any governance protocol.
 
 ## Key Components
 
