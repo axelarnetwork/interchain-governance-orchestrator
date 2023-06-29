@@ -7,7 +7,7 @@ const contractName = "ProposalExecutor";
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [deployer] = await hre.getUnnamedAccounts();
   const { gateway } = contracts[hre.network.name];
-  await deploy3(hre, contractName, deployer + "v1", [gateway]);
+  await deploy3(hre, contractName, deployer + "v1", [gateway, deployer]);
 };
 
 deploy.tags = [contractName];
