@@ -15,7 +15,10 @@ import "./executor/AxelarProposalExecutor.sol";
  * after proposal execution.
  */
 contract ProposalExecutor is AxelarProposalExecutor {
-    constructor(address _gateway) AxelarProposalExecutor(_gateway) {}
+    constructor(
+        address _gateway,
+        address _owner
+    ) AxelarProposalExecutor(_gateway, _owner) {}
 
     /**
      * @dev A callback function that is called after the proposal is executed.
