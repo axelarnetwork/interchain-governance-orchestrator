@@ -35,6 +35,7 @@ export async function deployProposalExecutor(
 ) {
   const contract = await deploy(deployer, chain.rpc, "ProposalExecutor", [
     chain.gateway,
+    deployer.address,
   ]);
 
   return contract;
