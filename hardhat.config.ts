@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         enabled: !isTest,
-        url: `https://1rpc.io/eth`,
+        url: `https://rpc.ankr.com/eth_goerli`,
       },
     },
     ethereum: {

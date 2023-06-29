@@ -37,8 +37,9 @@ abstract contract AxelarProposalExecutor is
 
     bool public paused;
 
-    constructor(address _gateway) AxelarExecutable(_gateway) {
+    constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
         paused = false;
+        _transferOwnership(_owner);
     }
 
     /**
