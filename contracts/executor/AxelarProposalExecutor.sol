@@ -1,4 +1,6 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
+
+// TODO: keep it less restrictive, and enforce version via the config
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -59,6 +61,8 @@ abstract contract AxelarProposalExecutor is
         bytes calldata payload
     ) internal override {
         // Check that the contract is not paused
+        // TODO: pausing ability should be optional. We should have a virtual method that an app can implement with checks if they want
+        // say add beforeProposalExecuted?
         if (paused) {
             revert Paused();
         }
@@ -108,6 +112,7 @@ abstract contract AxelarProposalExecutor is
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
+        // TODO: Axelar executable already protects against re entrancy since gateway validation is used up.
     ) internal nonReentrant {
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {

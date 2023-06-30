@@ -53,6 +53,8 @@ contract InterchainProposalSender is IProposalSender {
      * @param data A 2d array of encoded function arguments. The first dimension is the destination chain index, the second dimension is the destination target contract index.
      * Note that the destination chain must be unique in the destinationChains array.
      */
+    // TODO: could support multicall instead that calls a single broadcast proposal for each chain
+    // doesn't need all length checks as a result
     function broadcastProposalToChains(
         string[] memory destinationChains,
         string[] memory destinationContracts,
@@ -123,6 +125,8 @@ contract InterchainProposalSender is IProposalSender {
         uint fee,
         address[] memory targets,
         uint256[] memory values,
+        // TODO: why not just encode selector and data together, like what's common in a multicall?
+        // Also smaller payload size
         string[] memory signatures,
         bytes[] memory data
     ) internal {

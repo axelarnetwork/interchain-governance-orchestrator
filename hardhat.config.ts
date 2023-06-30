@@ -10,6 +10,7 @@ import "./tasks/whitelistProposalCaller";
 import { ethers } from "ethers";
 
 const privateKey = process.env.PRIVATE_KEY || "";
+const accounts = [];
 const apiKey = {
   ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || "",
   SNOWTRACE_API_KEY: process.env.SNOWTRACE_API_KEY || "",
@@ -41,27 +42,27 @@ const config: HardhatUserConfig = {
       chainId: 5,
       gasMultiplier: 2,
       url: "https://rpc.ankr.com/eth_goerli",
-      accounts: [privateKey],
+      accounts,
     },
     avalanche: {
       chainId: 43113,
       url: "https://api.avax-test.network/ext/bc/C/rpc",
-      accounts: [privateKey],
+      accounts,
     },
     moonbeam: {
       chainId: 1287,
       url: "https://rpc.api.moonbase.moonbeam.network",
-      accounts: [privateKey],
+      accounts,
     },
     polygon: {
       chainId: 80001,
       url: "https://rpc-mumbai.maticvigil.com/",
-      accounts: [privateKey],
+      accounts,
     },
     fantom: {
       chainId: 4002,
       url: "https://rpc.testnet.fantom.network",
-      accounts: [privateKey],
+      accounts,
     },
   },
   etherscan: {
