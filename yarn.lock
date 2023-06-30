@@ -2,10 +2,11 @@
 # yarn lockfile v1
 
 
-"@axelar-network/axelar-cgp-solidity@^4.3.2":
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.2.tgz#517c38de5f52ab1b0b4e041ceeb612508cd8f96d"
-  integrity sha512-xNSH1lsDFeX2076icSRB8X9PVi73q2zSZKPq7k1AnSErokurUcBv2DlZHaBeM+E8q7GTsZ0mn6aNDF9exUvrvg==
+"@axelar-network/axelar-cgp-solidity@axelarnetwork/axelar-cgp-solidity.git#36b19fac268e4903cf911c2663c0f4322676b1ad":
+  version "4.5.0"
+  resolved "https://codeload.github.com/axelarnetwork/axelar-cgp-solidity/tar.gz/36b19fac268e4903cf911c2663c0f4322676b1ad"
+  dependencies:
+    "@axelar-network/axelar-gmp-sdk-solidity" "^3.6.1"
 
 "@axelar-network/axelar-cgp-solidity@github:axelarnetwork/axelar-cgp-solidity#feat/forecaller-service":
   version "4.6.0"
@@ -20,6 +21,11 @@
   dependencies:
     fs-extra "^11.1.1"
     ganache "^7.7.7"
+
+"@axelar-network/axelar-gmp-sdk-solidity@^3.6.1":
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-3.6.1.tgz#22dab77a920215a5919c3fef43dd888bf115c949"
+  integrity sha512-jz8NSSbZpWUyE53JiXYp8cO8G32e7TB1u6tJiQtNKHsthajWxDZ4BcHZkjKMB2jVQJa4bjH2BbDq4BUb6aC90Q==
 
 "@axelar-network/axelar-local-dev@^2.0.1":
   version "2.0.1"
@@ -700,7 +706,7 @@
     "@nomicfoundation/solidity-analyzer-win32-ia32-msvc" "0.1.1"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.1"
 
-"@nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers", hardhat-deploy-ethers@^0.3.0-beta.13:
+"@nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers@^0.3.0-beta.13", hardhat-deploy-ethers@^0.3.0-beta.13:
   name "@nomiclabs/hardhat-ethers"
   version "0.3.0-beta.13"
   resolved "https://registry.yarnpkg.com/hardhat-deploy-ethers/-/hardhat-deploy-ethers-0.3.0-beta.13.tgz#b96086ff768ddf69928984d5eb0a8d78cfca9366"
@@ -1810,7 +1816,7 @@ ethereumjs-util@^7.1.4:
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^5.0.0, ethers@^5.5.3, ethers@^5.6.5, ethers@^5.7.1:
+ethers@^5.5.3, ethers@^5.6.5, ethers@^5.7.1, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -2124,10 +2130,10 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@^4.2.0:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-hardhat-deploy@^0.11.29:
-  version "0.11.29"
-  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.29.tgz#e6d76e37fa2ed74d76d15b01f3849da3bda49a81"
-  integrity sha512-9F+MRFkEocelzB8d+SDDCcTL7edBYAj2S63ldknvfIIBSajeB6q1/jm+dlK1GjcWzAzw7EVoxtjJXzxAxZfZcg==
+hardhat-deploy@^0.11.34:
+  version "0.11.34"
+  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.34.tgz#61252ebf5dfdda7b0b31298dd5580b0735c05910"
+  integrity sha512-N6xcwD8LSMV/IyfEr8TfR2YRbOh9Q4QvitR9MKZRTXQmgQiiMGjX+2efMjKgNMxwCVlmpfnE1tyDxOJOOUseLQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.7.0"
@@ -2154,10 +2160,10 @@ hardhat-deploy@^0.11.29:
     qs "^6.9.4"
     zksync-web3 "^0.14.3"
 
-hardhat@^2.14.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.14.0.tgz#b60c74861494aeb1b50803cf04cc47865a42b87a"
-  integrity sha512-73jsInY4zZahMSVFurSK+5TNCJTXMv+vemvGia0Ac34Mm19fYp6vEPVGF3sucbumszsYxiTT2TbS8Ii2dsDSoQ==
+hardhat@^2.14.1:
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.16.1.tgz#fd2288ce44f6846a70ba332b3d8158522447262a"
+  integrity sha512-QpBjGXFhhSYoYBGEHyoau/A63crZOP+i3GbNxzLGkL6IklzT+piN14+wGnINNCg5BLSKisQI/RAySPzaWRcx/g==
   dependencies:
     "@ethersproject/abi" "^5.1.2"
     "@metamask/eth-sig-util" "^4.0.0"
@@ -2198,7 +2204,6 @@ hardhat@^2.14.0:
     mnemonist "^0.38.0"
     mocha "^10.0.0"
     p-map "^4.0.0"
-    qs "^6.7.0"
     raw-body "^2.4.1"
     resolve "1.17.0"
     semver "^6.3.0"
@@ -3027,13 +3032,6 @@ pure-uuid@^1.6.2:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/pure-uuid/-/pure-uuid-1.6.3.tgz#d0e1894720328612ce55cdd08d90443dd7c1fc7f"
   integrity sha512-5cBiGtFWAulm5WwPWpUTjqJay6mJL5rm3Oru9vCXgwgWcoYtBEpjJbxjsWYVX7omr1jP5iw27lXUB6fDIdoOdw==
-
-qs@^6.7.0:
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.1.tgz#6c29dff97f0c0060765911ba65cbc9764186109f"
-  integrity sha512-0wsrzgTz/kAVIeuxSjnpGC56rzYtr6JT/2BwEvMaPhFIoYa1aGO8LbzuU1R0uUYQkLpWBTOj0l/CLAJB64J6nQ==
-  dependencies:
-    side-channel "^1.0.4"
 
 qs@^6.9.4:
   version "6.11.2"

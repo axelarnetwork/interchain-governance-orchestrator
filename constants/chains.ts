@@ -4,5 +4,7 @@ export const chains = {
   moonbeam: "moonbeam",
   polygon: "polygon",
   fantom: "fantom",
-  hardhat: "hardhat"
+  hardhat: "hardhat",
+  filecoin: "filecoin",
+  filecoinmainnet: "filecoinmainnet",
 };

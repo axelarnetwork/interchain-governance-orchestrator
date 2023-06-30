@@ -5,19 +5,14 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [deployer] = await hre.getUnnamedAccounts();
   const { deploy } = hre.deployments;
 
-  // const { deploy } = await deterministic("Deployer", {
-  //   from: deployer,
-  //   type: 2,
-  // });
-
-  const result = await deploy("Deployer",{
+  const result = await deploy("DummyState",{
       from: deployer,
     });
-  console.log("Deploy Deployer:", result.address);
+  console.log("Deploy Dummy:", result.address);
 };
 
-deploy.tags = ["Deployer"];
+deploy.tags = ["Dummy"];
 deploy.skip = (env: HardhatRuntimeEnvironment) =>
-  env.deployments.getOrNull("Deployer").then((d) => !!d);
+  env.deployments.getOrNull("Dummy").then((d) => !!d);
 
 export default deploy;

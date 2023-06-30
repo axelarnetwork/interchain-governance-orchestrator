@@ -1,15 +1,16 @@
 import "dotenv/config";
 import "hardhat-deploy";
-import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-verify";
 import "./tasks/whitelistProposalSender";
 import "./tasks/whitelistProposalCaller";
+import "./tasks/broadcast";
 import { ethers } from "ethers";
 
 const privateKey = process.env.PRIVATE_KEY || "";
+const prodPrivateKey = process.env.PROD_PRIVATE_KEY || "";
 const apiKey = {
   ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || "",
   SNOWTRACE_API_KEY: process.env.SNOWTRACE_API_KEY || "",
@@ -62,6 +63,21 @@ const config: HardhatUserConfig = {
       chainId: 4002,
       url: "https://rpc.testnet.fantom.network",
       accounts: [privateKey],
+    },
+    filecoin: {
+      chainId: 314159,
+      url: "https://filecoin-calibration.chainstacklabs.com/rpc/v1",
+      accounts: [privateKey],
+    },    
+    avalanchemainnet: {
+      chainId: 43114,
+      url: "https://avalanche.blockpi.network/v1/rpc/public",
+      accounts: [privateKey],
+    },
+    filecoinmainnet: {
+      chainId: 314,
+      url: "https://rpc.ankr.com/filecoin",
+      accounts: [prodPrivateKey],
     },
   },
   etherscan: {

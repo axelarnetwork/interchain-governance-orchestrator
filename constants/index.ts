@@ -23,6 +23,14 @@ export const contracts = {
     gateway: testnetChains[4].gateway,
     gasService: testnetChains[4].gasReceiver,
   },
+  [chains.filecoin]: {
+    gateway: testnetChains[12].gateway,
+    gasService: testnetChains[12].gasReceiver,
+  },
+  [chains.filecoinmainnet]: {
+    gateway: mainnetChains[10].gateway,
+    gasService: mainnetChains[10].gasReceiver,
+  },
   [chains.hardhat]: {
     gateway: mainnetChains[0].gateway,
     gasService: mainnetChains[0].gasReceiver,
