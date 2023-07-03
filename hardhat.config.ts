@@ -10,7 +10,7 @@ import "./tasks/whitelistProposalCaller";
 import { ethers } from "ethers";
 
 const privateKey = process.env.PRIVATE_KEY || "";
-const accounts = [];
+const accounts = [privateKey];
 const apiKey = {
   ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || "",
   SNOWTRACE_API_KEY: process.env.SNOWTRACE_API_KEY || "",
