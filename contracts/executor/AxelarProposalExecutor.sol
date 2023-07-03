@@ -4,8 +4,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "../interfaces/IProposalExecutor.sol";
@@ -105,15 +103,16 @@ abstract contract AxelarProposalExecutor is
      * @param values The amounts of native tokens to send
      * @param signatures The function signatures to call
      * @param data The encoded function arguments
-     * @notice This function uses the nonReentrant modifier to prevent reentrancy attack.
      */
     function _executeProposal(
         address[] memory targets,
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
-        // TODO: Axelar executable already protects against re entrancy since gateway validation is used up.
-    ) internal nonReentrant {
+    )
+        internal
+    // TODO: Axelar executable already protects against re entrancy since gateway validation is used up.
+    {
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
             // Construct the call data
