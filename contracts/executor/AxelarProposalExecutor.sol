@@ -23,7 +23,7 @@ import "../interfaces/IProposalExecutor.sol";
 abstract contract AxelarProposalExecutor is
     IProposalExecutor,
     AxelarExecutable,
-    Ownable,
+    Ownable
 {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
@@ -105,10 +105,7 @@ abstract contract AxelarProposalExecutor is
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory data
-    )
-        internal
-    // TODO: Axelar executable already protects against re entrancy since gateway validation is used up.
-    {
+    ) internal {
         // Iterate over all targets and call them with the given data
         for (uint256 i = 0; i < targets.length; i++) {
             // Construct the call data

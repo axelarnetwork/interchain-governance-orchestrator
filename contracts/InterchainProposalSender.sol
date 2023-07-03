@@ -44,50 +44,18 @@ contract InterchainProposalSender is IProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * @param destinationChains An array of destination chains
-     * @param destinationContracts An array of destination contracts
-     * @param fees An array of fees to pay for the interchain transaction
-     * @param targets A 2d array of contracts to call. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param values A 2d array of amounts of native tokens to send. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param signatures A 2d array of function signatures to call. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param data A 2d array of encoded function arguments. The first dimension is the destination chain index, the second dimension is the destination target contract index.
+     * calls An array of calls to be executed at the destination chain
      * Note that the destination chain must be unique in the destinationChains array.
      */
-    // TODO: could support multicall instead that calls a single broadcast proposal for each chain
-    // doesn't need all length checks as a result
     function broadcastProposalToChains(
-        string[] memory destinationChains,
-        string[] memory destinationContracts,
-        uint256[] memory fees,
-        address[][] memory targets,
-        uint256[][] memory values,
-        string[][] memory signatures,
-        bytes[][] memory data
+        IProposalSender.InterchainCall[] memory xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
-        revertIfInvalidFee(fees);
-
-        // revert if the length of given arrays are not equal
-        revertIfInvalidLength(
-            destinationChains,
-            destinationContracts,
-            fees,
-            targets,
-            values,
-            signatures,
-            data
-        );
-
-        for (uint i = 0; i < destinationChains.length; i++) {
-            _broadcastProposalToChain(
-                destinationChains[i],
-                destinationContracts[i],
-                fees[i],
-                targets[i],
-                values[i],
-                signatures[i],
-                data[i]
-            );
+        for (uint i = 0; i < xCalls.length; ) {
+            _broadcastProposalToChain(xCalls[i]);
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -95,107 +63,53 @@ contract InterchainProposalSender is IProposalSender {
      * @dev Broadcast the proposal to be executed at single destination chain.
      * @param destinationChain destination chain
      * @param destinationContract destination contract
-     * @param targets An array of contracts to call
-     * @param values An array of amounts of native tokens to send
-     * @param signatures An array of function signatures
-     * @param data An array of encoded function arguments
+     * @param calls An array of calls to be executed at the destination chain
      */
     function broadcastProposalToChain(
         string memory destinationChain,
         string memory destinationContract,
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) external payable {
+        IProposalSender.Call[] memory calls
+    ) external payable override {
         _broadcastProposalToChain(
-            destinationChain,
-            destinationContract,
-            msg.value,
-            targets,
-            values,
-            signatures,
-            data
+            IProposalSender.InterchainCall(
+                destinationChain,
+                destinationContract,
+                msg.value,
+                calls
+            )
         );
     }
 
     function _broadcastProposalToChain(
-        string memory destinationChain,
-        string memory destinationContract,
-        uint fee,
-        address[] memory targets,
-        uint256[] memory values,
-        // TODO: why not just encode selector and data together, like what's common in a multicall?
-        // Also smaller payload size
-        string[] memory signatures,
-        bytes[] memory data
+        IProposalSender.InterchainCall memory xCall
     ) internal {
-        revertIfInvalidProposalArgs(targets, values, signatures, data);
-
-        if (fee == 0) {
+        if (xCall.fee == 0) {
             revert InvalidFee();
         }
 
-        bytes memory payload = abi.encode(
-            msg.sender,
-            targets,
-            values,
-            signatures,
-            data
-        );
+        bytes memory payload = abi.encode(msg.sender, xCall.calls);
 
-        gasService.payNativeGasForContractCall{value: fee}(
+        gasService.payNativeGasForContractCall{value: xCall.fee}(
             address(this),
-            destinationChain,
-            destinationContract,
+            xCall.destinationChain,
+            xCall.destinationContract,
             payload,
             msg.sender
         );
 
-        gateway.callContract(destinationChain, destinationContract, payload);
+        gateway.callContract(
+            xCall.destinationChain,
+            xCall.destinationContract,
+            payload
+        );
     }
 
-    function revertIfInvalidProposalArgs(
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) private pure {
-        if (
-            targets.length == 0 ||
-            targets.length != values.length ||
-            targets.length != signatures.length ||
-            targets.length != data.length
-        ) {
-            revert ProposalArgsMisMatched();
-        }
-    }
-
-    function revertIfInvalidLength(
-        string[] memory destinationChains,
-        string[] memory destinationContracts,
-        uint[] memory fees,
-        address[][] memory targets,
-        uint256[][] memory values,
-        string[][] memory signatures,
-        bytes[][] memory data
-    ) private pure {
-        if (
-            destinationChains.length != destinationContracts.length ||
-            destinationChains.length != fees.length ||
-            destinationChains.length != targets.length ||
-            destinationChains.length != values.length ||
-            destinationChains.length != signatures.length ||
-            destinationChains.length != data.length
-        ) {
-            revert ArgsLengthMisMatched();
-        }
-    }
-
-    function revertIfInvalidFee(uint[] memory fees) private {
+    function revertIfInvalidFee(
+        IProposalSender.InterchainCall[] memory xCalls
+    ) private {
         uint totalFees = 0;
-        for (uint i = 0; i < fees.length; i++) {
-            totalFees += fees[i];
+        for (uint i = 0; i < xCalls.length; i++) {
+            totalFees += xCalls[i].fee;
         }
 
         if (totalFees != msg.value) {
