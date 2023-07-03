@@ -19,15 +19,11 @@ import "../interfaces/IProposalExecutor.sol";
  * For most governance system, the proposal caller should be the Timelock contract.
  *
  * This contract is abstract and some of its functions need to be implemented in a derived contract.
- *
- * Note that due to the inherent dangers of calls with arbitrary data, extra caution should be taken
- * to avoid reentrancy attacks and ensure that the calling contracts are trusted.
  */
 abstract contract AxelarProposalExecutor is
     IProposalExecutor,
     AxelarExecutable,
     Ownable,
-    ReentrancyGuard
 {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
