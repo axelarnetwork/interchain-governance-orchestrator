@@ -49,7 +49,7 @@ contract InterchainProposalSender is IProposalSender {
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function broadcastProposalToChains(
-        InterchainStruct.XCall[] memory xCalls
+        InterchainStruct.XCall[] calldata xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
@@ -71,7 +71,7 @@ contract InterchainProposalSender is IProposalSender {
     function broadcastProposalToChain(
         string memory destinationChain,
         string memory destinationContract,
-        InterchainStruct.Call[] memory calls
+        InterchainStruct.Call[] calldata calls
     ) external payable override {
         _broadcastProposalToChain(
             InterchainStruct.XCall(
@@ -108,7 +108,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function revertIfInvalidFee(
-        InterchainStruct.XCall[] memory xCalls
+        InterchainStruct.XCall[] calldata xCalls
     ) private {
         uint totalFees = 0;
         for (uint i = 0; i < xCalls.length; ) {
