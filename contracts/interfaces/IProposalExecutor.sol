@@ -58,5 +58,5 @@ interface IProposalExecutor {
         bool whitelisted
     ) external;
 
-    function setPaused(bool _paused) external;
+
 }

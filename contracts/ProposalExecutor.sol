@@ -22,6 +22,24 @@ contract ProposalExecutor is AxelarProposalExecutor {
     ) AxelarProposalExecutor(_gateway, _owner) {}
 
     /**
+     * @dev A callback function that is called before the proposal is executed.
+     * This function can be used to handle the payload before the proposal is executed.
+     * @param sourceChain The source chain from where the proposal was sent.
+     * @param sourceAddress The source address that sent the proposal. The source address should be the `InterchainProposalSender` contract address at the source chain.
+     * @param payload The payload. It is ABI encoded of the caller and calls.
+     * Where:
+     * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
+     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, calldata.
+     */
+    function beforeProposalExecuted(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
+    ) internal override {
+        // You can add your own logic here to handle the payload before the proposal is executed.
+    }
+
+    /**
      * @dev A callback function that is called after the proposal is executed.
      * This function emits an event containing the hash of the payload to signify successful execution.
      * @param sourceChain The source chain from where the proposal was sent.

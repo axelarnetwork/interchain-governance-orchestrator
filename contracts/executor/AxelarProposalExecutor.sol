@@ -32,10 +32,7 @@ abstract contract AxelarProposalExecutor is
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(address => bool)) public chainWhitelistedSender;
 
-    bool public paused;
-
     constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
-        paused = false;
         _transferOwnership(_owner);
     }
 
@@ -52,12 +49,7 @@ abstract contract AxelarProposalExecutor is
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
-        // Check that the contract is not paused
-        // TODO: pausing ability should be optional. We should have a virtual method that an app can implement with checks if they want
-        // say add beforeProposalExecuted?
-        if (paused) {
-            revert Paused();
-        }
+        beforeProposalExecuted(sourceChain, sourceAddress, payload);
 
         // Check that the source address is whitelisted
         if (
@@ -142,15 +134,6 @@ abstract contract AxelarProposalExecutor is
     }
 
     /**
-     * @dev Pause the contract. Only callable by the contract owner.
-     * @param _paused The new paused state.
-     */
-    function setPaused(bool _paused) external override onlyOwner {
-        paused = _paused;
-        emit PausedSet(_paused);
-    }
-
-    /**
      * @dev Called after a proposal is executed. The derived contract should implement this function.
      * This function should do some post-execution work, such as emitting events.
      * @param sourceChain The source chain
@@ -183,5 +166,21 @@ abstract contract AxelarProposalExecutor is
     function onTargetExecuted(
         InterchainStruct.Call memory call,
         bytes memory result
+    ) internal virtual;
+
+    /**
+     * @dev A callback function that is called before the proposal is executed.
+     * This function can be used to handle the payload before the proposal is executed.
+     * @param sourceChain The source chain from where the proposal was sent.
+     * @param sourceAddress The source address that sent the proposal. The source address should be the `InterchainProposalSender` contract address at the source chain.
+     * @param payload The payload. It is ABI encoded of the caller and calls.
+     * Where:
+     * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
+     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, calldata.
+     */
+    function beforeProposalExecuted(
+        string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes calldata payload
     ) internal virtual;
 }
