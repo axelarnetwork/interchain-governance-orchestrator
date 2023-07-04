@@ -4,6 +4,7 @@ import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-verify";
 import "./tasks/whitelistProposalSender";
 import "./tasks/whitelistProposalCaller";
@@ -18,7 +19,7 @@ const apiKey = {
   MUMBAISCAN_API_KEY: process.env.MUMBAISCAN_API_KEY || "",
   FTMSCAN_API_KEY: process.env.FTMSCAN_API_KEY || "",
 };
-const isTest = process.env.TEST === "true" ? true : false;
+const isE2E = process.env.E2E === "true" ? true : false;
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -34,7 +35,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        enabled: !isTest,
+        enabled: !isE2E,
         url: `https://rpc.ankr.com/eth_goerli`,
       },
     },
@@ -81,6 +82,9 @@ const config: HardhatUserConfig = {
       funding: "",
       signedTx: "",
     };
+  },
+  typechain: {
+    target: "ethers-v5",
   },
 };
 

@@ -24,7 +24,7 @@ export const contracts = {
     gasService: testnetChains[4].gasReceiver,
   },
   [chains.hardhat]: {
-    gateway: mainnetChains[0].gateway,
-    gasService: mainnetChains[0].gasReceiver,
+    gateway: testnetChains[0].gateway,
+    gasService: testnetChains[0].gasReceiver,
   },
 };
