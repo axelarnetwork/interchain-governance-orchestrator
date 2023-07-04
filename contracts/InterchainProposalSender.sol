@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 import "./interfaces/IProposalSender.sol";
+import "./lib/InterchainStruct.sol";
 
 /**
  * @title InterchainProposalSender
@@ -48,9 +49,11 @@ contract InterchainProposalSender is IProposalSender {
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function broadcastProposalToChains(
-        IProposalSender.InterchainCall[] memory xCalls
+        InterchainStruct.XCall[] memory xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
+        revertIfInvalidFee(xCalls);
+
         for (uint i = 0; i < xCalls.length; ) {
             _broadcastProposalToChain(xCalls[i]);
             unchecked {
@@ -68,10 +71,10 @@ contract InterchainProposalSender is IProposalSender {
     function broadcastProposalToChain(
         string memory destinationChain,
         string memory destinationContract,
-        IProposalSender.Call[] memory calls
+        InterchainStruct.Call[] memory calls
     ) external payable override {
         _broadcastProposalToChain(
-            IProposalSender.InterchainCall(
+            InterchainStruct.XCall(
                 destinationChain,
                 destinationContract,
                 msg.value,
@@ -81,7 +84,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function _broadcastProposalToChain(
-        IProposalSender.InterchainCall memory xCall
+        InterchainStruct.XCall memory xCall
     ) internal {
         if (xCall.fee == 0) {
             revert InvalidFee();
@@ -105,11 +108,14 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function revertIfInvalidFee(
-        IProposalSender.InterchainCall[] memory xCalls
+        InterchainStruct.XCall[] memory xCalls
     ) private {
         uint totalFees = 0;
-        for (uint i = 0; i < xCalls.length; i++) {
+        for (uint i = 0; i < xCalls.length; ) {
             totalFees += xCalls[i].fee;
+            unchecked {
+                ++i;
+            }
         }
 
         if (totalFees != msg.value) {
