@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-// TODO: keep it less restrictive, and enforce version via the config
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
