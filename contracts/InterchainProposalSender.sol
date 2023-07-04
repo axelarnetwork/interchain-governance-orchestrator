@@ -54,7 +54,7 @@ contract InterchainProposalSender is IProposalSender {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
 
-        for (uint i = 0; i < xCalls.length; ) {
+        for (uint i = 0; i < xCalls.length;) {
             _broadcastProposalToChain(xCalls[i]);
             unchecked {
                 ++i;

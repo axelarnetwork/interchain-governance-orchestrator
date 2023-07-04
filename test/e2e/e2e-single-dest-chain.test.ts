@@ -16,6 +16,10 @@ import { voteQueueExecuteProposal } from "./utils/governance";
 import { sleep } from "./utils/sleep";
 import { getChains } from "./utils/chains";
 import { after } from "mocha";
+import {
+  DummyState__factory,
+  InterchainProposalSender__factory,
+} from "../../typechain-types";
 
 setLogger(() => null);
 console.log = () => null;
@@ -28,6 +32,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
   let timelock: Contract;
   let governorAlpha: Contract;
   let dummyState: Contract;
+  const DummyStateInterface = DummyState__factory.createInterface();
 
   // redefine "slow" test for this test suite
   this.slow(15000);
@@ -81,32 +86,30 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
 
-    const targets = [dummyState.address];
-    const values = [0];
-    const signatures = ["setState(string)"];
-    const calldatas = [
-      ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"]),
+    const calls = [
+      {
+        target: dummyState.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World",
+        ]),
+      },
     ];
 
     // Propose the payload to the Governor contract
-    const axelarFee = ethers.utils.parseEther("0.0001");
+    const axelarFee = ethers.utils.parseEther("0.1");
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      [
-        "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
-      ],
+      ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
       [
         ethers.utils.defaultAbiCoder.encode(
-          ["string", "string", "address[]", "uint256[]", "string[]", "bytes[]"],
           [
-            "Avalanche",
-            executor.address,
-            targets,
-            values,
-            signatures,
-            calldatas,
-          ]
+            "string",
+            "string",
+            "(address target, uint256 value, bytes callData)[]",
+          ],
+          ["Avalanche", executor.address, calls]
         ),
       ],
       "Test Proposal"
@@ -135,8 +138,8 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
-      [timelock.address, targets, values, signatures, calldatas]
+      ["address", "(address target, uint256 value, bytes callData)[]"],
+      [timelock.address, calls]
     );
     await waitProposalExecuted(payload, executor);
 
@@ -148,25 +151,29 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     const dummyState2 = await deployDummyState(deployer);
     const dummyState3 = await deployDummyState(deployer);
 
-    const encodeMsg = (msg: string) =>
-      ethers.utils.defaultAbiCoder.encode(["string"], [msg]);
-
     // Encode the payload for the destination chain
-    const targets = [
-      dummyState.address,
-      dummyState2.address,
-      dummyState3.address,
-    ];
-    const values = [0, 0, 0];
-    const signatures = [
-      "setState(string)",
-      "setState(string)",
-      "setState(string)",
-    ];
-    const calldatas = [
-      encodeMsg("Hello World1"),
-      encodeMsg("Hello World2"),
-      encodeMsg("Hello World3"),
+    const calls = [
+      {
+        target: dummyState.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World1",
+        ]),
+      },
+      {
+        target: dummyState2.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World2",
+        ]),
+      },
+      {
+        target: dummyState3.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World3",
+        ]),
+      },
     ];
 
     // Delegate votes the COMP token to the deployer
@@ -177,20 +184,15 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      [
-        "broadcastProposalToChain(string,string,address[],uint256[],string[],bytes[])",
-      ],
+      ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
       [
         ethers.utils.defaultAbiCoder.encode(
-          ["string", "string", "address[]", "uint256[]", "string[]", "bytes[]"],
           [
-            "Avalanche",
-            executor.address,
-            targets,
-            values,
-            signatures,
-            calldatas,
-          ]
+            "string",
+            "string",
+            "(address target, uint256 value, bytes callData)[]",
+          ],
+          ["Avalanche", executor.address, calls]
         ),
       ],
       { value: ethers.utils.parseEther("0.0001") }
@@ -211,8 +213,8 @@ describe("Interchain Governance Executor For Single Destination Chain", function
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
-      [timelock.address, targets, values, signatures, calldatas]
+      ["address", "(address target, uint256 value, bytes callData)[]"],
+      [timelock.address, calls]
     );
     await waitProposalExecuted(payload, executor);
 
@@ -225,20 +227,20 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     const maliciousSender = await deployInterchainProposalSender(deployer);
     const dummyContract = await deployDummyState(deployer);
 
-    const targets = [dummyContract.address];
-    const values = [0];
-    const signatures = ["setState(string)"];
-    const calldatas = [
-      ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"]),
+    const calls = [
+      {
+        target: dummyContract.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World",
+        ]),
+      },
     ];
 
     await maliciousSender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
-      targets,
-      values,
-      signatures,
-      calldatas,
+      calls,
       { value: ethers.utils.parseEther("0.0001") }
     );
 
@@ -251,21 +253,21 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     const dummyContract = await deployDummyState(deployer);
 
     // Encode the payload for the destination chain
-    const targets = [dummyContract.address];
-    const values = [0];
-    const signatures = ["setState(string)"];
-    const calldatas = [
-      ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"]),
+    const calls = [
+      {
+        target: dummyContract.address,
+        value: 0,
+        callData: DummyStateInterface.encodeFunctionData("setState", [
+          "Hello World",
+        ]),
+      },
     ];
 
     // try to execute the proposal
     await sender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
-      targets,
-      values,
-      signatures,
-      calldatas,
+      calls,
       { value: ethers.utils.parseEther("0.0001") }
     );
 
@@ -287,10 +289,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     await sender.broadcastProposalToChain(
       "Avalanche",
       executor.address,
-      targets,
-      values,
-      signatures,
-      calldatas,
+      calls,
       {
         value: ethers.utils.parseEther("0.001"),
       }
@@ -298,8 +297,8 @@ describe("Interchain Governance Executor For Single Destination Chain", function
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
-      [deployer.address, targets, values, signatures, calldatas]
+      ["address", "(address target, uint256 value, bytes callData)[]"],
+      [deployer.address, calls]
     );
     await waitProposalExecuted(payload, executor);
 

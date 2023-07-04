@@ -16,6 +16,7 @@ import { voteQueueExecuteProposal } from "./utils/governance";
 import { getChains } from "./utils/chains";
 import { after } from "mocha";
 import { Chain } from "./types/chain";
+import { DummyState__factory } from "../../typechain-types";
 
 setLogger(() => null);
 console.log = () => null;
@@ -29,6 +30,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
   let governorAlpha: Contract;
   let dummyStates: Contract[] = [];
   let destChains: Chain[] = [];
+  const DummyStateInterface = DummyState__factory.createInterface();
 
   // redefine "slow" test for this test suite
   this.slow(15000);
@@ -93,41 +95,37 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
   it("should execute proposal at multiple destination chains", async function () {
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
-    const targets = dummyStates.map((dummyState) => dummyState.address);
-    const values = dummyStates.map(() => 0);
-    const signatures = dummyStates.map(() => "setState(string)");
-    const calldatas = dummyStates.map(() =>
-      ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])
-    );
 
-    // Propose the payload to the Governor contract
+    const xCalls = dummyStates.map((dummyState, i) => ({
+      destinationChain: destChains[i].name,
+      destinationContract: executors[i].address,
+      fee: ethers.utils.parseEther("0.025"),
+      calls: [
+        {
+          target: dummyState.address,
+          value: 0,
+          callData: DummyStateInterface.encodeFunctionData("setState", [
+            "Hello World",
+          ]),
+        },
+      ],
+    }));
+
+    // Propose the payload to the Governor ntract
     const axelarFee = ethers.utils.parseEther("0.1");
+
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
       [
-        "broadcastProposalToChains(string[],string[],uint256[],address[][],uint256[][],string[][],bytes[][])",
+        "broadcastProposalToChains((string,string,uint256,(address,uint256,bytes)[])[])",
       ],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
-            "string[]",
-            "string[]",
-            "uint256[]",
-            "address[][]",
-            "uint256[][]",
-            "string[][]",
-            "bytes[][]",
+            "(string destinationChain,string destinationContract,uint256 fee,(address target,uint256 value,bytes callData)[] calls)[]",
           ],
-          [
-            destChains.map((chain) => chain.name),
-            executors.map((executor) => executor.address),
-            destChains.map(() => ethers.utils.parseEther("0.025")),
-            destChains.map((_, i) => [targets[i]]),
-            destChains.map((_, i) => [values[i]]),
-            destChains.map((_, i) => [signatures[i]]),
-            destChains.map((_, i) => [calldatas[i]]),
-          ]
+          [xCalls]
         ),
       ],
       "Test Proposal"
@@ -156,14 +154,8 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "address[]", "uint256[]", "string[]", "bytes[]"],
-      [
-        timelock.address,
-        [targets[0]],
-        [values[0]],
-        [signatures[0]],
-        [calldatas[0]],
-      ]
+      ["address", "(address target, uint256 value, bytes callData)[]"],
+      [timelock.address, xCalls[0].calls]
     );
 
     await Promise.all(
