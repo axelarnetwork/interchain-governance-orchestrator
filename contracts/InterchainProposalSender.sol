@@ -45,7 +45,14 @@ contract InterchainProposalSender is IProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * calls An array of calls to be executed at the destination chain
+     * @param xCalls An array of `InterchainStruct.XCall` to be executed at the destination chains. Where each `InterchainStruct.XCall` contains the following:
+     * - destinationChain: destination chain
+     * - destinationContract: destination contract
+     * - fee: fee to be paid for the interchain transaction
+     * - calls: An array of `InterchainStruct.Call` to be executed at the destination chain. Where each `InterchainStruct.Call` contains the following:
+     *   - target: target contract
+     *   - value: amount of tokens to send
+     *   - callData: encoded function arguments
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function broadcastProposalToChains(
@@ -54,7 +61,7 @@ contract InterchainProposalSender is IProposalSender {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
 
-        for (uint i = 0; i < xCalls.length;) {
+        for (uint i = 0; i < xCalls.length; ) {
             _broadcastProposalToChain(xCalls[i]);
             unchecked {
                 ++i;
@@ -66,7 +73,10 @@ contract InterchainProposalSender is IProposalSender {
      * @dev Broadcast the proposal to be executed at single destination chain.
      * @param destinationChain destination chain
      * @param destinationContract destination contract
-     * @param calls An array of calls to be executed at the destination chain
+     * @param calls An array of calls to be executed at the destination chain. Where each call contains the following:
+     * - target: target contract
+     * - value: amount of tokens to send
+     * - callData: encoded function arguments
      */
     function broadcastProposalToChain(
         string memory destinationChain,
