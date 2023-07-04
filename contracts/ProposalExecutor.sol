@@ -7,6 +7,7 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "./executor/AxelarProposalExecutor.sol";
+import "./lib/InterchainStruct.sol";
 
 /**
  * @title ProposalExecutor
@@ -25,14 +26,10 @@ contract ProposalExecutor is AxelarProposalExecutor {
      * This function emits an event containing the hash of the payload to signify successful execution.
      * @param sourceChain The source chain from where the proposal was sent.
      * @param sourceAddress The source address that sent the proposal. The source address should be the `InterchainProposalSender` contract address at the source chain.
-     * @param payload The payload of the proposal.
-     * The payload is ABI encoded array of proposalCaller, targets, values, signatures and data.
+     * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
-     * - `proposalCaller` is the contract that calls the `InterchainProposalSender` at the source chain.
-     * - `targets` are the contracts to call
-     * - `values` are the amounts of native tokens to send
-     * - `signatures` are the function signatures to call
-     * - `data` is the encoded function arguments.
+     * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
+     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, signature and data.
      */
     function onProposalExecuted(
         string calldata sourceChain,
@@ -46,13 +43,11 @@ contract ProposalExecutor is AxelarProposalExecutor {
     /**
      * @dev A callback function that is called when the execution of a target contract within a proposal fails.
      * This function will revert the transaction providing the failure reason if present in the failure data.
-     * @param target The target contract that failed to execute.
-     * @param callData The data that was used to call the target contract.
+     * @param call The call data that was used to call the target contract.
      * @param result The return data from the failed call to the target contract.
      */
     function onTargetExecutionFailed(
-        address target,
-        bytes memory callData,
+        InterchainStruct.Call memory call,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
@@ -70,12 +65,12 @@ contract ProposalExecutor is AxelarProposalExecutor {
     /**
      * @dev A callback function that is called after a target contract within a proposal is successfully executed.
      * This function does not implement any additional logic, but can be customized in derived contracts.
-     * @param target The target contract that was successfully executed.
-     * @param callData The data that was used to call the target contract.
+     * @param call The call data that was used to call the target contract.
+     * @param result The return data from the successful call to the target contract.
      */
     function onTargetExecuted(
-        address target,
-        bytes memory callData
+        InterchainStruct.Call memory call,
+        bytes memory result
     ) internal override {
         // You can add your own logic here to handle the success of each target contract execution.
     }

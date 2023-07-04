@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "../interfaces/IProposalExecutor.sol";
+import "../lib/InterchainStruct.sol";
 
 /**
  * @title AxelarProposalExecutor
@@ -41,13 +42,10 @@ abstract contract AxelarProposalExecutor is
     /**
      * @dev Executes the proposal. The source address must be a whitelisted sender.
      * @param sourceAddress The source address
-     * @param payload The payload. It is ABI encoded array of caller, targets, values, signatures and data.
+     * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
-     * - `caller` is the contract that calls the `InterchainProposalSender` at the source chain.
-     * - `targets` are the contracts to call
-     * - `values` are the amounts of native tokens to send
-     * - `signatures` are the function signatures to call
-     * - `data` is the encoded function arguments.
+     * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
+     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, signature and data.
      */
     function _execute(
         string calldata sourceChain,
@@ -73,14 +71,8 @@ abstract contract AxelarProposalExecutor is
         // Decode the payload
         (
             address interchainProposalCaller,
-            address[] memory targets,
-            uint256[] memory values,
-            string[] memory signatures,
-            bytes[] memory data
-        ) = abi.decode(
-                payload,
-                (address, address[], uint256[], string[], bytes[])
-            );
+            InterchainStruct.Call[] memory calls
+        ) = abi.decode(payload, (address, InterchainStruct.Call[]));
 
         // Check that the caller is whitelisted
         if (!chainWhitelistedCallers[sourceChain][interchainProposalCaller]) {
@@ -88,41 +80,25 @@ abstract contract AxelarProposalExecutor is
         }
 
         // Execute the proposal with the given arguments
-        _executeProposal(targets, values, signatures, data);
+        _executeProposal(calls);
 
         onProposalExecuted(sourceChain, sourceAddress, payload);
     }
 
     /**
      * @dev Executes the proposal. Calls each target with the respective value, signature, and data.
-     * @param targets The contracts to call
-     * @param values The amounts of native tokens to send
-     * @param signatures The function signatures to call
-     * @param data The encoded function arguments
+     * @param calls The calls to execute.
      */
-    function _executeProposal(
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) internal {
-        // Iterate over all targets and call them with the given data
-        for (uint256 i = 0; i < targets.length; i++) {
-            // Construct the call data
-            bytes memory callData = abi.encodePacked(
-                bytes4(keccak256(bytes(signatures[i]))),
-                data[i]
-            );
-
-            // Call the target
-            (bool success, bytes memory result) = targets[i].call{
-                value: values[i]
-            }(callData);
+    function _executeProposal(InterchainStruct.Call[] memory calls) internal {
+        for (uint256 i = 0; i < calls.length; i++) {
+            (bool success, bytes memory result) = calls[i].target.call{
+                value: calls[i].value
+            }(calls[i].callData);
 
             if (!success) {
-                onTargetExecutionFailed(targets[i], callData, result);
+                onTargetExecutionFailed(calls[i], result);
             } else {
-                onTargetExecuted(targets[i], callData);
+                onTargetExecuted(calls[i], result);
             }
         }
     }
@@ -190,24 +166,22 @@ abstract contract AxelarProposalExecutor is
     /**
      * @dev Called when the execution of a target has failed. The derived contract should implement this function.
      * This function should handle the failure. It could revert the transaction, ignore the failure, or do something else.
-     * @param target The target contract
-     * @param callData The encoded function arguments that was attempted to use.
+     * @param call The call that has been executed.
      * @param result The result of the call.
      */
     function onTargetExecutionFailed(
-        address target,
-        bytes memory callData,
+        InterchainStruct.Call memory call,
         bytes memory result
     ) internal virtual;
 
     /**
      * @dev Called after a target is successfully executed. The derived contract should implement this function.
      * This function should do some post-execution work, such as emitting events.
-     * @param target The target contract
-     * @param callData The encoded function arguments used.
+     * @param call The call that has been executed.
+     * @param result The result of the call.
      */
     function onTargetExecuted(
-        address target,
-        bytes memory callData
+        InterchainStruct.Call memory call,
+        bytes memory result
     ) internal virtual;
 }
