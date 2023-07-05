@@ -13,6 +13,10 @@
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^3.2.0"
 
+"@axelar-network/axelar-contract-deployments@git+https://github.com/axelarnetwork/axelar-contract-deployments.git#eb698c3b3c2fc7f90da0a43db9b8e10ec9b05a09":
+  version "0.1.0"
+  resolved "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#eb698c3b3c2fc7f90da0a43db9b8e10ec9b05a09"
+
 "@axelar-network/axelar-gmp-sdk-solidity@^3.2.0", "@axelar-network/axelar-gmp-sdk-solidity@^3.2.1":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-3.3.0.tgz#3ac23b1f76c26256618de9c6444a6efb256dd4b0"

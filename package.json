@@ -14,6 +14,7 @@
     "task": "hardhat"
   },
   "devDependencies": {
+    "@axelar-network/axelar-contract-deployments": "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#eb698c3b3c2fc7f90da0a43db9b8e10ec9b05a09",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomicfoundation/hardhat-verify": "^1.0.0",

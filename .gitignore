@@ -13,3 +13,5 @@ artifacts
 deployments
 data
 *.log
+
+keys.json
