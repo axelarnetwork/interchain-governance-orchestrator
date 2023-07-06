@@ -11,7 +11,7 @@ import { chains } from "../../constants/chains";
 import { expect } from "chai";
 import { Signer } from "ethers";
 
-describe("Interchain Proposal Executor", function () {
+describe("Proposal Executor", function () {
   let executor: TestProposalExecutor;
   let signer: Signer;
   let signerAddress: string;
@@ -91,7 +91,7 @@ describe("Interchain Proposal Executor", function () {
         .withArgs(ethers.utils.keccak256(payload));
     });
 
-    it("should emit error when execution failed", async function () {
+    it("should revert properly when execution failed", async function () {
       // whitelist caller and sender
       await executor.setWhitelistedProposalCaller(
         chains.ethereum,
@@ -136,6 +136,65 @@ describe("Interchain Proposal Executor", function () {
       await expect(broadcast(getPayload(false))).to.be.revertedWithCustomError(
         executor,
         "ProposalExecuteFailed"
+      );
+    });
+
+    it("should revert when the sender hasn't been whitelisted", async function () {
+      const callData = dummy.interface.encodeFunctionData("setState", [
+        "Hello World",
+      ]);
+      const calls = [
+        {
+          target: dummy.address,
+          value: 0,
+          callData,
+        },
+      ];
+
+      const payload = ethers.utils.defaultAbiCoder.encode(
+        ["address", "tuple(address target, uint256 value, bytes callData)[]"],
+        [signerAddress, calls]
+      );
+
+      const broadcast = () =>
+        executor.forceExecute(chains.ethereum, signerAddress, payload);
+
+      await expect(broadcast()).to.be.revertedWithCustomError(
+        executor,
+        "NotWhitelistedSourceAddress"
+      );
+    });
+
+    it("should revert when the caller hasn't been whitelisted", async function () {
+      await executor.setWhitelistedProposalSender(
+        chains.ethereum,
+        signerAddress,
+        true
+      );
+
+      const callData = dummy.interface.encodeFunctionData("setState", [
+        "Hello World",
+      ]);
+
+      const calls = [
+        {
+          target: dummy.address,
+          value: 0,
+          callData,
+        },
+      ];
+
+      const payload = ethers.utils.defaultAbiCoder.encode(
+        ["address", "tuple(address target, uint256 value, bytes callData)[]"],
+        [signerAddress, calls]
+      );
+
+      const broadcast = () =>
+        executor.forceExecute(chains.ethereum, signerAddress, payload);
+
+      await expect(broadcast()).to.be.revertedWithCustomError(
+        executor,
+        "NotWhitelistedCaller"
       );
     });
   });
