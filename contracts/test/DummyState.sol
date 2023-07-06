@@ -6,4 +6,8 @@ contract DummyState {
     function setState(string calldata _message) external {
         message = _message;
     }
+
+    function kaboom() external pure {
+        revert("kaboom");
+    }
 }
