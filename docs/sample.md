@@ -76,16 +76,15 @@ You can opt to execute your proposal on a single destination chain or multiple c
 **Proposal Payload Encoding**
 
 ```ts
-// Formulate the payload for the destination chain
-const proposalPayload = ethers.utils.defaultAbiCoder.encode(
-  ["address[]", "uint256[]", "string[]", "bytes[]"],
-  [
-    [DummyContractAddressOnAvalanche],
-    [0],
-    ["setState(string)"],
-    [ethers.utils.defaultAbiCoder.encode(["string"], ["Hello World"])],
-  ]
-);
+const proposalExecutions = [
+  {
+    target: dummyState.address,
+    value: 0,
+    callData: new ethers.utils.Interface([
+      "function setState(string)",
+    ]).encodeFunctionData("setState", ["Hello World"]),
+  },
+];
 ```
 
 This step encodes the proposal payload, which is then dispatched to the destination chain. This payload represents the specific transaction you want to execute.
@@ -97,11 +96,11 @@ This step encodes the proposal payload, which is then dispatched to the destinat
 await governorAlphaContract.propose(
   [sender.address],
   [relayerFee], // The `relayerFee` from step 2 is used here.
-  ["broadcastProposalToChain(string,string,bytes)"],
+  ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
   [
     ethers.utils.defaultAbiCoder.encode(
-      ["string", "string", "bytes"],
-      ["Avalanche", ProposalExecutorAddressOnAvalanche, proposalPayload]
+      ["string", "string", "(address target, uint256 value, bytes callData)[]"],
+      ["Avalanche", ProposalExecutorAddressOnAvalanche, proposalExecutions]
     ),
   ],
   `A proposal to set "Hello World" message at Avalanche chain`
@@ -110,21 +109,64 @@ await governorAlphaContract.propose(
 
 #### Multiple Destination Chains
 
-If you wish to propose to multiple chains, use a similar approach to the single destination chain, but use the `broadcastProposalToChains` function:
+If you wish to propose to multiple chains, use a similar approach to the single destination chain, but use the `broadcastProposalToChains` function like the following:
 
-```solidity
-function broadcastProposalToChains(
-    string[] memory destinationChains,
-    string[] memory destinationContracts,
-    uint256[] memory fees,
-    address[][] memory targets,
-    uint256[][] memory values,
-    string[][] memory signatures,
-    bytes[][] memory data
-) external payable override
+```ts
+const proposalExecutions = [
+  {
+    destinationChain: "Avalanche",
+    destinationContract: ProposalExecutorAddressOnAvalanche,
+    fee: ethers.utils.parseEther(relayerFee),
+    calls: [
+      {
+        target: dummyState.address,
+        value: 0,
+        callData: new ethers.utils.Interface([
+          "function setState(string)",
+        ]).encodeFunctionData("setState", ["Hello World"]),
+      },
+    ],
+  },
+  {
+    destinationChain: "Fantom",
+    destinationContract: ProposalExecutorAddressOnFantom,
+    fee: ethers.utils.parseEther(relayerFee2), // Note that the relayer fee must be calculated separately for each execution.
+    calls: [
+      {
+        target: dummyState.address,
+        value: 0,
+        callData: new ethers.utils.Interface([
+          "function setState(string)",
+        ]).encodeFunctionData("setState", ["Hello World"]),
+      },
+    ],
+  },
+];
 ```
 
-This results in the proposal payload being submitted to the Governor contract, which triggers the subsequent stages of voting, queuing, and execution. This culminates in the invocation of the `broadcastProposalToChain` function on the InterchainProposalSender contract on Ethereum, setting off the interchain method call.
+**Proposing Transaction to the Governor Contract**
+
+```ts
+// Propose the payload to the Governor contract
+await governorAlphaContract.propose(
+  [sender.address],
+  [relayerFee], // The `relayerFee` from step 2 is used here.
+  [
+    "broadcastProposalToChains((string,string,uint256,(address,uint256,bytes)[])[])",
+  ],
+  [
+    ethers.utils.defaultAbiCoder.encode(
+      [
+        "(string destinationChain,string destinationContract,uint256 fee,(address target,uint256 value,bytes callData)[] calls)[]",
+      ],
+      [proposalExecutions]
+    ),
+  ],
+  `A proposal to set "Hello World" message at Avalanche chain and Fantom chain`
+);
+```
+
+This results in the proposal payload being submitted to the Governor contract, which triggers the subsequent stages of voting, queuing, and execution. This culminates in the invocation of the `broadcastProposalToChain` or `broadcastProposalToChains` function on the `InterchainProposalSender` contract on Ethereum, setting off the interchain method call.
 
 ## Summary
 
