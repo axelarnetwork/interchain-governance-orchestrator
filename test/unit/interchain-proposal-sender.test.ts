@@ -45,7 +45,7 @@ describe("Interchain Governance Sender", function () {
     );
   });
 
-  describe("broadcastProposalToChain", function () {
+  describe("sendProposal", function () {
     it("should be able to call gateway and gasService contracts successfully", async function () {
       const target = await ethers
         .getSigners()
@@ -70,7 +70,7 @@ describe("Interchain Governance Sender", function () {
       ];
 
       const broadcast = () =>
-        sender.broadcastProposalToChain(
+        sender.sendProposal(
           chains.avalanche,
           ethers.constants.AddressZero,
           calls,
@@ -123,7 +123,7 @@ describe("Interchain Governance Sender", function () {
       ];
 
       const broadcast = () =>
-        sender.broadcastProposalToChain(
+        sender.sendProposal(
           chains.avalanche,
           ethers.constants.AddressZero,
           calls,
@@ -137,7 +137,7 @@ describe("Interchain Governance Sender", function () {
     });
   });
 
-  describe("broadcastProposalToChains", function () {
+  describe("sendProposals", function () {
     it("should be able to call gateway and gasService contracts successfully", async function () {
       const target = await ethers
         .getSigners()
@@ -179,7 +179,7 @@ describe("Interchain Governance Sender", function () {
       ];
 
       const broadcast = () =>
-        sender.broadcastProposalToChains(xCalls, { value: 2 });
+        sender.sendProposals(xCalls, { value: 2 });
 
       const payload = ethers.utils.defaultAbiCoder.encode(
         ["address", "tuple(address target, uint256 value, bytes callData)[]"],

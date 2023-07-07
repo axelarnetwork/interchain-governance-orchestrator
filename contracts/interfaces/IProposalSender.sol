@@ -11,7 +11,7 @@ interface IProposalSender {
      * @dev Broadcast the proposal to be executed at multiple destination chains
      * @param calls An array of calls to be executed at the destination chain
      */
-    function broadcastProposalToChains(
+    function sendProposals(
         InterchainStruct.XCall[] memory calls
     ) external payable;
 
@@ -21,7 +21,7 @@ interface IProposalSender {
      * @param destinationContract destination contract
      * @param calls An array of calls to be executed at the destination chain
      */
-    function broadcastProposalToChain(
+    function sendProposal(
         string calldata destinationChain,
         string calldata destinationContract,
         InterchainStruct.Call[] calldata calls

@@ -6,7 +6,7 @@ Axelar Interchain Governance Executor is a project that enhances on-chain govern
 
 There are two essential contracts in this interchain extension:
 
-1. `InterchainProposalSender`: Deployed on the source chain, this contract has a method called `broadcastProposalToChain`. This method encodes a proposal into a payload for a remote chain and pays the Axelar Gas Service for the execution of the interchain call on the destination chain.
+1. `InterchainProposalSender`: Deployed on the source chain, this contract has a method called `sendProposal`. This method encodes a proposal into a payload for a remote chain and pays the Axelar Gas Service for the execution of the interchain call on the destination chain.
 
 2. `ProposalExecutor`: Deployed on the destination chain, this contract has a callback method `_execute` that executes the proposal on the target contracts.
 

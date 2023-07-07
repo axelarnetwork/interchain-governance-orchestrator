@@ -101,7 +101,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
+      ["sendProposal(string,string,(address,uint256,bytes)[])"],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
@@ -184,7 +184,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
+      ["sendProposal(string,string,(address,uint256,bytes)[])"],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
@@ -237,7 +237,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
       },
     ];
 
-    await maliciousSender.broadcastProposalToChain(
+    await maliciousSender.sendProposal(
       "Avalanche",
       executor.address,
       calls,
@@ -264,7 +264,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     ];
 
     // try to execute the proposal
-    await sender.broadcastProposalToChain(
+    await sender.sendProposal(
       "Avalanche",
       executor.address,
       calls,
@@ -286,7 +286,7 @@ describe("Interchain Governance Executor For Single Destination Chain", function
     );
 
     // try to execute the proposal again
-    await sender.broadcastProposalToChain(
+    await sender.sendProposal(
       "Avalanche",
       executor.address,
       calls,

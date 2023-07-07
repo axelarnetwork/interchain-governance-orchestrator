@@ -96,7 +96,7 @@ This step encodes the proposal payload, which is then dispatched to the destinat
 await governorAlphaContract.propose(
   [sender.address],
   [relayerFee], // The `relayerFee` from step 2 is used here.
-  ["broadcastProposalToChain(string,string,(address,uint256,bytes)[])"],
+  ["sendProposal(string,string,(address,uint256,bytes)[])"],
   [
     ethers.utils.defaultAbiCoder.encode(
       ["string", "string", "(address target, uint256 value, bytes callData)[]"],
@@ -109,7 +109,7 @@ await governorAlphaContract.propose(
 
 #### Multiple Destination Chains
 
-If you wish to propose to multiple chains, use a similar approach to the single destination chain, but use the `broadcastProposalToChains` function like the following:
+If you wish to propose to multiple chains, use a similar approach to the single destination chain, but use the `sendProposals` function like the following:
 
 ```ts
 const proposalExecutions = [
@@ -152,7 +152,7 @@ await governorAlphaContract.propose(
   [sender.address],
   [relayerFee], // The `relayerFee` from step 2 is used here.
   [
-    "broadcastProposalToChains((string,string,uint256,(address,uint256,bytes)[])[])",
+    "sendProposals((string,string,uint256,(address,uint256,bytes)[])[])",
   ],
   [
     ethers.utils.defaultAbiCoder.encode(
@@ -166,7 +166,7 @@ await governorAlphaContract.propose(
 );
 ```
 
-This results in the proposal payload being submitted to the Governor contract, which triggers the subsequent stages of voting, queuing, and execution. This culminates in the invocation of the `broadcastProposalToChain` or `broadcastProposalToChains` function on the `InterchainProposalSender` contract on Ethereum, setting off the interchain method call.
+This results in the proposal payload being submitted to the Governor contract, which triggers the subsequent stages of voting, queuing, and execution. This culminates in the invocation of the `sendProposal` or `sendProposals` function on the `InterchainProposalSender` contract on Ethereum, setting off the interchain method call.
 
 ## Summary
 

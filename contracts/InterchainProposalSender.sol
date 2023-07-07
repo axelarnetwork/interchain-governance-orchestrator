@@ -12,7 +12,7 @@ import "./lib/InterchainStruct.sol";
  * It achieves this by working in conjunction with the AxelarGateway and AxelarGasService contracts.
  *
  * The contract allows for the sending of a single proposal to multiple destination chains. This is achieved
- * through the `broadcastProposalToChains` function, which takes in arrays representing the destination chains,
+ * through the `sendProposals` function, which takes in arrays representing the destination chains,
  * destination contracts, fees, target contracts, amounts of tokens to send, function signatures, and encoded
  * function arguments.
  *
@@ -22,7 +22,7 @@ import "./lib/InterchainStruct.sol";
  * for each chain.
  *
  * In addition, the contract also allows for the execution of a single proposal at a single destination chain
- * through the `broadcastProposalToChain` function. This is a more granular approach and works similarly to the
+ * through the `sendProposal` function. This is a more granular approach and works similarly to the
  * aforementioned function but for a single destination.
  *
  * The contract ensures the correctness of the provided proposal details and fees through a series of internal
@@ -55,14 +55,14 @@ contract InterchainProposalSender is IProposalSender {
      *   - callData: encoded function arguments
      * Note that the destination chain must be unique in the destinationChains array.
      */
-    function broadcastProposalToChains(
+    function sendProposals(
         InterchainStruct.XCall[] calldata xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
 
         for (uint i = 0; i < xCalls.length; ) {
-            _broadcastProposalToChain(xCalls[i]);
+            _sendProposal(xCalls[i]);
             unchecked {
                 ++i;
             }
@@ -78,12 +78,12 @@ contract InterchainProposalSender is IProposalSender {
      * - value: amount of tokens to send
      * - callData: encoded function arguments
      */
-    function broadcastProposalToChain(
+    function sendProposal(
         string memory destinationChain,
         string memory destinationContract,
         InterchainStruct.Call[] calldata calls
     ) external payable override {
-        _broadcastProposalToChain(
+        _sendProposal(
             InterchainStruct.XCall(
                 destinationChain,
                 destinationContract,
@@ -93,7 +93,7 @@ contract InterchainProposalSender is IProposalSender {
         );
     }
 
-    function _broadcastProposalToChain(
+    function _sendProposal(
         InterchainStruct.XCall memory xCall
     ) internal {
         if (xCall.fee == 0) {

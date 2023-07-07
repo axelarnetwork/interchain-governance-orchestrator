@@ -118,7 +118,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
       [sender.address],
       [axelarFee],
       [
-        "broadcastProposalToChains((string,string,uint256,(address,uint256,bytes)[])[])",
+        "sendProposals((string,string,uint256,(address,uint256,bytes)[])[])",
       ],
       [
         ethers.utils.defaultAbiCoder.encode(

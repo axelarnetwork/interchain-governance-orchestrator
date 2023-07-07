@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
   },
   "files": [
-    "test/**/*.ts",
+    "test/**/*.test.ts",
     "deploy/**/*.ts",
     "constants/*.ts"
   ]
