@@ -29,6 +29,7 @@
     "hardhat-deploy": "^0.11.29",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "mocha": "^10.2.0",
+    "solidity-coverage": "^0.8.4",
     "ts-node": "^10.9.1",
     "typechain": "^8.2.0",
     "typescript": "^5.0.4"
