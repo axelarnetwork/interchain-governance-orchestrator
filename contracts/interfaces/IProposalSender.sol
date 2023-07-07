@@ -12,7 +12,7 @@ interface IProposalSender {
      * @param calls An array of calls to be executed at the destination chain
      */
     function sendProposals(
-        InterchainCalls.XCall[] memory calls
+        InterchainCalls.InterchainCall[] memory calls
     ) external payable;
 
     /**

@@ -45,7 +45,7 @@ contract InterchainProposalSender is IProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * @param xCalls An array of `InterchainCalls.XCall` to be executed at the destination chains. Where each `InterchainCalls.XCall` contains the following:
+     * @param xCalls An array of `InterchainCalls.InterchainCall` to be executed at the destination chains. Where each `InterchainCalls.InterchainCall` contains the following:
      * - destinationChain: destination chain
      * - destinationContract: destination contract
      * - fee: fee to be paid for the interchain transaction
@@ -56,7 +56,7 @@ contract InterchainProposalSender is IProposalSender {
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function sendProposals(
-        InterchainCalls.XCall[] calldata xCalls
+        InterchainCalls.InterchainCall[] calldata xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
@@ -84,7 +84,7 @@ contract InterchainProposalSender is IProposalSender {
         InterchainCalls.Call[] calldata calls
     ) external payable override {
         _sendProposal(
-            InterchainCalls.XCall(
+            InterchainCalls.InterchainCall(
                 destinationChain,
                 destinationContract,
                 msg.value,
@@ -94,7 +94,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function _sendProposal(
-        InterchainCalls.XCall memory xCall
+        InterchainCalls.InterchainCall memory xCall
     ) internal {
         if (xCall.fee == 0) {
             revert InvalidFee();
@@ -118,7 +118,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function revertIfInvalidFee(
-        InterchainCalls.XCall[] calldata xCalls
+        InterchainCalls.InterchainCall[] calldata xCalls
     ) private {
         uint totalFees = 0;
         for (uint i = 0; i < xCalls.length; ) {
