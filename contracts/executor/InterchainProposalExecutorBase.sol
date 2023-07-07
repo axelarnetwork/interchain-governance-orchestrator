@@ -88,7 +88,7 @@ abstract contract InterchainProposalExecutorBase is
             }(call.callData);
 
             if (!success) {
-                onTargetExecutionFailed(call, result);
+                _onTargetExecutionFailed(call, result);
             } else {
                 onTargetExecuted(call, result);
             }
@@ -152,7 +152,7 @@ abstract contract InterchainProposalExecutorBase is
      * @param call The call that has been executed.
      * @param result The result of the call.
      */
-    function onTargetExecutionFailed(
+    function _onTargetExecutionFailed(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal virtual;

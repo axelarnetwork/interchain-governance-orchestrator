@@ -54,7 +54,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
         emit ProposalExecuted(keccak256(payload));
     }
 
-    function onTargetExecutionFailed(
+    function _onTargetExecutionFailed(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal pure override {

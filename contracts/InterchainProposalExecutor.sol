@@ -64,7 +64,7 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
      * @param call The call data that was used to call the target contract.
      * @param result The return data from the failed call to the target contract.
      */
-    function onTargetExecutionFailed(
+    function _onTargetExecutionFailed(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal pure override {
