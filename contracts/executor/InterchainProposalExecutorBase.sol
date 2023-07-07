@@ -9,7 +9,7 @@ import "../interfaces/IInterchainProposalExecutor.sol";
 import "../lib/InterchainCalls.sol";
 
 /**
- * @title AxelarProposalExecutor
+ * @title InterchainProposalExecutorBase
  * @dev This contract is intended to be the destination contract for `InterchainProposalSender` contract.
  * The proposal will be finally executed from this contract on the destination chain.
  *
@@ -20,7 +20,7 @@ import "../lib/InterchainCalls.sol";
  *
  * This contract is abstract and some of its functions need to be implemented in a derived contract.
  */
-abstract contract AxelarProposalExecutor is
+abstract contract InterchainProposalExecutorBase is
     IInterchainProposalExecutor,
     AxelarExecutable,
     Ownable
