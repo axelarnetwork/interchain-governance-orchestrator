@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
-import "./interfaces/IProposalSender.sol";
+import "./interfaces/IInterchainProposalSender.sol";
 import "./lib/InterchainCalls.sol";
 
 /**
@@ -34,7 +34,7 @@ import "./lib/InterchainCalls.sol";
  * AxelarGasService contract to pay for the gas fees of the interchain transactions and the AxelarGateway
  * contract to call the target contracts on the destination chains with the provided encoded function arguments.
  */
-contract InterchainProposalSender is IProposalSender {
+contract InterchainProposalSender is IInterchainProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
 
