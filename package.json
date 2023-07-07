@@ -1,5 +1,5 @@
 {
-  "name": "interchain-governance",
+  "name": "@axelar-network/interchain-governance-executor",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
