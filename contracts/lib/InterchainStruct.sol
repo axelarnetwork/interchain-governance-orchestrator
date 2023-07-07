@@ -6,7 +6,7 @@ library InterchainStruct {
      * @dev An interchain call to be executed at the destination chain
      * @param destinationChain destination chain
      * @param destinationContract destination contract
-     * @param fee The amount of native token to transfer to the target contract
+     * @param gas The amount of native token to transfer to the target contract as gas payment for the interchain call
      * @param calls An array of calls to be executed at the destination chain
      */
     struct XCall {
