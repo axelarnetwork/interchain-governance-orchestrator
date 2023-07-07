@@ -11,6 +11,7 @@
     "test:e2e": "E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
     "compile": "hardhat clean && hardhat typechain",
+    "coverage": "COVERAGE=true hardhat coverage",
     "lint": "solhint 'contracts/**/*.sol'",
     "task": "hardhat"
   },

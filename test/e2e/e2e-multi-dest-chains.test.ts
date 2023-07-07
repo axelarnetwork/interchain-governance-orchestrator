@@ -21,7 +21,7 @@ import { DummyState__factory } from "../../typechain-types";
 setLogger(() => null);
 console.log = () => null;
 
-describe("Interchain Governance Executor for Multiple Destination Chains", function () {
+describe("Interchain Governance Executor for Multiple Destination Chains [ @skip-on-coverage ]", function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executors: Contract[] = [];

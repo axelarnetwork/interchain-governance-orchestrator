@@ -24,7 +24,7 @@ import {
 setLogger(() => null);
 console.log = () => null;
 
-describe("Interchain Governance Executor For Single Destination Chain", function () {
+describe("Interchain Governance Executor For Single Destination Chain [ @skip-on-coverage ]", function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executor: Contract;
