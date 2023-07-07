@@ -57,6 +57,4 @@ interface IProposalExecutor {
         address sourceCaller,
         bool whitelisted
     ) external;
-
-
 }
