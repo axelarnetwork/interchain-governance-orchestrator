@@ -11,6 +11,7 @@
     "test:e2e": "E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
     "compile": "hardhat clean && hardhat typechain",
+    "lint": "solhint 'contracts/**/*.sol'",
     "task": "hardhat"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "hardhat-gas-reporter": "^1.0.8",
     "mocha": "^10.2.0",
+    "solhint": "^3.4.1",
     "solidity-coverage": "^0.8.4",
     "ts-node": "^10.9.1",
     "typechain": "^8.2.0",
