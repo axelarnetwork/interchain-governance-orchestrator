@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
 import "../interfaces/IProposalExecutor.sol";
-import "../lib/InterchainStruct.sol";
+import "../lib/InterchainCalls.sol";
 
 /**
  * @title AxelarProposalExecutor
@@ -41,7 +41,7 @@ abstract contract AxelarProposalExecutor is
      * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
-     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, signature and data.
+     * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, signature and data.
      */
     function _execute(
         string calldata sourceChain,
@@ -62,8 +62,8 @@ abstract contract AxelarProposalExecutor is
         // Decode the payload
         (
             address interchainProposalCaller,
-            InterchainStruct.Call[] memory calls
-        ) = abi.decode(payload, (address, InterchainStruct.Call[]));
+            InterchainCalls.Call[] memory calls
+        ) = abi.decode(payload, (address, InterchainCalls.Call[]));
 
         // Check that the caller is whitelisted
         if (!chainWhitelistedCallers[sourceChain][interchainProposalCaller]) {
@@ -80,7 +80,7 @@ abstract contract AxelarProposalExecutor is
      * @dev Executes the proposal. Calls each target with the respective value, signature, and data.
      * @param calls The calls to execute.
      */
-    function _executeProposal(InterchainStruct.Call[] memory calls) internal {
+    function _executeProposal(InterchainCalls.Call[] memory calls) internal {
         for (uint256 i = 0; i < calls.length; i++) {
             (bool success, bytes memory result) = calls[i].target.call{
                 value: calls[i].value
@@ -152,7 +152,7 @@ abstract contract AxelarProposalExecutor is
      * @param result The result of the call.
      */
     function onTargetExecutionFailed(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal virtual;
 
@@ -163,7 +163,7 @@ abstract contract AxelarProposalExecutor is
      * @param result The result of the call.
      */
     function onTargetExecuted(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal virtual;
 
@@ -175,7 +175,7 @@ abstract contract AxelarProposalExecutor is
      * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
-     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, calldata.
+     * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, calldata.
      */
     function beforeProposalExecuted(
         string calldata sourceChain,

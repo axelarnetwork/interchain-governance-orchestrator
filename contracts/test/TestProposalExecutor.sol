@@ -7,7 +7,7 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "../executor/AxelarProposalExecutor.sol";
-import "../lib/InterchainStruct.sol";
+import "../lib/InterchainCalls.sol";
 
 /**
  * @title ProposalExecutor
@@ -55,7 +55,7 @@ contract TestProposalExecutor is AxelarProposalExecutor {
     }
 
     function onTargetExecutionFailed(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
@@ -71,7 +71,7 @@ contract TestProposalExecutor is AxelarProposalExecutor {
     }
 
     function onTargetExecuted(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal override {
         emit TargetExecuted(call.target, call.value, call.callData);

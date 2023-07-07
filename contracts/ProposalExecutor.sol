@@ -7,7 +7,7 @@ import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecu
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "./executor/AxelarProposalExecutor.sol";
-import "./lib/InterchainStruct.sol";
+import "./lib/InterchainCalls.sol";
 
 /**
  * @title ProposalExecutor
@@ -29,7 +29,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
      * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
-     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, calldata.
+     * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, calldata.
      */
     function beforeProposalExecuted(
         string calldata sourceChain,
@@ -47,7 +47,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
      * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
-     * - `calls` is the array of `InterchainStruct.Call` to execute. Each call contains the target, value, signature and data.
+     * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, signature and data.
      */
     function onProposalExecuted(
         string calldata sourceChain,
@@ -65,7 +65,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
      * @param result The return data from the failed call to the target contract.
      */
     function onTargetExecutionFailed(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
@@ -87,7 +87,7 @@ contract ProposalExecutor is AxelarProposalExecutor {
      * @param result The return data from the successful call to the target contract.
      */
     function onTargetExecuted(
-        InterchainStruct.Call memory call,
+        InterchainCalls.Call memory call,
         bytes memory result
     ) internal override {
         // You can add your own logic here to handle the success of each target contract execution.

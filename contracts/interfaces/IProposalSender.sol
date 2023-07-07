@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../lib/InterchainStruct.sol";
+import "../lib/InterchainCalls.sol";
 
 interface IProposalSender {
     // An error emitted when the given fee is invalid
@@ -12,7 +12,7 @@ interface IProposalSender {
      * @param calls An array of calls to be executed at the destination chain
      */
     function sendProposals(
-        InterchainStruct.XCall[] memory calls
+        InterchainCalls.XCall[] memory calls
     ) external payable;
 
     /**
@@ -24,6 +24,6 @@ interface IProposalSender {
     function sendProposal(
         string calldata destinationChain,
         string calldata destinationContract,
-        InterchainStruct.Call[] calldata calls
+        InterchainCalls.Call[] calldata calls
     ) external payable;
 }

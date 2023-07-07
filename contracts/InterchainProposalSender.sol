@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 import "./interfaces/IProposalSender.sol";
-import "./lib/InterchainStruct.sol";
+import "./lib/InterchainCalls.sol";
 
 /**
  * @title InterchainProposalSender
@@ -45,18 +45,18 @@ contract InterchainProposalSender is IProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * @param xCalls An array of `InterchainStruct.XCall` to be executed at the destination chains. Where each `InterchainStruct.XCall` contains the following:
+     * @param xCalls An array of `InterchainCalls.XCall` to be executed at the destination chains. Where each `InterchainCalls.XCall` contains the following:
      * - destinationChain: destination chain
      * - destinationContract: destination contract
      * - fee: fee to be paid for the interchain transaction
-     * - calls: An array of `InterchainStruct.Call` to be executed at the destination chain. Where each `InterchainStruct.Call` contains the following:
+     * - calls: An array of `InterchainCalls.Call` to be executed at the destination chain. Where each `InterchainCalls.Call` contains the following:
      *   - target: target contract
      *   - value: amount of tokens to send
      *   - callData: encoded function arguments
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function sendProposals(
-        InterchainStruct.XCall[] calldata xCalls
+        InterchainCalls.XCall[] calldata xCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(xCalls);
@@ -81,10 +81,10 @@ contract InterchainProposalSender is IProposalSender {
     function sendProposal(
         string memory destinationChain,
         string memory destinationContract,
-        InterchainStruct.Call[] calldata calls
+        InterchainCalls.Call[] calldata calls
     ) external payable override {
         _sendProposal(
-            InterchainStruct.XCall(
+            InterchainCalls.XCall(
                 destinationChain,
                 destinationContract,
                 msg.value,
@@ -94,7 +94,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function _sendProposal(
-        InterchainStruct.XCall memory xCall
+        InterchainCalls.XCall memory xCall
     ) internal {
         if (xCall.fee == 0) {
             revert InvalidFee();
@@ -118,7 +118,7 @@ contract InterchainProposalSender is IProposalSender {
     }
 
     function revertIfInvalidFee(
-        InterchainStruct.XCall[] calldata xCalls
+        InterchainCalls.XCall[] calldata xCalls
     ) private {
         uint totalFees = 0;
         for (uint i = 0; i < xCalls.length; ) {
