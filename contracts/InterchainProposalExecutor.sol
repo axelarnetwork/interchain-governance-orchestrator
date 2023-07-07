@@ -49,7 +49,7 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
      * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, signature and data.
      */
-    function onProposalExecuted(
+    function _onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
@@ -86,7 +86,7 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
      * @param call The call data that was used to call the target contract.
      * @param result The return data from the successful call to the target contract.
      */
-    function onTargetExecuted(
+    function _onTargetExecuted(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal override {

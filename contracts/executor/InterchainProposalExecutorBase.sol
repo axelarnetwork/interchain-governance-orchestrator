@@ -73,7 +73,7 @@ abstract contract InterchainProposalExecutorBase is
         // Execute the proposal with the given arguments
         _executeProposal(calls);
 
-        onProposalExecuted(sourceChain, sourceAddress, payload);
+        _onProposalExecuted(sourceChain, sourceAddress, payload);
     }
 
     /**
@@ -90,7 +90,7 @@ abstract contract InterchainProposalExecutorBase is
             if (!success) {
                 _onTargetExecutionFailed(call, result);
             } else {
-                onTargetExecuted(call, result);
+                _onTargetExecuted(call, result);
             }
         }
     }
@@ -140,7 +140,7 @@ abstract contract InterchainProposalExecutorBase is
      * @param sourceAddress The source address
      * @param payload The payload that has been executed.
      */
-    function onProposalExecuted(
+    function _onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
@@ -163,7 +163,7 @@ abstract contract InterchainProposalExecutorBase is
      * @param call The call that has been executed.
      * @param result The result of the call.
      */
-    function onTargetExecuted(
+    function _onTargetExecuted(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal virtual;

@@ -45,7 +45,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
         _execute(sourceChain, sourceAddress, payload);
     }
 
-    function onProposalExecuted(
+    function _onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
@@ -70,7 +70,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
         }
     }
 
-    function onTargetExecuted(
+    function _onTargetExecuted(
         InterchainCalls.Call memory call,
         bytes memory result
     ) internal override {
