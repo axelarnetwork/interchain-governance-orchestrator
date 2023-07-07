@@ -8,7 +8,7 @@ There are two essential contracts in this interchain extension:
 
 1. `InterchainProposalSender`: Deployed on the source chain, this contract has a method called `sendProposal`. This method encodes a proposal into a payload for a remote chain and pays the Axelar Gas Service for the execution of the interchain call on the destination chain.
 
-2. `ProposalExecutor`: Deployed on the destination chain, this contract has a callback method `_execute` that executes the proposal on the target contracts.
+2. `InterchainProposalExecutor`: Deployed on the destination chain, this contract has a callback method `_execute` that executes the proposal on the target contracts.
 
 For a visual transaction flow of the interchain proposal, see the mermaid diagram below.
 
@@ -16,7 +16,7 @@ For a visual transaction flow of the interchain proposal, see the mermaid diagra
 flowchart
     subgraph "Destination Chain Contracts"
         direction TB
-        PE{{ProposalExecutor Contract}}
+        PE{{InterchainProposalExecutor Contract}}
         PE -.->|Calls| TargetA
         PE -->|Calls| TargetB
         PE -.->|Calls| Target
@@ -67,7 +67,7 @@ Once you're comfortable with the process, use the deployed addresses to integrat
 
 ## Interchain Proposal Execution
 
-In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the testnet listed below. On the destination chain, deploy `ProposalExecutor` and set up access control for whitelisted senders from the source chain.
+In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the testnet listed below. On the destination chain, deploy `InterchainProposalExecutor` and set up access control for whitelisted senders from the source chain.
 
 | Chain     | InterchainProposalSender address           |
 | --------- | ------------------------------------------ |

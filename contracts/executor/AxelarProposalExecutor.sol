@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
 import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
-import "../interfaces/IProposalExecutor.sol";
+import "../interfaces/IInterchainProposalExecutor.sol";
 import "../lib/InterchainCalls.sol";
 
 /**
@@ -21,7 +21,7 @@ import "../lib/InterchainCalls.sol";
  * This contract is abstract and some of its functions need to be implemented in a derived contract.
  */
 abstract contract AxelarProposalExecutor is
-    IProposalExecutor,
+    IInterchainProposalExecutor,
     AxelarExecutable,
     Ownable
 {

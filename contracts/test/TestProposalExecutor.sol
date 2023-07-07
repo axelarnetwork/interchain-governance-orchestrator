@@ -10,7 +10,7 @@ import "../executor/AxelarProposalExecutor.sol";
 import "../lib/InterchainCalls.sol";
 
 /**
- * @title ProposalExecutor
+ * @title InterchainProposalExecutor
  * @dev This contract provides a simple implementation of the `AxelarProposalExecutor` abstract contract.
  * It offers specific logic for handling proposal execution success and failures as well as emitting events
  * after proposal execution.

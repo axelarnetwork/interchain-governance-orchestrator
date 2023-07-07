@@ -33,7 +33,7 @@ export async function deployProposalExecutor(
   deployer: Wallet,
   chain: Chain = getChains()[1]
 ) {
-  const contract = await deploy(deployer, chain.rpc, "ProposalExecutor", [
+  const contract = await deploy(deployer, chain.rpc, "InterchainProposalExecutor", [
     chain.gateway,
     deployer.address,
   ]);

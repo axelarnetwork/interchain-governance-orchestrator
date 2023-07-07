@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Welcome to this comprehensive guide that outlines the deployment process for `ProposalExecutor` and (optionally) `InterchainProposalSender` contracts. We aim to ensure a seamless and reliable deployment experience.
+Welcome to this comprehensive guide that outlines the deployment process for `InterchainProposalExecutor` and (optionally) `InterchainProposalSender` contracts. We aim to ensure a seamless and reliable deployment experience.
 
 Our deployment script adopts the `CREATE3` approach, an innovative strategy that ensures the deployed contract address remains consistent across varying EVM chains.
 
@@ -19,13 +19,13 @@ Before we begin, ensure the following steps are complete:
 
 Here are the steps to deploy the contracts:
 
-- To deploy the `ProposalExecutor` contract exclusively, use the following command:
+- To deploy the `InterchainProposalExecutor` contract exclusively, use the following command:
 
 ```bash
- yarn deploy --tags ProposalExecutor --network {chainName}
+ yarn deploy --tags InterchainProposalExecutor --network {chainName}
 ```
 
-- To deploy both `ProposalExecutor` and `InterchainProposalSender` contracts, use the following command:
+- To deploy both `InterchainProposalExecutor` and `InterchainProposalSender` contracts, use the following command:
 
 ```bash
 yarn deploy --network {chainName}
@@ -39,9 +39,9 @@ To verify your contract, run the following command:
 yarn deploy --tags Verify --network {chainName}
 ```
 
-## Setting Up the ProposalExecutor Contract
+## Setting Up the InterchainProposalExecutor Contract
 
-You may need to whitelist certain contracts for your `ProposalExecutor` contract. Here's how you can do that:
+You may need to whitelist certain contracts for your `InterchainProposalExecutor` contract. Here's how you can do that:
 
 1. To whitelist the `InterchainProposalSender` contract, use the following command:
 

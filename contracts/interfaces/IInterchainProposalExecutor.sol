@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IProposalExecutor {
+interface IInterchainProposalExecutor {
     // An event emitted when the proposal caller is whitelisted
     event WhitelistedProposalCallerSet(
         string indexed sourceChain,

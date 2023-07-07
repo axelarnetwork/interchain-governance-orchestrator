@@ -4,7 +4,7 @@ This document outlines how to create a proposal that sets a new string value in 
 
 ## Prerequisites
 
-You must have deployed instances of `InterchainProposalSender` and `ProposalExecutor`. Your `InterchainProposalSender` must be whitelisted for the `ProposalExecutor`.
+You must have deployed instances of `InterchainProposalSender` and `InterchainProposalExecutor`. Your `InterchainProposalSender` must be whitelisted for the `InterchainProposalExecutor`.
 
 ## Code Snippet
 

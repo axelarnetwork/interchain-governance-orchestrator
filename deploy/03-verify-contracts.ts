@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/dist/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
-  const verifyContractNames = ["InterchainProposalSender", "ProposalExecutor"];
+  const verifyContractNames = ["InterchainProposalSender", "InterchainProposalExecutor"];
 
   for (const contractName of verifyContractNames) {
     const contract = await hre.deployments
