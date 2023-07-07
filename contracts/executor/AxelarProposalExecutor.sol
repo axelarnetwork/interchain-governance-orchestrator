@@ -82,14 +82,15 @@ abstract contract AxelarProposalExecutor is
      */
     function _executeProposal(InterchainCalls.Call[] memory calls) internal {
         for (uint256 i = 0; i < calls.length; i++) {
-            (bool success, bytes memory result) = calls[i].target.call{
-                value: calls[i].value
-            }(calls[i].callData);
+            InterchainCalls.Call memory call = calls[i];
+            (bool success, bytes memory result) = call.target.call{
+                value: call.value
+            }(call.callData);
 
             if (!success) {
-                onTargetExecutionFailed(calls[i], result);
+                onTargetExecutionFailed(call, result);
             } else {
-                onTargetExecuted(calls[i], result);
+                onTargetExecuted(call, result);
             }
         }
     }
