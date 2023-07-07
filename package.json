@@ -12,6 +12,7 @@
     "test:unit": "hardhat test test/unit/*.test.ts",
     "compile": "hardhat clean && hardhat typechain",
     "coverage": "COVERAGE=true hardhat coverage",
+    "flatten": "sh scripts/flatten-contracts.sh",
     "lint": "solhint 'contracts/**/*.sol'",
     "task": "hardhat"
   },
