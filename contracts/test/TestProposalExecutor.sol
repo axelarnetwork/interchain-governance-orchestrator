@@ -29,7 +29,7 @@ contract TestProposalExecutor is AxelarProposalExecutor {
         address _owner
     ) AxelarProposalExecutor(_gateway, _owner) {}
 
-    function beforeProposalExecuted(
+    function _beforeProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload

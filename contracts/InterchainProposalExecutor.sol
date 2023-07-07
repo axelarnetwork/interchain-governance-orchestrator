@@ -31,7 +31,7 @@ contract InterchainProposalExecutor is AxelarProposalExecutor {
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
      * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, calldata.
      */
-    function beforeProposalExecuted(
+    function _beforeProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload

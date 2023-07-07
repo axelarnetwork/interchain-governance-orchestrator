@@ -48,7 +48,7 @@ abstract contract AxelarProposalExecutor is
         string calldata sourceAddress,
         bytes calldata payload
     ) internal override {
-        beforeProposalExecuted(sourceChain, sourceAddress, payload);
+        _beforeProposalExecuted(sourceChain, sourceAddress, payload);
 
         // Check that the source address is whitelisted
         if (
@@ -178,7 +178,7 @@ abstract contract AxelarProposalExecutor is
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
      * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, calldata.
      */
-    function beforeProposalExecuted(
+    function _beforeProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
