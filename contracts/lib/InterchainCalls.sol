@@ -12,7 +12,7 @@ library InterchainCalls {
     struct InterchainCall {
         string destinationChain;
         string destinationContract;
-        uint256 fee;
+        uint256 gas;
         Call[] calls;
     }
 

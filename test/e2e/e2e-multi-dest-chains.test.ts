@@ -99,7 +99,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
     const xCalls = dummyStates.map((dummyState, i) => ({
       destinationChain: destChains[i].name,
       destinationContract: executors[i].address,
-      fee: ethers.utils.parseEther("0.025"),
+      gas: ethers.utils.parseEther("0.025"),
       calls: [
         {
           target: dummyState.address,
@@ -123,7 +123,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains", funct
       [
         ethers.utils.defaultAbiCoder.encode(
           [
-            "(string destinationChain,string destinationContract,uint256 fee,(address target,uint256 value,bytes callData)[] calls)[]",
+            "(string destinationChain,string destinationContract,uint256 gas,(address target,uint256 value,bytes callData)[] calls)[]",
           ],
           [xCalls]
         ),

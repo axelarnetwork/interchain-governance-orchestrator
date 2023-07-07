@@ -167,13 +167,13 @@ describe("Interchain Governance Sender", function () {
         {
           destinationChain: destChains[0],
           destinationContract: ethers.constants.AddressZero,
-          fee: 1,
+          gas: 1,
           calls,
         },
         {
           destinationChain: destChains[1],
           destinationContract: ethers.constants.AddressZero,
-          fee: 1,
+          gas: 1,
           calls,
         },
       ];

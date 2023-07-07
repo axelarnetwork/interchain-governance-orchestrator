@@ -51,10 +51,10 @@ This part of the script sets up your wallet and initializes the `GovernorAlpha` 
 ### 2. Gas Fee Estimation
 
 ```ts
-// Axelar API setup for gas fee estimation
+// Axelar API setup for gas gas estimation
 const axelarApi = new AxelarQueryAPI({ environment: Environment.MAINNET });
 
-// Estimate Axelar Relayer fee for execution on the destination chain
+// Estimate Axelar Relayer gas for execution on the destination chain
 const relayerFee = await axelarApi.estimateGasFee(
   CHAINS.MAINNET.ETHEREUM,
   CHAINS.MAINNET.AVALANCHE,
@@ -65,7 +65,7 @@ const relayerFee = await axelarApi.estimateGasFee(
 );
 ```
 
-Here, the script estimates the gas fee for the execution of your transaction on the destination chain using Axelar API.
+Here, the script estimates the gas gas for the execution of your transaction on the destination chain using Axelar API.
 
 ### 3. Choose Which Chains Will Execute the Proposal
 
@@ -116,7 +116,7 @@ const proposalExecutions = [
   {
     destinationChain: "Avalanche",
     destinationContract: ProposalExecutorAddressOnAvalanche,
-    fee: ethers.utils.parseEther(relayerFee),
+    gas: ethers.utils.parseEther(relayerFee),
     calls: [
       {
         target: dummyState.address,
@@ -130,7 +130,7 @@ const proposalExecutions = [
   {
     destinationChain: "Fantom",
     destinationContract: ProposalExecutorAddressOnFantom,
-    fee: ethers.utils.parseEther(relayerFee2), // Note that the relayer fee must be calculated separately for each execution.
+    gas: ethers.utils.parseEther(relayerFee2), // Note that the relayer gas must be calculated separately for each execution.
     calls: [
       {
         target: dummyState.address,
@@ -157,7 +157,7 @@ await governorAlphaContract.propose(
   [
     ethers.utils.defaultAbiCoder.encode(
       [
-        "(string destinationChain,string destinationContract,uint256 fee,(address target,uint256 value,bytes callData)[] calls)[]",
+        "(string destinationChain,string destinationContract,uint256 gas,(address target,uint256 value,bytes callData)[] calls)[]",
       ],
       [proposalExecutions]
     ),

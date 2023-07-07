@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../lib/InterchainCalls.sol";
 
 interface IProposalSender {
-    // An error emitted when the given fee is invalid
+    // An error emitted when the given gas is invalid
     error InvalidFee();
 
     /**

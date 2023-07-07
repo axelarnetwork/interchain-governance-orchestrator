@@ -48,7 +48,7 @@ contract InterchainProposalSender is IProposalSender {
      * @param xCalls An array of `InterchainCalls.InterchainCall` to be executed at the destination chains. Where each `InterchainCalls.InterchainCall` contains the following:
      * - destinationChain: destination chain
      * - destinationContract: destination contract
-     * - fee: fee to be paid for the interchain transaction
+     * - gas: gas to be paid for the interchain transaction
      * - calls: An array of `InterchainCalls.Call` to be executed at the destination chain. Where each `InterchainCalls.Call` contains the following:
      *   - target: target contract
      *   - value: amount of tokens to send
@@ -96,13 +96,13 @@ contract InterchainProposalSender is IProposalSender {
     function _sendProposal(
         InterchainCalls.InterchainCall memory xCall
     ) internal {
-        if (xCall.fee == 0) {
+        if (xCall.gas == 0) {
             revert InvalidFee();
         }
 
         bytes memory payload = abi.encode(msg.sender, xCall.calls);
 
-        gasService.payNativeGasForContractCall{value: xCall.fee}(
+        gasService.payNativeGasForContractCall{value: xCall.gas}(
             address(this),
             xCall.destinationChain,
             xCall.destinationContract,
@@ -122,7 +122,7 @@ contract InterchainProposalSender is IProposalSender {
     ) private {
         uint totalFees = 0;
         for (uint i = 0; i < xCalls.length; ) {
-            totalFees += xCalls[i].fee;
+            totalFees += xCalls[i].gas;
             unchecked {
                 ++i;
             }
