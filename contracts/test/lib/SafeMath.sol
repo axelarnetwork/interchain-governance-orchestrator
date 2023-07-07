@@ -31,7 +31,7 @@ library SafeMath {
         unchecked {
             c = a + b;
         }
-        require(c >= a, "SafeMath: addition overflow");
+        require(c >= a, 'SafeMath: addition overflow');
 
         return c;
     }
@@ -67,7 +67,7 @@ library SafeMath {
      * - Subtraction cannot underflow.
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, "SafeMath: subtraction underflow");
+        return sub(a, b, 'SafeMath: subtraction underflow');
     }
 
     /**
@@ -109,7 +109,7 @@ library SafeMath {
         unchecked {
             c = a * b;
         }
-        require(c / a == b, "SafeMath: multiplication overflow");
+        require(c / a == b, 'SafeMath: multiplication overflow');
 
         return c;
     }
@@ -155,7 +155,7 @@ library SafeMath {
      * - The divisor cannot be zero.
      */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return div(a, b, "SafeMath: division by zero");
+        return div(a, b, 'SafeMath: division by zero');
     }
 
     /**
@@ -194,7 +194,7 @@ library SafeMath {
      * - The divisor cannot be zero.
      */
     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return mod(a, b, "SafeMath: modulo by zero");
+        return mod(a, b, 'SafeMath: modulo by zero');
     }
 
     /**

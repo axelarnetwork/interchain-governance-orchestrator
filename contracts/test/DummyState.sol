@@ -8,6 +8,6 @@ contract DummyState {
     }
 
     function kaboom() external pure {
-        revert("kaboom");
+        revert('kaboom');
     }
 }

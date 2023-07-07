@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../lib/InterchainCalls.sol";
+import '../lib/InterchainCalls.sol';
 
 interface IInterchainProposalSender {
     // An error emitted when the given gas is invalid
