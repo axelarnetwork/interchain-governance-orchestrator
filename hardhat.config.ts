@@ -4,6 +4,7 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-verify";
+import "solidity-coverage";
 import "./tasks";
 import { ethers } from "ethers";
 import { HardhatUserConfig } from "hardhat/config";
