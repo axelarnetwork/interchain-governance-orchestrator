@@ -118,15 +118,15 @@ contract InterchainProposalSender is IInterchainProposalSender {
     function revertIfInvalidFee(
         InterchainCalls.InterchainCall[] calldata interchainCalls
     ) private {
-        uint totalFees = 0;
+        uint totalGas = 0;
         for (uint i = 0; i < interchainCalls.length; ) {
-            totalFees += interchainCalls[i].gas;
+            totalGas += interchainCalls[i].gas;
             unchecked {
                 ++i;
             }
         }
 
-        if (totalFees != msg.value) {
+        if (totalGas != msg.value) {
             revert InvalidFee();
         }
     }
