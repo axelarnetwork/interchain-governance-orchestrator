@@ -26,10 +26,10 @@ abstract contract InterchainProposalExecutorBase is
     Ownable
 {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
-    mapping(string => mapping(address => bool)) public chainWhitelistedCallers;
+    mapping(string => mapping(address => bool)) public whitelistedCallers;
 
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
-    mapping(string => mapping(address => bool)) public chainWhitelistedSender;
+    mapping(string => mapping(address => bool)) public whitelistedSenders;
 
     constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
         _transferOwnership(_owner);
@@ -52,7 +52,7 @@ abstract contract InterchainProposalExecutorBase is
 
         // Check that the source address is whitelisted
         if (
-            !chainWhitelistedSender[sourceChain][
+            !whitelistedSenders[sourceChain][
                 StringToAddress.toAddress(sourceAddress)
             ]
         ) {
@@ -66,7 +66,7 @@ abstract contract InterchainProposalExecutorBase is
         ) = abi.decode(payload, (address, InterchainCalls.Call[]));
 
         // Check that the caller is whitelisted
-        if (!chainWhitelistedCallers[sourceChain][interchainProposalCaller]) {
+        if (!whitelistedCallers[sourceChain][interchainProposalCaller]) {
             revert NotWhitelistedCaller();
         }
 
@@ -106,7 +106,7 @@ abstract contract InterchainProposalExecutorBase is
         address sourceCaller,
         bool whitelisted
     ) external override onlyOwner {
-        chainWhitelistedCallers[sourceChain][sourceCaller] = whitelisted;
+        whitelistedCallers[sourceChain][sourceCaller] = whitelisted;
         emit WhitelistedProposalCallerSet(
             sourceChain,
             sourceCaller,
@@ -125,7 +125,7 @@ abstract contract InterchainProposalExecutorBase is
         address sourceSender,
         bool whitelisted
     ) external override onlyOwner {
-        chainWhitelistedSender[sourceChain][sourceSender] = whitelisted;
+        whitelistedSenders[sourceChain][sourceSender] = whitelisted;
         emit WhitelistedProposalSenderSet(
             sourceChain,
             sourceSender,
