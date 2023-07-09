@@ -26,5 +26,5 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Flatten
-        run: yarn flatten
+      # - name: Flatten
+      #   run: yarn flatten
