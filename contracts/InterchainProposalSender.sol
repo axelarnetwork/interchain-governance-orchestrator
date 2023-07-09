@@ -98,7 +98,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
     ) internal {
         bytes memory payload = abi.encode(msg.sender, interchainCall.calls);
 
-        if (interchainCall.gas == 0) {
+        if (interchainCall.gas > 0) {
             gasService.payNativeGasForContractCall{value: interchainCall.gas}(
                 address(this),
                 interchainCall.destinationChain,
