@@ -10,6 +10,8 @@
     "deploy": "hardhat deploy",
     "test:e2e": "E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
+    "testjs:e2e": "E2E=true hardhat test test-js/e2e/*.test.js",
+    "testjs:unit": "hardhat test test-js/unit/*.test.js",
     "compile": "hardhat clean && hardhat typechain",
     "coverage": "COVERAGE=true hardhat coverage",
     "flatten": "sh scripts/flatten-contracts.sh",
