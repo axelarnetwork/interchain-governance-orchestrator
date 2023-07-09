@@ -1,13 +1,12 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
-import './executor/InterchainProposalExecutorBase.sol';
-import './lib/InterchainCalls.sol';
+import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {AxelarExecutable} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import {IAxelarExecutable} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol';
+import {StringToAddress} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import {InterchainProposalExecutorBase} from './executor/InterchainProposalExecutorBase.sol';
+import {InterchainCalls} from './lib/InterchainCalls.sol';
 
 /**
  * @title InterchainProposalExecutor
