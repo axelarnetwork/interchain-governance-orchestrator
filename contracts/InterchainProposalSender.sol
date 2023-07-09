@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IAxelarGateway} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
-import {IAxelarGasService} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
-import {IInterchainProposalSender} from './interfaces/IInterchainProposalSender.sol';
-import {InterchainCalls} from './lib/InterchainCalls.sol';
+import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {IInterchainProposalSender} from "./interfaces/IInterchainProposalSender.sol";
+import {InterchainCalls} from "./lib/InterchainCalls.sol";
 
 /**
  * @title InterchainProposalSender
@@ -45,7 +45,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * @param xCalls An array of `InterchainCalls.InterchainCall` to be executed at the destination chains. Where each `InterchainCalls.InterchainCall` contains the following:
+     * @param interchainCalls An array of `InterchainCalls.InterchainCall` to be executed at the destination chains. Where each `InterchainCalls.InterchainCall` contains the following:
      * - destinationChain: destination chain
      * - destinationContract: destination contract
      * - gas: gas to be paid for the interchain transaction
@@ -56,13 +56,13 @@ contract InterchainProposalSender is IInterchainProposalSender {
      * Note that the destination chain must be unique in the destinationChains array.
      */
     function sendProposals(
-        InterchainCalls.InterchainCall[] calldata xCalls
+        InterchainCalls.InterchainCall[] calldata interchainCalls
     ) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
-        revertIfInvalidFee(xCalls);
+        revertIfInvalidFee(interchainCalls);
 
-        for (uint i = 0; i < xCalls.length; ) {
-            _sendProposal(xCalls[i]);
+        for (uint i = 0; i < interchainCalls.length; ) {
+            _sendProposal(interchainCalls[i]);
             unchecked {
                 ++i;
             }
@@ -94,35 +94,33 @@ contract InterchainProposalSender is IInterchainProposalSender {
     }
 
     function _sendProposal(
-        InterchainCalls.InterchainCall memory xCall
+        InterchainCalls.InterchainCall memory interchainCall
     ) internal {
-        if (xCall.gas == 0) {
-            revert InvalidFee();
+        bytes memory payload = abi.encode(msg.sender, interchainCall.calls);
+
+        if (interchainCall.gas == 0) {
+            gasService.payNativeGasForContractCall{value: interchainCall.gas}(
+                address(this),
+                interchainCall.destinationChain,
+                interchainCall.destinationContract,
+                payload,
+                msg.sender
+            );
         }
 
-        bytes memory payload = abi.encode(msg.sender, xCall.calls);
-
-        gasService.payNativeGasForContractCall{value: xCall.gas}(
-            address(this),
-            xCall.destinationChain,
-            xCall.destinationContract,
-            payload,
-            msg.sender
-        );
-
         gateway.callContract(
-            xCall.destinationChain,
-            xCall.destinationContract,
+            interchainCall.destinationChain,
+            interchainCall.destinationContract,
             payload
         );
     }
 
     function revertIfInvalidFee(
-        InterchainCalls.InterchainCall[] calldata xCalls
+        InterchainCalls.InterchainCall[] calldata interchainCalls
     ) private {
         uint totalFees = 0;
-        for (uint i = 0; i < xCalls.length; ) {
-            totalFees += xCalls[i].gas;
+        for (uint i = 0; i < interchainCalls.length; ) {
+            totalFees += interchainCalls[i].gas;
             unchecked {
                 ++i;
             }
