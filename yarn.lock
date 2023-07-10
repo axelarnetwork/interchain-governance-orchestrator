@@ -44,10 +44,10 @@
   optionalDependencies:
     near-workspaces "^3.3.0"
 
-"@axelar-network/axelarjs-sdk@0.13.2":
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.13.2.tgz#78c4f320e509111fa4c51f78acd6c542fe3a8ff6"
-  integrity sha512-ypKo0d5paCtE2pfSoi3zJ3uNnlj+NPfviimy8bcIbJssoT8U6ivm63jR4uriKgp8imemfqXhmWzl/nHKBHNpTg==
+"@axelar-network/axelarjs-sdk@^0.13.4":
+  version "0.13.4"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.13.4.tgz#abffec3b2e806a6f0de051687bb48963daf8eff8"
+  integrity sha512-iV/ccRyDEKJWNrRQa/DeAdqzgwo5Ic9b2n+CboOTWUd5AkUZ4k0YiYFnsKXS4dwzbSGS/3WtAlHq37Z8JZJKlg==
   dependencies:
     "@axelar-network/axelar-cgp-solidity" "^4.5.0"
     "@axelar-network/axelarjs-types" "^0.33.0"

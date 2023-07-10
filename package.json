@@ -10,8 +10,6 @@
     "deploy": "hardhat deploy",
     "test:e2e": "cross-env E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
-    "testjs:e2e": "cross-env E2E=true hardhat test test-js/e2e/*.test.js",
-    "testjs:unit": "hardhat test test-js/unit/*.test.js",
     "prettier": "prettier --write 'contracts/**/*.sol'",
     "compile": "hardhat clean && hardhat typechain",
     "coverage": "cross-env COVERAGE=true hardhat coverage",
@@ -21,7 +19,7 @@
   },
   "devDependencies": {
     "@axelar-network/axelar-contract-deployments": "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#eb698c3b3c2fc7f90da0a43db9b8e10ec9b05a09",
-    "@axelar-network/axelarjs-sdk": "0.13.2",
+    "@axelar-network/axelarjs-sdk": "^0.13.4",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomicfoundation/hardhat-toolbox": "2.0.2",

@@ -7,7 +7,9 @@ const contractName = "InterchainProposalExecutor";
 const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const [deployer] = await hre.getUnnamedAccounts();
   const { gateway } = contracts[hre.network.name];
-  await deploy3(hre, contractName, deployer + "v1", [gateway, deployer]);
+  const artifact = await hre.artifacts.readArtifact(contractName);
+  const salt = [deployer, artifact.bytecode, "v1"].join()
+  await deploy3(hre, contractName, salt, [gateway, deployer]);
 };
 
 deploy.tags = [contractName];
