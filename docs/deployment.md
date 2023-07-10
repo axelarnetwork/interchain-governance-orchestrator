@@ -64,21 +64,40 @@ Note: the chain name is case-sensitive, you must use the following doc as a refe
 - testnet: https://docs.axelar.dev/dev/reference/testnet-chain-names
 - mainnet: https://docs.axelar.dev/dev/reference/mainnet-chain-names
 
-## Test functionalities
+## Test Deployment
 
-To test if your deployment works end-to-end from initiating the interchain proposal to Axelar at the source chain, to execution at the destination chain, we'll need to have some contract to execute proposal code. To keep it simple, we can use a `DummyState` contract [here](../contracts/test/DummyState.sol).
+To confirm the successful deployment and functioning of your contracts, conduct an end-to-end test from initiating an interchain proposal on the source chain to its execution on the destination chain. Use the DummyState contract [here](../contracts/test/DummyState.sol) to execute the proposal code. If the message updates correctly, the deployment is operational.
 
-We'll update the `message` with the interchain call from the source chain. If the message is updated correctly, our deployment is working.
-
-1. Deploy the `DummyState` contract
+1. Deploy the `DummyState` contract to the same chain as the `InterchainProposalExecutor` contract.
 
 ```bash
 yarn deploy --tags DummyState --network {chainName}
 ```
 
-2. Initiate the interchain call
+2. Confirm the accuracy of whitelisted addresses:
 
+- The whitelisted sender should reference the `InterchainProposalSender` contract.
+- The whitelisted caller should reference your signer account provided in `/info/keys.json`.
 
+Remember: chain names are case-sensitive.
+
+3. Initiate the `executeDummyState` task on the source chain:
+
+```bash
+yarn task executeDummyState {destinationChain} {message} --network {srcChainName}
+```
+
+This command sends a test proposal to the `InterchainProposalSender` contract to update the `DummyState` contract message on the destination chain. You can track the execution status via the axelarscan link printed upon completion.
+
+4. Verify the DummyState message
+
+Upon execution completion, check the `DummyState` contract message on the destination chain using:
+
+```bash
+yarn task readDummyState --network {destinationChain}
+```
+
+If the message updates successfully, your contract is functioning correctly.
 
 ## Supported Networks
 
