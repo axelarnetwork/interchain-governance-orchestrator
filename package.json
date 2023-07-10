@@ -4,16 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "engines": {
-    "node": "^16.0.0 || ^18.0.0"
+    "node": ">=16"
   },
   "scripts": {
     "deploy": "hardhat deploy",
-    "test:e2e": "E2E=true hardhat test test/e2e/*.test.ts",
+    "test:e2e": "cross-env E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
-    "testjs:e2e": "E2E=true hardhat test test-js/e2e/*.test.js",
+    "testjs:e2e": "cross-env E2E=true hardhat test test-js/e2e/*.test.js",
     "testjs:unit": "hardhat test test-js/unit/*.test.js",
     "compile": "hardhat clean && hardhat typechain",
-    "coverage": "COVERAGE=true hardhat coverage",
+    "coverage": "cross-env COVERAGE=true hardhat coverage",
     "flatten": "sh scripts/flatten-contracts.sh",
     "lint": "solhint 'contracts/**/*.sol'",
     "task": "hardhat"
@@ -50,6 +50,7 @@
     "@axelar-network/axelar-local-dev": "^2.0.1",
     "@openzeppelin/contracts": "^4.8.3",
     "@openzeppelin/contracts-upgradeable": "^4.8.3",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.3"
   }
 }

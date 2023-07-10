@@ -1,13 +1,14 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol';
-import '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
-import '../InterchainProposalExecutor.sol';
-import '../lib/InterchainCalls.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol";
+import "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
+import "../InterchainProposalExecutor.sol";
+import "../lib/InterchainCalls.sol";
 
 /**
  * @title InterchainProposalExecutor
@@ -45,20 +46,8 @@ contract TestProposalExecutor is InterchainProposalExecutor {
         _execute(sourceChain, sourceAddress, payload);
     }
 
-    function _onProposalExecuted(
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        address caller,
-        bytes calldata payload
-    ) internal override {
-        // You can add your own logic here to handle the payload after the proposal is executed.
-        emit ProposalExecuted(
-            keccak256(abi.encode(sourceChain, sourceAddress, caller, payload))
-        );
-    }
-
     function _onTargetExecutionFailed(
-        InterchainCalls.Call memory call,
+        InterchainCalls.Call memory,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
@@ -75,7 +64,7 @@ contract TestProposalExecutor is InterchainProposalExecutor {
 
     function _onTargetExecuted(
         InterchainCalls.Call memory call,
-        bytes memory result
+        bytes memory
     ) internal override {
         emit TargetExecuted(call.target, call.value, call.callData);
     }
