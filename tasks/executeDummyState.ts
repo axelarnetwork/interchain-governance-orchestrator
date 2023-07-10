@@ -7,7 +7,7 @@ import {
 import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import {chains as testnetChains } from "@axelar-network/axelar-contract-deployments/info/testnet.json";
 import {chains as mainnetChains} from "@axelar-network/axelar-contract-deployments/info/mainnet.json";
-import { getDeploymentAddress } from "./helpers/deployment";
+import { getDeploymentAddress, getInterchainProposalSenderAddress } from "./helpers/deployment";
 
 task(
   "executeDummyState",
@@ -27,6 +27,11 @@ task(
 
     const executorContractAddress = _executorContractAddress || getDeploymentAddress(hre, "InterchainProposalExecutor", destinationChain);
     const dummyContractAddress = _dummyContractAddress || getDeploymentAddress(hre, "DummyState", destinationChain);
+    const senderContractAddress = getInterchainProposalSenderAddress(hre.network.name);
+
+    if(!senderContractAddress) {
+      throw new Error(`InterchainProposalSender is not found on ${hre.network.name}`)
+    }
 
     if(!executorContractAddress || !dummyContractAddress) {
       throw new Error("executorContractAddress or dummyContractAddress is not found")
@@ -34,8 +39,9 @@ task(
 
     const ethers = hre.ethers;
 
-    const sender = await ethers.getContract<InterchainProposalSender>(
-      "InterchainProposalSender"
+    const sender = await ethers.getContractAt<InterchainProposalSender>(
+      "InterchainProposalSender",
+      senderContractAddress
     );
 
     const callData = DummyState__factory.createInterface().encodeFunctionData(

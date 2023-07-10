@@ -12,3 +12,13 @@ export function getDeploymentAddress(hre: HardhatRuntimeEnvironment, contractNam
     return undefined
   }
 }
+
+export function getInterchainProposalSenderAddress(chainName: string) {
+  try{
+    const contract = readJSON(path.join(__dirname, "../../deployed.json"))
+    const env = process.env.ENV === "mainnet" ? "mainnet" : "testnet";
+    return contract["InterchainProposalSender"][env][chainName]
+    } catch (e) {
+      return undefined
+    }
+}
