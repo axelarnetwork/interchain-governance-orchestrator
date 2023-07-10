@@ -11,7 +11,7 @@ task("whitelistSender", "Whitelist proposal sender")
 
     const interchainProposalSenderAddress = sourceSender || getInterchainProposalSenderAddress(sourceChain.toLowerCase())
 
-    if(!interchainProposalSenderAddress) {
+    if (!interchainProposalSenderAddress) {
       throw new Error(`InterchainProposalSender is not found on ${sourceChain}`)
     }
 
