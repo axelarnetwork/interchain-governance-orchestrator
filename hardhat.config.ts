@@ -1,11 +1,6 @@
 import "dotenv/config";
 import "hardhat-deploy";
-import "@typechain/hardhat";
-import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-chai-matchers";
-import "solidity-coverage";
-import "./tasks";
 import { ethers } from "ethers";
 import { HardhatUserConfig } from "hardhat/config";
 import {
@@ -14,6 +9,7 @@ import {
 } from "@axelar-network/axelar-contract-deployments/evm/utils";
 import testnetChains from "@axelar-network/axelar-contract-deployments/info/testnet.json";
 import mainnetChains from "@axelar-network/axelar-contract-deployments/info/mainnet.json";
+import "./tasks";
 
 const keys = readJSON("./info/keys.json");
 const env = process.env.ENV || "testnet";
