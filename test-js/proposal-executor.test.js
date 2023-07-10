@@ -1,6 +1,6 @@
 const { ethers } = require('hardhat');
-const { contracts } = require('../../constants');
-const { chains } = require('../../constants/chains');
+const { contracts } = require('./utils/constants');
+const { chains } = require('./utils/chains');
 const { expect } = require('chai');
 
 describe('Proposal Executor', function () {

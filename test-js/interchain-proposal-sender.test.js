@@ -1,6 +1,6 @@
 const hre = require('hardhat');
-const { contracts } = require('../../constants');
-const { chains } = require('../../constants/chains');
+const { contracts } = require('./utils/constants');
+const { chains } = require('./utils/chains');
 const { expect } = require('chai');
 
 const ethers = hre.ethers;
@@ -22,6 +22,7 @@ describe('Interchain Governance Sender', function () {
     const senderFactory = await ethers.getContractFactory(
       'InterchainProposalSender',
     );
+
     sender = await senderFactory.deploy(
       contracts[chains.hardhat].gateway,
       contracts[chains.hardhat].gasService,
