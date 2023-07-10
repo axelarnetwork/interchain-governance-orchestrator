@@ -1,5 +1,4 @@
 import { task } from "hardhat/config";
-// import { DummyState__factory } from '../typechain-types/contracts/';
 import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import {chains as testnetChains } from "@axelar-network/axelar-contract-deployments/info/testnet.json";
 import {chains as mainnetChains} from "@axelar-network/axelar-contract-deployments/info/mainnet.json";
