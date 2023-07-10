@@ -29,6 +29,7 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
   let timelock;
   let governorAlpha;
   let dummyState;
+  let srcChain;
   const DummyStateInterface = DummyState__factory.createInterface();
 
   // redefine "slow" test for this test suite
@@ -40,6 +41,7 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     await start([deployer.address]);
 
     const chains = getChains();
+    srcChain = chains[0];
 
     // Deploy contracts
     sender = await deployInterchainProposalSender(deployer);
@@ -54,14 +56,14 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     );
 
     await executor.setWhitelistedProposalSender(
-      chains[0].name,
+      srcChain.name,
       sender.address,
       true
     );
 
     // Whitelist the Governor contract to execute proposals
     await executor.setWhitelistedProposalCaller(
-      chains[0].name,
+      srcChain.name,
       timelock.address,
       true
     );
@@ -138,7 +140,13 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       ["address", "(address target, uint256 value, bytes callData)[]"],
       [timelock.address, calls]
     );
-    await waitProposalExecuted(payload, executor);
+    await waitProposalExecuted(
+      srcChain.name,
+      sender.address,
+      timelock.address,
+      payload,
+      executor
+    );
 
     // Expect the dummy state to be updated
     await expect(await dummyState.message()).to.equal("Hello World");
@@ -213,7 +221,13 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       ["address", "(address target, uint256 value, bytes callData)[]"],
       [timelock.address, calls]
     );
-    await waitProposalExecuted(payload, executor);
+    await waitProposalExecuted(
+      srcChain.name,
+      sender.address,
+      timelock.address,
+      payload,
+      executor
+    );
 
     expect(await dummyState.message()).to.equal("Hello World1");
     expect(await dummyState2.message()).to.equal("Hello World2");
@@ -286,7 +300,13 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       ["address", "(address target, uint256 value, bytes callData)[]"],
       [deployer.address, calls]
     );
-    await waitProposalExecuted(payload, executor);
+    await waitProposalExecuted(
+      srcChain.name,
+      sender.address,
+      deployer.address,
+      payload,
+      executor
+    );
 
     // Expect the dummy state to be updated
     expect(await dummyContract.message()).to.equal("Hello World");

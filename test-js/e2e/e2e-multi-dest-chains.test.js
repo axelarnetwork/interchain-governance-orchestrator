@@ -1,7 +1,7 @@
 const { start, stop } = require("./utils/server");
-const { expect }= require("chai");
-const { ethers, Wallet }= require("ethers");
-const { setLogger }= require("@axelar-network/axelar-local-dev");
+const { expect } = require("chai");
+const { ethers, Wallet } = require("ethers");
+const { setLogger } = require("@axelar-network/axelar-local-dev");
 const {
   deployComp,
   deployDummyState,
@@ -9,13 +9,13 @@ const {
   deployProposalExecutor,
   deployInterchainProposalSender,
   deployTimelock,
-}= require("./utils/deploy");
-const { waitProposalExecuted }= require("./utils/wait");
-const { transferTimelockAdmin }= require("./utils/timelock");
-const { voteQueueExecuteProposal }= require("./utils/governance");
-const { getChains }= require("./utils/chains");
-const { after }= require("mocha");
-const { DummyState__factory }= require("../../typechain-types");
+} = require("./utils/deploy");
+const { waitProposalExecuted } = require("./utils/wait");
+const { transferTimelockAdmin } = require("./utils/timelock");
+const { voteQueueExecuteProposal } = require("./utils/governance");
+const { getChains } = require("./utils/chains");
+const { after } = require("mocha");
+const { DummyState__factory } = require("../../typechain-types");
 
 setLogger(() => null);
 console.log = () => null;
@@ -29,6 +29,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
   let governorAlpha;
   let dummyStates = [];
   let destChains = [];
+  let srcChain;
   const DummyStateInterface = DummyState__factory.createInterface();
 
   // redefine "slow" test for this test suite
@@ -43,7 +44,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     );
 
     const chains = getChains();
-    const srcChain = chains[0];
+    srcChain = chains[0];
     destChains = chains.slice(1);
 
     // Deploy contracts
@@ -156,7 +157,15 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     );
 
     await Promise.all(
-      executors.map((executor) => waitProposalExecuted(payload, executor))
+      executors.map((executor) =>
+        waitProposalExecuted(
+          srcChain.name,
+          sender.address,
+          timelock.address,
+          payload,
+          executor
+        )
+      )
     );
 
     for (let i = 0; i < executors.length; i++) {

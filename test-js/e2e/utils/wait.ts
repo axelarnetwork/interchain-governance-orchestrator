@@ -3,8 +3,8 @@ import { Contract, ethers } from "ethers";
 export const waitProposalExecuted = (
   sourceChain: string,
   sourceAddress: string,
-  payload: string,
   caller: string,
+  payload: string,
   executorContract: Contract
 ) =>
   new Promise((resolve, reject) => {
