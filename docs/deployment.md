@@ -51,6 +51,8 @@ Replace `{sourceChain}`, `{sourceSenderAddress}`, and `{chainName}` with your re
 yarn task whitelistSender {sourceChain} {sourceSenderAddress} --network {chainName}
 ```
 
+Note: The {sourceSenderAddress} is optional. If not specified, it defaults to the `InterchainProposalSender` contract address found in [deployed.json](../deployed.json).
+
 2. To whitelist the caller that calls the `InterchainProposalSender` contract (usually a `Timelock` contract), use the following command:
 
 Replace `{sourceChain}`, `{sourceCallerAddress}`, and `{chainName}` with your respective chain name, caller address, and network name.
@@ -74,6 +76,11 @@ To confirm the successful deployment and functioning of your contracts, conduct 
 yarn deploy --tags DummyState --network {chainName}
 ```
 
+Example command:
+```bash
+yarn deploy --tags DummyState --network polygon
+```
+
 2. Confirm the accuracy of whitelisted addresses:
 
 - The whitelisted sender should reference the `InterchainProposalSender` contract.
@@ -87,6 +94,11 @@ Remember: chain names are case-sensitive.
 yarn task executeDummyState {destinationChain} {message} --network {srcChainName}
 ```
 
+Example command:
+```bash
+yarn task executeDummyState Polygon "Hello From Avalanche" --network avalanche
+```
+
 This command sends a test proposal to the `InterchainProposalSender` contract to update the `DummyState` contract message on the destination chain. You can track the execution status via the axelarscan link printed upon completion.
 
 4. Verify the DummyState message
@@ -95,6 +107,11 @@ Upon execution completion, check the `DummyState` contract message on the destin
 
 ```bash
 yarn task readDummyState --network {destinationChain}
+```
+
+Example command:
+```bash
+yarn task readDummyState --network polygon
 ```
 
 If the message updates successfully, your contract is functioning correctly.
