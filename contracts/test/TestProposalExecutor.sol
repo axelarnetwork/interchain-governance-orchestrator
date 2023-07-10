@@ -6,16 +6,16 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
-import '../executor/InterchainProposalExecutorBase.sol';
+import '../InterchainProposalExecutor.sol';
 import '../lib/InterchainCalls.sol';
 
 /**
  * @title InterchainProposalExecutor
- * @dev This contract provides a simple implementation of the `InterchainProposalExecutorBase` abstract contract.
+ * @dev This contract provides a simple implementation of the `InterchainProposalExecutor` abstract contract.
  * It offers specific logic for handling proposal execution success and failures as well as emitting events
  * after proposal execution.
  */
-contract TestProposalExecutor is InterchainProposalExecutorBase {
+contract TestProposalExecutor is InterchainProposalExecutor {
     event BeforeProposalExecuted(
         string sourceChain,
         string sourceAddress,
@@ -27,7 +27,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
     constructor(
         address _gateway,
         address _owner
-    ) InterchainProposalExecutorBase(_gateway, _owner) {}
+    ) InterchainProposalExecutor(_gateway, _owner) {}
 
     function _beforeProposalExecuted(
         string calldata sourceChain,
