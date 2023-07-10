@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import {IAxelarGateway} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
-import {IAxelarGasService} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
-import {IInterchainProposalSender} from './interfaces/IInterchainProposalSender.sol';
-import {InterchainCalls} from './lib/InterchainCalls.sol';
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { IInterchainProposalSender } from './interfaces/IInterchainProposalSender.sol';
+import { InterchainCalls } from './lib/InterchainCalls.sol';
 
 /**
  * @title InterchainProposalSender
@@ -56,9 +56,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
      *   - callData: encoded function arguments
      * Note that the destination chain must be unique in the destinationChains array.
      */
-    function sendProposals(
-        InterchainCalls.InterchainCall[] calldata interchainCalls
-    ) external payable override {
+    function sendProposals(InterchainCalls.InterchainCall[] calldata interchainCalls) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(interchainCalls);
 
@@ -84,23 +82,14 @@ contract InterchainProposalSender is IInterchainProposalSender {
         string memory destinationContract,
         InterchainCalls.Call[] calldata calls
     ) external payable override {
-        _sendProposal(
-            InterchainCalls.InterchainCall(
-                destinationChain,
-                destinationContract,
-                msg.value,
-                calls
-            )
-        );
+        _sendProposal(InterchainCalls.InterchainCall(destinationChain, destinationContract, msg.value, calls));
     }
 
-    function _sendProposal(
-        InterchainCalls.InterchainCall memory interchainCall
-    ) internal {
+    function _sendProposal(InterchainCalls.InterchainCall memory interchainCall) internal {
         bytes memory payload = abi.encode(msg.sender, interchainCall.calls);
 
         if (interchainCall.gas > 0) {
-            gasService.payNativeGasForContractCall{value: interchainCall.gas}(
+            gasService.payNativeGasForContractCall{ value: interchainCall.gas }(
                 address(this),
                 interchainCall.destinationChain,
                 interchainCall.destinationContract,
@@ -109,16 +98,10 @@ contract InterchainProposalSender is IInterchainProposalSender {
             );
         }
 
-        gateway.callContract(
-            interchainCall.destinationChain,
-            interchainCall.destinationContract,
-            payload
-        );
+        gateway.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
     }
 
-    function revertIfInvalidFee(
-        InterchainCalls.InterchainCall[] calldata interchainCalls
-    ) private {
+    function revertIfInvalidFee(InterchainCalls.InterchainCall[] calldata interchainCalls) private {
         uint totalGas = 0;
         for (uint i = 0; i < interchainCalls.length; ) {
             totalGas += interchainCalls[i].gas;

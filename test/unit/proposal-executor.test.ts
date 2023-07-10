@@ -1,17 +1,17 @@
-import { ethers } from "hardhat";
+import { ethers } from 'hardhat';
 import {
   IAxelarGateway,
   TestProposalExecutor__factory as TestProposalExecutorFactory,
   TestProposalExecutor,
   DummyState__factory as DummyStateFactory,
   DummyState,
-} from "../../typechain-types";
-import { contracts } from "../../constants";
-import { chains } from "../../constants/chains";
-import { expect } from "chai";
-import { Signer } from "ethers";
+} from '../../typechain-types';
+import { contracts } from '../../constants';
+import { chains } from '../../constants/chains';
+import { expect } from 'chai';
+import { Signer } from 'ethers';
 
-describe("Proposal Executor", function () {
+describe('Proposal Executor', function () {
   let executor: TestProposalExecutor;
   let signer: Signer;
   let signerAddress: string;
@@ -27,40 +27,40 @@ describe("Proposal Executor", function () {
     signerAddress = await signer.getAddress();
     const executorFactory =
       await ethers.getContractFactory<TestProposalExecutorFactory>(
-        "TestProposalExecutor"
+        'TestProposalExecutor',
       );
     executor = await executorFactory.deploy(
       contracts[chains.hardhat].gateway,
-      signerAddress
+      signerAddress,
     );
 
     const dummyStateFactory =
-      await ethers.getContractFactory<DummyStateFactory>("DummyState");
+      await ethers.getContractFactory<DummyStateFactory>('DummyState');
 
     dummy = await dummyStateFactory.deploy();
 
     gateway = await ethers.getContractAt<IAxelarGateway>(
-      "IAxelarGateway",
-      contracts[chains.hardhat].gateway
+      'IAxelarGateway',
+      contracts[chains.hardhat].gateway,
     );
   });
 
-  describe("_execute", function () {
-    it("should be able to call target contract", async function () {
+  describe('_execute', function () {
+    it('should be able to call target contract', async function () {
       // whitelist caller and sender
       await executor.setWhitelistedProposalCaller(
         chains.ethereum,
         signerAddress,
-        true
+        true,
       );
       await executor.setWhitelistedProposalSender(
         chains.ethereum,
         signerAddress,
-        true
+        true,
       );
 
-      const callData = dummy.interface.encodeFunctionData("setState", [
-        "Hello World",
+      const callData = dummy.interface.encodeFunctionData('setState', [
+        'Hello World',
       ]);
       const calls = [
         {
@@ -71,52 +71,52 @@ describe("Proposal Executor", function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ["address", "tuple(address target, uint256 value, bytes callData)[]"],
-        [signerAddress, calls]
+        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        [signerAddress, calls],
       );
 
       const broadcast = () =>
         executor.forceExecute(chains.ethereum, signerAddress, payload);
 
       await expect(broadcast())
-        .to.emit(executor, "BeforeProposalExecuted(string,string,bytes)")
+        .to.emit(executor, 'BeforeProposalExecuted(string,string,bytes)')
         .withArgs(chains.ethereum, signerAddress, payload);
 
       await expect(broadcast())
-        .to.emit(executor, "TargetExecuted(address,uint256,bytes)")
+        .to.emit(executor, 'TargetExecuted(address,uint256,bytes)')
         .withArgs(calls[0].target, calls[0].value, calls[0].callData);
 
       await expect(broadcast())
-        .to.emit(executor, "ProposalExecuted(bytes32)")
+        .to.emit(executor, 'ProposalExecuted(bytes32)')
         .withArgs(
           ethers.utils.keccak256(
             ethers.utils.defaultAbiCoder.encode(
-              ["string", "string", "address", "bytes"],
-              [chains.ethereum, signerAddress, signerAddress, payload]
-            )
-          )
+              ['string', 'string', 'address', 'bytes'],
+              [chains.ethereum, signerAddress, signerAddress, payload],
+            ),
+          ),
         );
     });
 
-    it("should revert properly when execution failed", async function () {
+    it('should revert properly when execution failed', async function () {
       // whitelist caller and sender
       await executor.setWhitelistedProposalCaller(
         chains.ethereum,
         signerAddress,
-        true
+        true,
       );
       await executor.setWhitelistedProposalSender(
         chains.ethereum,
         signerAddress,
-        true
+        true,
       );
 
       const getPayload = (failedWithReason: boolean) => {
-        const failedCallData = dummy.interface.encodeFunctionData("setState", [
-          "Hello World",
+        const failedCallData = dummy.interface.encodeFunctionData('setState', [
+          'Hello World',
         ]);
         const failedCallDataWithReason =
-          dummy.interface.encodeFunctionData("testRevert");
+          dummy.interface.encodeFunctionData('testRevert');
 
         const calls = [
           {
@@ -129,8 +129,8 @@ describe("Proposal Executor", function () {
         ];
 
         const payload = ethers.utils.defaultAbiCoder.encode(
-          ["address", "tuple(address target, uint256 value, bytes callData)[]"],
-          [signerAddress, calls]
+          ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+          [signerAddress, calls],
         );
 
         return payload;
@@ -139,16 +139,16 @@ describe("Proposal Executor", function () {
       const broadcast = (payload: string) =>
         executor.forceExecute(chains.ethereum, signerAddress, payload);
 
-      await expect(broadcast(getPayload(true))).to.be.revertedWith("kaboom");
+      await expect(broadcast(getPayload(true))).to.be.revertedWith('kaboom');
       await expect(broadcast(getPayload(false))).to.be.revertedWithCustomError(
         executor,
-        "ProposalExecuteFailed"
+        'ProposalExecuteFailed',
       );
     });
 
     it("should revert when the sender hasn't been whitelisted", async function () {
-      const callData = dummy.interface.encodeFunctionData("setState", [
-        "Hello World",
+      const callData = dummy.interface.encodeFunctionData('setState', [
+        'Hello World',
       ]);
       const calls = [
         {
@@ -159,8 +159,8 @@ describe("Proposal Executor", function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ["address", "tuple(address target, uint256 value, bytes callData)[]"],
-        [signerAddress, calls]
+        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        [signerAddress, calls],
       );
 
       const broadcast = () =>
@@ -168,7 +168,7 @@ describe("Proposal Executor", function () {
 
       await expect(broadcast()).to.be.revertedWithCustomError(
         executor,
-        "NotWhitelistedSourceAddress"
+        'NotWhitelistedSourceAddress',
       );
     });
 
@@ -176,11 +176,11 @@ describe("Proposal Executor", function () {
       await executor.setWhitelistedProposalSender(
         chains.ethereum,
         signerAddress,
-        true
+        true,
       );
 
-      const callData = dummy.interface.encodeFunctionData("setState", [
-        "Hello World",
+      const callData = dummy.interface.encodeFunctionData('setState', [
+        'Hello World',
       ]);
 
       const calls = [
@@ -192,8 +192,8 @@ describe("Proposal Executor", function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ["address", "tuple(address target, uint256 value, bytes callData)[]"],
-        [signerAddress, calls]
+        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        [signerAddress, calls],
       );
 
       const broadcast = () =>
@@ -201,7 +201,7 @@ describe("Proposal Executor", function () {
 
       await expect(broadcast()).to.be.revertedWithCustomError(
         executor,
-        "NotWhitelistedCaller"
+        'NotWhitelistedCaller',
       );
     });
   });

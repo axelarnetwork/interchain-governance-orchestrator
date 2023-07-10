@@ -1,7 +1,7 @@
-import { start, stop } from "./utils/server";
-import { expect } from "chai";
-import { ethers, Contract, Wallet } from "ethers";
-import { setLogger } from "@axelar-network/axelar-local-dev";
+import { start, stop } from './utils/server';
+import { expect } from 'chai';
+import { ethers, Contract, Wallet } from 'ethers';
+import { setLogger } from '@axelar-network/axelar-local-dev';
 import {
   deployComp,
   deployDummyState,
@@ -9,19 +9,19 @@ import {
   deployProposalExecutor,
   deployInterchainProposalSender,
   deployTimelock,
-} from "./utils/deploy";
-import { waitProposalExecuted } from "./utils/wait";
-import { transferTimelockAdmin } from "./utils/timelock";
-import { voteQueueExecuteProposal } from "./utils/governance";
-import { getChains } from "./utils/chains";
-import { after } from "mocha";
-import { Chain } from "./types/chain";
-import { DummyState__factory } from "../../typechain-types";
+} from './utils/deploy';
+import { waitProposalExecuted } from './utils/wait';
+import { transferTimelockAdmin } from './utils/timelock';
+import { voteQueueExecuteProposal } from './utils/governance';
+import { getChains } from './utils/chains';
+import { after } from 'mocha';
+import { Chain } from './types/chain';
+import { DummyState__factory } from '../../typechain-types';
 
 setLogger(() => null);
 console.log = () => null;
 
-describe("Interchain Governance Executor for Multiple Destination Chains [ @skip-on-coverage ]", function () {
+describe('Interchain Governance Executor for Multiple Destination Chains [ @skip-on-coverage ]', function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executors: Contract[] = [];
@@ -41,7 +41,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     // Start local chains
     await start(
       [deployer.address],
-      ["Ethereum", "Avalanche", "Polygon", "Binance", "Fantom"]
+      ['Ethereum', 'Avalanche', 'Polygon', 'Binance', 'Fantom'],
     );
 
     const chains = getChains();
@@ -60,7 +60,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     governorAlpha = await deployGovernorAlpha(
       deployer,
       timelock.address,
-      comp.address
+      comp.address,
     );
 
     for (let i = 0; i < executors.length; i++) {
@@ -68,14 +68,14 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
       await executors[i].setWhitelistedProposalSender(
         srcChain.name,
         sender.address,
-        true
+        true,
       );
 
       // Whitelist the timelock contract to executor contract
       await executors[i].setWhitelistedProposalCaller(
         srcChain.name,
         timelock.address,
-        true
+        true,
       );
 
       const dummyState = await deployDummyState(deployer, chains[i + 1]);
@@ -93,46 +93,46 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     await stop();
   });
 
-  it("should execute proposal at multiple destination chains", async function () {
+  it('should execute proposal at multiple destination chains', async function () {
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
 
     const xCalls = dummyStates.map((dummyState, i) => ({
       destinationChain: destChains[i].name,
       destinationContract: executors[i].address,
-      gas: ethers.utils.parseEther("0.025"),
+      gas: ethers.utils.parseEther('0.025'),
       calls: [
         {
           target: dummyState.address,
           value: 0,
-          callData: DummyStateInterface.encodeFunctionData("setState", [
-            "Hello World",
+          callData: DummyStateInterface.encodeFunctionData('setState', [
+            'Hello World',
           ]),
         },
       ],
     }));
 
     // Propose the payload to the Governor ntract
-    const axelarFee = ethers.utils.parseEther("0.1");
+    const axelarFee = ethers.utils.parseEther('0.1');
 
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      ["sendProposals((string,string,uint256,(address,uint256,bytes)[])[])"],
+      ['sendProposals((string,string,uint256,(address,uint256,bytes)[])[])'],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
-            "(string destinationChain,string destinationContract,uint256 gas,(address target,uint256 value,bytes callData)[] calls)[]",
+            '(string destinationChain,string destinationContract,uint256 gas,(address target,uint256 value,bytes callData)[] calls)[]',
           ],
-          [xCalls]
+          [xCalls],
         ),
       ],
-      "Test Proposal"
+      'Test Proposal',
     );
 
     // Read latest proposal ID created by deployer's address.
     const proposalId = await governorAlpha.latestProposalIds(deployer.address);
-    console.log("Created Proposal ID:", proposalId.toString());
+    console.log('Created Proposal ID:', proposalId.toString());
 
     // Vote, queue, and execute given proposal ID.
     await voteQueueExecuteProposal(
@@ -141,7 +141,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
       comp,
       governorAlpha,
       timelock,
-      axelarFee
+      axelarFee,
     );
 
     // Read proposal state
@@ -153,8 +153,8 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "(address target, uint256 value, bytes callData)[]"],
-      [timelock.address, xCalls[0].calls]
+      ['address', '(address target, uint256 value, bytes callData)[]'],
+      [timelock.address, xCalls[0].calls],
     );
 
     await Promise.all(
@@ -164,13 +164,13 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
           sender.address,
           timelock.address,
           payload,
-          executor
-        )
-      )
+          executor,
+        ),
+      ),
     );
 
     for (let i = 0; i < executors.length; i++) {
-      await expect(await dummyStates[i].message()).to.equal("Hello World");
+      await expect(await dummyStates[i].message()).to.equal('Hello World');
     }
   });
 });

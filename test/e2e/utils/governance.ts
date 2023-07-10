@@ -1,5 +1,5 @@
-import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
-import { getChains } from "./chains";
+import { BigNumber, BigNumberish, Contract, ethers } from 'ethers';
+import { getChains } from './chains';
 
 // Hide unnecessary details in a single function call for completing the voting process including vote, queue and execute transaction.
 export async function voteQueueExecuteProposal(
@@ -8,46 +8,46 @@ export async function voteQueueExecuteProposal(
   comp: Contract,
   governorAlpha: Contract,
   timelock: Contract,
-  value: BigNumberish
+  value: BigNumberish,
 ) {
   const srcChainProvider = new ethers.providers.JsonRpcProvider(
-    getChains()[0].rpc
+    getChains()[0].rpc,
   );
 
   // Advance time to the proposal's start block
   const votingDelay = await governorAlpha.votingDelay();
-  await srcChainProvider.send("evm_mine", [{ blocks: votingDelay.toString() }]);
+  await srcChainProvider.send('evm_mine', [{ blocks: votingDelay.toString() }]);
 
   // Cast vote for the proposal
   await governorAlpha.castVote(proposalId, true);
   const compBalance = await comp.balanceOf(deployerAddress);
   console.log(
-    "Casted Vote with",
+    'Casted Vote with',
     ethers.utils.formatEther(compBalance),
-    "COMP"
+    'COMP',
   );
 
   // Advance time to the proposal's end block
   const votingPeriod = await governorAlpha.votingPeriod();
-  await srcChainProvider.send("evm_mine", [
+  await srcChainProvider.send('evm_mine', [
     { blocks: votingPeriod.toString() },
   ]);
 
   // Queue the proposal
   await governorAlpha.queue(proposalId);
-  console.log("Queued Proposal ID:", proposalId.toString());
+  console.log('Queued Proposal ID:', proposalId.toString());
 
   const delay = await timelock
     .delay()
     .then((delay: BigNumber) => delay.toHexString());
 
   // Advance time to the proposal's eta
-  await srcChainProvider.send("evm_increaseTime", [delay]);
+  await srcChainProvider.send('evm_increaseTime', [delay]);
 
   // Execute the proposal
   await governorAlpha.execute(proposalId, {
     value,
   });
 
-  console.log("Executed Proposal ID:", proposalId.toString());
+  console.log('Executed Proposal ID:', proposalId.toString());
 }

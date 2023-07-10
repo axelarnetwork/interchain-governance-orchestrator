@@ -9,7 +9,7 @@ export interface Chain {
   tokens: string;
   GMPExpressService: {
     expressOperator: string;
-    salt: "GMPExpressService";
+    salt: 'GMPExpressService';
     address: string;
     implementation: string;
     deployer: string;

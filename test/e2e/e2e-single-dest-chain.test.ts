@@ -1,7 +1,7 @@
-import { start, stop } from "./utils/server";
-import { expect } from "chai";
-import { ethers, Contract, Wallet } from "ethers";
-import { setLogger } from "@axelar-network/axelar-local-dev";
+import { start, stop } from './utils/server';
+import { expect } from 'chai';
+import { ethers, Contract, Wallet } from 'ethers';
+import { setLogger } from '@axelar-network/axelar-local-dev';
 import {
   deployComp,
   deployDummyState,
@@ -9,20 +9,20 @@ import {
   deployProposalExecutor,
   deployInterchainProposalSender,
   deployTimelock,
-} from "./utils/deploy";
-import { waitProposalExecuted } from "./utils/wait";
-import { transferTimelockAdmin } from "./utils/timelock";
-import { voteQueueExecuteProposal } from "./utils/governance";
-import { sleep } from "./utils/sleep";
-import { getChains } from "./utils/chains";
-import { after } from "mocha";
-import { DummyState__factory } from "../../typechain-types";
-import { Chain } from "./types/chain";
+} from './utils/deploy';
+import { waitProposalExecuted } from './utils/wait';
+import { transferTimelockAdmin } from './utils/timelock';
+import { voteQueueExecuteProposal } from './utils/governance';
+import { sleep } from './utils/sleep';
+import { getChains } from './utils/chains';
+import { after } from 'mocha';
+import { DummyState__factory } from '../../typechain-types';
+import { Chain } from './types/chain';
 
 setLogger(() => null);
 console.log = () => null;
 
-describe("Interchain Governance Executor For Single Destination Chain [ @skip-on-coverage ]", function () {
+describe('Interchain Governance Executor For Single Destination Chain [ @skip-on-coverage ]', function () {
   const deployer = Wallet.createRandom();
   let sender: Contract;
   let executor: Contract;
@@ -53,20 +53,20 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     governorAlpha = await deployGovernorAlpha(
       deployer,
       timelock.address,
-      comp.address
+      comp.address,
     );
 
     await executor.setWhitelistedProposalSender(
       srcChain.name,
       sender.address,
-      true
+      true,
     );
 
     // Whitelist the Governor contract to execute proposals
     await executor.setWhitelistedProposalCaller(
       srcChain.name,
       timelock.address,
-      true
+      true,
     );
 
     // Transfer ownership of the Timelock contract to the Governor contract
@@ -82,7 +82,7 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     await stop();
   });
 
-  it("should execute a proposal with a single destination target contract", async function () {
+  it('should execute a proposal with a single destination target contract', async function () {
     // Delegate votes the COMP token to the deployer
     await comp.delegate(deployer.address);
 
@@ -90,34 +90,34 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       {
         target: dummyState.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World',
         ]),
       },
     ];
 
     // Propose the payload to the Governor contract
-    const axelarFee = ethers.utils.parseEther("0.1");
+    const axelarFee = ethers.utils.parseEther('0.1');
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      ["sendProposal(string,string,(address,uint256,bytes)[])"],
+      ['sendProposal(string,string,(address,uint256,bytes)[])'],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
-            "string",
-            "string",
-            "(address target, uint256 value, bytes callData)[]",
+            'string',
+            'string',
+            '(address target, uint256 value, bytes callData)[]',
           ],
-          ["Avalanche", executor.address, calls]
+          ['Avalanche', executor.address, calls],
         ),
       ],
-      "Test Proposal"
+      'Test Proposal',
     );
 
     // Read latest proposal ID created by deployer's address.
     const proposalId = await governorAlpha.latestProposalIds(deployer.address);
-    console.log("Created Proposal ID:", proposalId.toString());
+    console.log('Created Proposal ID:', proposalId.toString());
 
     // Vote, queue, and execute given proposal ID.
     await voteQueueExecuteProposal(
@@ -126,7 +126,7 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       comp,
       governorAlpha,
       timelock,
-      axelarFee
+      axelarFee,
     );
 
     // Read proposal state
@@ -138,8 +138,8 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "(address target, uint256 value, bytes callData)[]"],
-      [timelock.address, calls]
+      ['address', '(address target, uint256 value, bytes callData)[]'],
+      [timelock.address, calls],
     );
 
     await waitProposalExecuted(
@@ -147,14 +147,14 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       sender.address,
       timelock.address,
       payload,
-      executor
+      executor,
     );
 
     // Expect the dummy state to be updated
-    await expect(await dummyState.message()).to.equal("Hello World");
+    await expect(await dummyState.message()).to.equal('Hello World');
   });
 
-  it("should execute a proposal with multiple destination target contracts", async function () {
+  it('should execute a proposal with multiple destination target contracts', async function () {
     const dummyState2 = await deployDummyState(deployer);
     const dummyState3 = await deployDummyState(deployer);
 
@@ -163,22 +163,22 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       {
         target: dummyState.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World1",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World1',
         ]),
       },
       {
         target: dummyState2.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World2",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World2',
         ]),
       },
       {
         target: dummyState3.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World3",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World3',
         ]),
       },
     ];
@@ -187,26 +187,26 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
     await comp.delegate(deployer.address);
 
     // Propose the payload to the Governor contract
-    const axelarFee = ethers.utils.parseEther("0.0001");
+    const axelarFee = ethers.utils.parseEther('0.0001');
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      ["sendProposal(string,string,(address,uint256,bytes)[])"],
+      ['sendProposal(string,string,(address,uint256,bytes)[])'],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
-            "string",
-            "string",
-            "(address target, uint256 value, bytes callData)[]",
+            'string',
+            'string',
+            '(address target, uint256 value, bytes callData)[]',
           ],
-          ["Avalanche", executor.address, calls]
+          ['Avalanche', executor.address, calls],
         ),
       ],
-      { value: ethers.utils.parseEther("0.0001") }
+      { value: ethers.utils.parseEther('0.0001') },
     );
 
     const proposalId = await governorAlpha.latestProposalIds(deployer.address);
-    console.log("Created Proposal ID:", proposalId.toString());
+    console.log('Created Proposal ID:', proposalId.toString());
 
     // Vote, queue, and execute given proposal ID.
     await voteQueueExecuteProposal(
@@ -215,28 +215,28 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       comp,
       governorAlpha,
       timelock,
-      axelarFee
+      axelarFee,
     );
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "(address target, uint256 value, bytes callData)[]"],
-      [timelock.address, calls]
+      ['address', '(address target, uint256 value, bytes callData)[]'],
+      [timelock.address, calls],
     );
     await waitProposalExecuted(
       srcChain.name,
       sender.address,
       timelock.address,
       payload,
-      executor
+      executor,
     );
 
-    expect(await dummyState.message()).to.equal("Hello World1");
-    expect(await dummyState2.message()).to.equal("Hello World2");
-    expect(await dummyState3.message()).to.equal("Hello World3");
+    expect(await dummyState.message()).to.equal('Hello World1');
+    expect(await dummyState2.message()).to.equal('Hello World2');
+    expect(await dummyState3.message()).to.equal('Hello World3');
   });
 
-  it("should not execute if the call is initiated by an invalid InterchainProposalSender contract address", async function () {
+  it('should not execute if the call is initiated by an invalid InterchainProposalSender contract address', async function () {
     const maliciousSender = await deployInterchainProposalSender(deployer);
     const dummyContract = await deployDummyState(deployer);
 
@@ -244,22 +244,22 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       {
         target: dummyContract.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World',
         ]),
       },
     ];
 
-    await maliciousSender.sendProposal("Avalanche", executor.address, calls, {
-      value: ethers.utils.parseEther("0.0001"),
+    await maliciousSender.sendProposal('Avalanche', executor.address, calls, {
+      value: ethers.utils.parseEther('0.0001'),
     });
 
     await sleep(5000);
 
-    expect(await dummyContract.message()).to.equal("");
+    expect(await dummyContract.message()).to.equal('');
   });
 
-  it("should not execute if the call is initiated by a non-whitelisted proposal caller address", async function () {
+  it('should not execute if the call is initiated by a non-whitelisted proposal caller address', async function () {
     const dummyContract = await deployDummyState(deployer);
 
     // Encode the payload for the destination chain
@@ -267,48 +267,48 @@ describe("Interchain Governance Executor For Single Destination Chain [ @skip-on
       {
         target: dummyContract.address,
         value: 0,
-        callData: DummyStateInterface.encodeFunctionData("setState", [
-          "Hello World",
+        callData: DummyStateInterface.encodeFunctionData('setState', [
+          'Hello World',
         ]),
       },
     ];
 
     // try to execute the proposal
-    await sender.sendProposal("Avalanche", executor.address, calls, {
-      value: ethers.utils.parseEther("0.0001"),
+    await sender.sendProposal('Avalanche', executor.address, calls, {
+      value: ethers.utils.parseEther('0.0001'),
     });
 
     await sleep(5000);
 
     // Expect the dummy state to not be updated
-    expect(await dummyContract.message()).to.equal("");
+    expect(await dummyContract.message()).to.equal('');
 
     // try to set the sender as a whitelisted proposal caller
     await executor.setWhitelistedProposalCaller(
       srcChain.name,
       deployer.address,
-      true
+      true,
     );
 
     // try to execute the proposal again
-    await sender.sendProposal("Avalanche", executor.address, calls, {
-      value: ethers.utils.parseEther("0.001"),
+    await sender.sendProposal('Avalanche', executor.address, calls, {
+      value: ethers.utils.parseEther('0.001'),
     });
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "(address target, uint256 value, bytes callData)[]"],
-      [deployer.address, calls]
+      ['address', '(address target, uint256 value, bytes callData)[]'],
+      [deployer.address, calls],
     );
     await waitProposalExecuted(
       srcChain.name,
       sender.address,
       deployer.address,
       payload,
-      executor
+      executor,
     );
 
     // Expect the dummy state to be updated
-    expect(await dummyContract.message()).to.equal("Hello World");
+    expect(await dummyContract.message()).to.equal('Hello World');
   });
 });

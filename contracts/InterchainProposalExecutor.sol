@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
-import {StringToAddress} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
-import {AxelarExecutable} from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
-import {IInterchainProposalExecutor} from './interfaces/IInterchainProposalExecutor.sol';
-import {InterchainCalls} from './lib/InterchainCalls.sol';
+import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
+import { StringToAddress } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
+import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
+import { IInterchainProposalExecutor } from './interfaces/IInterchainProposalExecutor.sol';
+import { InterchainCalls } from './lib/InterchainCalls.sol';
 
 /**
  * @title InterchainProposalExecutor
@@ -19,11 +19,7 @@ import {InterchainCalls} from './lib/InterchainCalls.sol';
  *
  * This contract is abstract and some of its functions need to be implemented in a derived contract.
  */
-contract InterchainProposalExecutor is
-    IInterchainProposalExecutor,
-    AxelarExecutable,
-    Ownable
-{
+contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecutable, Ownable {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
     mapping(string => mapping(address => bool)) public whitelistedCallers;
 
@@ -50,19 +46,15 @@ contract InterchainProposalExecutor is
         _beforeProposalExecuted(sourceChain, sourceAddress, payload);
 
         // Check that the source address is whitelisted
-        if (
-            !whitelistedSenders[sourceChain][
-                StringToAddress.toAddress(sourceAddress)
-            ]
-        ) {
+        if (!whitelistedSenders[sourceChain][StringToAddress.toAddress(sourceAddress)]) {
             revert NotWhitelistedSourceAddress();
         }
 
         // Decode the payload
-        (
-            address interchainProposalCaller,
-            InterchainCalls.Call[] memory calls
-        ) = abi.decode(payload, (address, InterchainCalls.Call[]));
+        (address interchainProposalCaller, InterchainCalls.Call[] memory calls) = abi.decode(
+            payload,
+            (address, InterchainCalls.Call[])
+        );
 
         // Check that the caller is whitelisted
         if (!whitelistedCallers[sourceChain][interchainProposalCaller]) {
@@ -72,23 +64,9 @@ contract InterchainProposalExecutor is
         // Execute the proposal with the given arguments
         _executeProposal(calls);
 
-        _onProposalExecuted(
-            sourceChain,
-            sourceAddress,
-            interchainProposalCaller,
-            payload
-        );
+        _onProposalExecuted(sourceChain, sourceAddress, interchainProposalCaller, payload);
 
-        emit ProposalExecuted(
-            keccak256(
-                abi.encode(
-                    sourceChain,
-                    sourceAddress,
-                    interchainProposalCaller,
-                    payload
-                )
-            )
-        );
+        emit ProposalExecuted(keccak256(abi.encode(sourceChain, sourceAddress, interchainProposalCaller, payload)));
     }
 
     /**
@@ -98,9 +76,7 @@ contract InterchainProposalExecutor is
     function _executeProposal(InterchainCalls.Call[] memory calls) internal {
         for (uint256 i = 0; i < calls.length; i++) {
             InterchainCalls.Call memory call = calls[i];
-            (bool success, bytes memory result) = call.target.call{
-                value: call.value
-            }(call.callData);
+            (bool success, bytes memory result) = call.target.call{ value: call.value }(call.callData);
 
             if (!success) {
                 _onTargetExecutionFailed(call, result);
@@ -122,11 +98,7 @@ contract InterchainProposalExecutor is
         bool whitelisted
     ) external override onlyOwner {
         whitelistedCallers[sourceChain][sourceCaller] = whitelisted;
-        emit WhitelistedProposalCallerSet(
-            sourceChain,
-            sourceCaller,
-            whitelisted
-        );
+        emit WhitelistedProposalCallerSet(sourceChain, sourceCaller, whitelisted);
     }
 
     /**
@@ -141,11 +113,7 @@ contract InterchainProposalExecutor is
         bool whitelisted
     ) external override onlyOwner {
         whitelistedSenders[sourceChain][sourceSender] = whitelisted;
-        emit WhitelistedProposalSenderSet(
-            sourceChain,
-            sourceSender,
-            whitelisted
-        );
+        emit WhitelistedProposalSenderSet(sourceChain, sourceSender, whitelisted);
     }
 
     /**
@@ -188,10 +156,7 @@ contract InterchainProposalExecutor is
      * This function will revert the transaction providing the failure reason if present in the failure data.
      * @param result The return data from the failed call to the target contract.
      */
-    function _onTargetExecutionFailed(
-        InterchainCalls.Call memory /* call */,
-        bytes memory result
-    ) internal virtual {
+    function _onTargetExecutionFailed(InterchainCalls.Call memory /* call */, bytes memory result) internal virtual {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
         if (result.length > 0) {
             // The failure data is a revert reason string.
@@ -210,10 +175,7 @@ contract InterchainProposalExecutor is
      * @param call The call that has been executed.
      * @param result The result of the call.
      */
-    function _onTargetExecuted(
-        InterchainCalls.Call memory call,
-        bytes memory result
-    ) internal virtual {
+    function _onTargetExecuted(InterchainCalls.Call memory call, bytes memory result) internal virtual {
         // You can add your own logic here to handle the success of each target contract execution.
     }
 }
