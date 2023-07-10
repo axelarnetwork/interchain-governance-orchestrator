@@ -47,8 +47,8 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
     }
 
     function _onProposalExecuted(
-        string calldata sourceChain,
-        string calldata sourceAddress,
+        string calldata,
+        string calldata,
         bytes calldata payload
     ) internal override {
         // You can add your own logic here to handle the payload after the proposal is executed.
@@ -56,7 +56,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
     }
 
     function _onTargetExecutionFailed(
-        InterchainCalls.Call memory call,
+        InterchainCalls.Call memory,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
@@ -73,7 +73,7 @@ contract TestProposalExecutor is InterchainProposalExecutorBase {
 
     function _onTargetExecuted(
         InterchainCalls.Call memory call,
-        bytes memory result
+        bytes memory
     ) internal override {
         emit TargetExecuted(call.target, call.value, call.callData);
     }

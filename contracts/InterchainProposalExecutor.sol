@@ -41,16 +41,14 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
     /**
      * @dev A callback function that is called after the proposal is executed.
      * This function emits an event containing the hash of the payload to signify successful execution.
-     * @param sourceChain The source chain from where the proposal was sent.
-     * @param sourceAddress The source address that sent the proposal. The source address should be the `InterchainProposalSender` contract address at the source chain.
      * @param payload The payload. It is ABI encoded of the caller and calls.
      * Where:
      * - `caller` is the address that calls the `InterchainProposalSender` at the source chain.
      * - `calls` is the array of `InterchainCalls.Call` to execute. Each call contains the target, value, signature and data.
      */
     function _onProposalExecuted(
-        string calldata sourceChain,
-        string calldata sourceAddress,
+        string calldata /* sourceChain */,
+        string calldata /* sourceAddress */,
         bytes calldata payload
     ) internal override {
         // You can add your own logic here to handle the payload after the proposal is executed.
@@ -60,11 +58,10 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
     /**
      * @dev A callback function that is called when the execution of a target contract within a proposal fails.
      * This function will revert the transaction providing the failure reason if present in the failure data.
-     * @param call The call data that was used to call the target contract.
      * @param result The return data from the failed call to the target contract.
      */
     function _onTargetExecutionFailed(
-        InterchainCalls.Call memory call,
+        InterchainCalls.Call memory /* call */,
         bytes memory result
     ) internal pure override {
         // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.

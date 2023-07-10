@@ -45,7 +45,7 @@ contract Timelock {
 
     mapping(bytes32 => bool) public queuedTransactions;
 
-    constructor(address admin_, uint delay_) public {
+    constructor(address admin_, uint delay_) {
         require(
             delay_ >= MINIMUM_DELAY,
             'Timelock::constructor: Delay must exceed minimum delay.'
@@ -60,6 +60,8 @@ contract Timelock {
     }
 
     fallback() external payable {}
+
+    receive() external payable {}
 
     function setDelay(uint delay_) public {
         require(

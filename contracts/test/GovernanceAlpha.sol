@@ -137,7 +137,7 @@ contract GovernorAlpha {
     /// @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(uint id);
 
-    constructor(address timelock_, address comp_, address guardian_) public {
+    constructor(address timelock_, address comp_, address guardian_) {
         timelock = TimelockInterface(timelock_);
         comp = CompInterface(comp_);
         guardian = guardian_;
@@ -282,9 +282,9 @@ contract GovernorAlpha {
     }
 
     function cancel(uint proposalId) public {
-        ProposalState state = state(proposalId);
+        ProposalState proposalState = state(proposalId);
         require(
-            state != ProposalState.Executed,
+            proposalState != ProposalState.Executed,
             'GovernorAlpha::cancel: cannot cancel executed proposal'
         );
 
