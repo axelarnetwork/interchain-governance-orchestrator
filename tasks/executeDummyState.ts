@@ -25,11 +25,11 @@ task(
     const dummyContractAddress = _dummyContractAddress || getDeploymentAddress(hre, "DummyState", destinationChain);
     const senderContractAddress = getInterchainProposalSenderAddress(hre.network.name);
 
-    if(!senderContractAddress) {
+    if (!senderContractAddress) {
       throw new Error(`InterchainProposalSender is not found on ${hre.network.name}`)
     }
 
-    if(!executorContractAddress || !dummyContractAddress) {
+    if (!executorContractAddress || !dummyContractAddress) {
       throw new Error("executorContractAddress or dummyContractAddress is not found")
     }
 
