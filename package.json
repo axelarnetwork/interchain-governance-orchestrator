@@ -10,7 +10,6 @@
     "deploy": "hardhat deploy",
     "test:e2e": "cross-env E2E=true hardhat test test/e2e/*.test.ts",
     "test:unit": "hardhat test test/unit/*.test.ts",
-    "testjs": "hardhat test test-js/*.test.js",
     "prettier": "prettier --write 'contracts/**/*.sol'",
     "compile": "hardhat clean && hardhat typechain",
     "coverage": "cross-env COVERAGE=true hardhat coverage",
