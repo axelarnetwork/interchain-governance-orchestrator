@@ -1,9 +1,11 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+// SPDX-License-Identifier: MIT
 
-import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
-import "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
-import "./interfaces/IProposalSender.sol";
+pragma solidity ^0.8.0;
+
+import { IAxelarGateway } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol';
+import { IAxelarGasService } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol';
+import { IInterchainProposalSender } from './interfaces/IInterchainProposalSender.sol';
+import { InterchainCalls } from './lib/InterchainCalls.sol';
 
 /**
  * @title InterchainProposalSender
@@ -11,7 +13,7 @@ import "./interfaces/IProposalSender.sol";
  * It achieves this by working in conjunction with the AxelarGateway and AxelarGasService contracts.
  *
  * The contract allows for the sending of a single proposal to multiple destination chains. This is achieved
- * through the `broadcastProposalToChains` function, which takes in arrays representing the destination chains,
+ * through the `sendProposals` function, which takes in arrays representing the destination chains,
  * destination contracts, fees, target contracts, amounts of tokens to send, function signatures, and encoded
  * function arguments.
  *
@@ -21,7 +23,7 @@ import "./interfaces/IProposalSender.sol";
  * for each chain.
  *
  * In addition, the contract also allows for the execution of a single proposal at a single destination chain
- * through the `broadcastProposalToChain` function. This is a more granular approach and works similarly to the
+ * through the `sendProposal` function. This is a more granular approach and works similarly to the
  * aforementioned function but for a single destination.
  *
  * The contract ensures the correctness of the provided proposal details and fees through a series of internal
@@ -33,7 +35,7 @@ import "./interfaces/IProposalSender.sol";
  * AxelarGasService contract to pay for the gas fees of the interchain transactions and the AxelarGateway
  * contract to call the target contracts on the destination chains with the provided encoded function arguments.
  */
-contract InterchainProposalSender is IProposalSender {
+contract InterchainProposalSender is IInterchainProposalSender {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
 
@@ -44,48 +46,25 @@ contract InterchainProposalSender is IProposalSender {
 
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
-     * @param destinationChains An array of destination chains
-     * @param destinationContracts An array of destination contracts
-     * @param fees An array of fees to pay for the interchain transaction
-     * @param targets A 2d array of contracts to call. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param values A 2d array of amounts of native tokens to send. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param signatures A 2d array of function signatures to call. The first dimension is the destination chain index, the second dimension is the destination target contract index.
-     * @param data A 2d array of encoded function arguments. The first dimension is the destination chain index, the second dimension is the destination target contract index.
+     * @param interchainCalls An array of `InterchainCalls.InterchainCall` to be executed at the destination chains. Where each `InterchainCalls.InterchainCall` contains the following:
+     * - destinationChain: destination chain
+     * - destinationContract: destination contract
+     * - gas: gas to be paid for the interchain transaction
+     * - calls: An array of `InterchainCalls.Call` to be executed at the destination chain. Where each `InterchainCalls.Call` contains the following:
+     *   - target: target contract
+     *   - value: amount of tokens to send
+     *   - callData: encoded function arguments
      * Note that the destination chain must be unique in the destinationChains array.
      */
-    function broadcastProposalToChains(
-        string[] memory destinationChains,
-        string[] memory destinationContracts,
-        uint256[] memory fees,
-        address[][] memory targets,
-        uint256[][] memory values,
-        string[][] memory signatures,
-        bytes[][] memory data
-    ) external payable override {
+    function sendProposals(InterchainCalls.InterchainCall[] calldata interchainCalls) external payable override {
         // revert if the sum of given fees are not equal to the msg.value
-        revertIfInvalidFee(fees);
+        revertIfInvalidFee(interchainCalls);
 
-        // revert if the length of given arrays are not equal
-        revertIfInvalidLength(
-            destinationChains,
-            destinationContracts,
-            fees,
-            targets,
-            values,
-            signatures,
-            data
-        );
-
-        for (uint i = 0; i < destinationChains.length; i++) {
-            _broadcastProposalToChain(
-                destinationChains[i],
-                destinationContracts[i],
-                fees[i],
-                targets[i],
-                values[i],
-                signatures[i],
-                data[i]
-            );
+        for (uint i = 0; i < interchainCalls.length; ) {
+            _sendProposal(interchainCalls[i]);
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -93,108 +72,45 @@ contract InterchainProposalSender is IProposalSender {
      * @dev Broadcast the proposal to be executed at single destination chain.
      * @param destinationChain destination chain
      * @param destinationContract destination contract
-     * @param targets An array of contracts to call
-     * @param values An array of amounts of native tokens to send
-     * @param signatures An array of function signatures
-     * @param data An array of encoded function arguments
+     * @param calls An array of calls to be executed at the destination chain. Where each call contains the following:
+     * - target: target contract
+     * - value: amount of tokens to send
+     * - callData: encoded function arguments
      */
-    function broadcastProposalToChain(
+    function sendProposal(
         string memory destinationChain,
         string memory destinationContract,
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) external payable {
-        _broadcastProposalToChain(
-            destinationChain,
-            destinationContract,
-            msg.value,
-            targets,
-            values,
-            signatures,
-            data
-        );
+        InterchainCalls.Call[] calldata calls
+    ) external payable override {
+        _sendProposal(InterchainCalls.InterchainCall(destinationChain, destinationContract, msg.value, calls));
     }
 
-    function _broadcastProposalToChain(
-        string memory destinationChain,
-        string memory destinationContract,
-        uint fee,
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) internal {
-        revertIfInvalidProposalArgs(targets, values, signatures, data);
+    function _sendProposal(InterchainCalls.InterchainCall memory interchainCall) internal {
+        bytes memory payload = abi.encode(msg.sender, interchainCall.calls);
 
-        if (fee == 0) {
-            revert InvalidFee();
+        if (interchainCall.gas > 0) {
+            gasService.payNativeGasForContractCall{ value: interchainCall.gas }(
+                address(this),
+                interchainCall.destinationChain,
+                interchainCall.destinationContract,
+                payload,
+                msg.sender
+            );
         }
 
-        bytes memory payload = abi.encode(
-            msg.sender,
-            targets,
-            values,
-            signatures,
-            data
-        );
-
-        gasService.payNativeGasForContractCall{value: fee}(
-            address(this),
-            destinationChain,
-            destinationContract,
-            payload,
-            msg.sender
-        );
-
-        gateway.callContract(destinationChain, destinationContract, payload);
+        gateway.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
     }
 
-    function revertIfInvalidProposalArgs(
-        address[] memory targets,
-        uint256[] memory values,
-        string[] memory signatures,
-        bytes[] memory data
-    ) private pure {
-        if (
-            targets.length == 0 ||
-            targets.length != values.length ||
-            targets.length != signatures.length ||
-            targets.length != data.length
-        ) {
-            revert ProposalArgsMisMatched();
-        }
-    }
-
-    function revertIfInvalidLength(
-        string[] memory destinationChains,
-        string[] memory destinationContracts,
-        uint[] memory fees,
-        address[][] memory targets,
-        uint256[][] memory values,
-        string[][] memory signatures,
-        bytes[][] memory data
-    ) private pure {
-        if (
-            destinationChains.length != destinationContracts.length ||
-            destinationChains.length != fees.length ||
-            destinationChains.length != targets.length ||
-            destinationChains.length != values.length ||
-            destinationChains.length != signatures.length ||
-            destinationChains.length != data.length
-        ) {
-            revert ArgsLengthMisMatched();
-        }
-    }
-
-    function revertIfInvalidFee(uint[] memory fees) private {
-        uint totalFees = 0;
-        for (uint i = 0; i < fees.length; i++) {
-            totalFees += fees[i];
+    function revertIfInvalidFee(InterchainCalls.InterchainCall[] calldata interchainCalls) private {
+        uint totalGas = 0;
+        for (uint i = 0; i < interchainCalls.length; ) {
+            totalGas += interchainCalls[i].gas;
+            unchecked {
+                ++i;
+            }
         }
 
-        if (totalFees != msg.value) {
+        if (totalGas != msg.value) {
             revert InvalidFee();
         }
     }

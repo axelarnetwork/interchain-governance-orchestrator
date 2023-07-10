@@ -1,0 +1,2 @@
+import "./whitelistProposalCaller";
+import "./whitelistProposalSender";

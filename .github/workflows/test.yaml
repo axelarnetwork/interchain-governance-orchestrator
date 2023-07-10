@@ -1,0 +1,33 @@
+name: Testing
+
+on:
+  - pull_request
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        node-version:
+          - 18.x
+        os:
+          - ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn compile
+
+      - name: Test E2E
+        run: yarn test:e2e
+
+      - name: Test Unit
+        run: yarn test:unit

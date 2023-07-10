@@ -6,6 +6,11 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+  },
+  "files": [
+    "test/**/*.test.ts",
+    "deploy/**/*.ts",
+    "constants/*.ts"
+  ]
 }

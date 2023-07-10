@@ -1,5 +1,5 @@
 import { task } from "hardhat/config";
-import { ProposalExecutor } from "../typechain-types/contracts/ProposalExecutor";
+import { InterchainProposalExecutor } from "../typechain-types/contracts/InterchainProposalExecutor";
 
 task("whitelistCaller", "Whitelist proposal caller")
   .addPositionalParam("sourceChain")
@@ -10,8 +10,8 @@ task("whitelistCaller", "Whitelist proposal caller")
     const ethers = hre.ethers;
 
     // get executor contract
-    const executor = await ethers.getContract<ProposalExecutor>(
-      "ProposalExecutor"
+    const executor = await ethers.getContract<InterchainProposalExecutor>(
+      "InterchainProposalExecutor"
     );
 
     const tx = await executor.setWhitelistedProposalCaller(
