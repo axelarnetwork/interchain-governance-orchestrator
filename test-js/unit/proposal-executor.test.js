@@ -34,7 +34,7 @@ describe("Proposal Executor", function () {
     );
   });
 
-  describe("_execute", function () {
+  describe("propsal execute", function () {
     it("should be able to call target contract", async function () {
       // whitelist caller and sender
       await executor.setWhitelistedProposalCaller(
