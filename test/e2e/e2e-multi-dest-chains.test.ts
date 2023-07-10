@@ -30,6 +30,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
   let governorAlpha: Contract;
   let dummyStates: Contract[] = [];
   let destChains: Chain[] = [];
+  let srcChain: Chain;
   const DummyStateInterface = DummyState__factory.createInterface();
 
   // redefine "slow" test for this test suite
@@ -44,7 +45,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     );
 
     const chains = getChains();
-    const srcChain = chains[0];
+    srcChain = chains[0];
     destChains = chains.slice(1);
 
     // Deploy contracts
@@ -117,9 +118,7 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     await governorAlpha.propose(
       [sender.address],
       [axelarFee],
-      [
-        "sendProposals((string,string,uint256,(address,uint256,bytes)[])[])",
-      ],
+      ["sendProposals((string,string,uint256,(address,uint256,bytes)[])[])"],
       [
         ethers.utils.defaultAbiCoder.encode(
           [
@@ -159,7 +158,15 @@ describe("Interchain Governance Executor for Multiple Destination Chains [ @skip
     );
 
     await Promise.all(
-      executors.map((executor) => waitProposalExecuted(payload, executor))
+      executors.map((executor) =>
+        waitProposalExecuted(
+          srcChain.name,
+          sender.address,
+          timelock.address,
+          payload,
+          executor
+        )
+      )
     );
 
     for (let i = 0; i < executors.length; i++) {

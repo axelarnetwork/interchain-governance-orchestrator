@@ -73,7 +73,12 @@ abstract contract InterchainProposalExecutorBase is
         // Execute the proposal with the given arguments
         _executeProposal(calls);
 
-        _onProposalExecuted(sourceChain, sourceAddress, payload);
+        _onProposalExecuted(
+            sourceChain,
+            sourceAddress,
+            interchainProposalCaller,
+            payload
+        );
     }
 
     /**
@@ -138,11 +143,13 @@ abstract contract InterchainProposalExecutorBase is
      * This function should do some post-execution work, such as emitting events.
      * @param sourceChain The source chain
      * @param sourceAddress The source address
+     * @param interchainProposalCaller The caller that calls the `InterchainProposalSender` at the source chain.
      * @param payload The payload that has been executed.
      */
     function _onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
+        address interchainProposalCaller,
         bytes calldata payload
     ) internal virtual;
 

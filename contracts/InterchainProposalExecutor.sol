@@ -51,10 +51,13 @@ contract InterchainProposalExecutor is InterchainProposalExecutorBase {
     function _onProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
+        address caller,
         bytes calldata payload
     ) internal override {
         // You can add your own logic here to handle the payload after the proposal is executed.
-        emit ProposalExecuted(keccak256(payload));
+        emit ProposalExecuted(
+            keccak256(abi.encode(sourceChain, sourceAddress, caller, payload))
+        );
     }
 
     /**

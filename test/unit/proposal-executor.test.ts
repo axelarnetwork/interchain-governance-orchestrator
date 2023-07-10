@@ -87,8 +87,15 @@ describe("Proposal Executor", function () {
         .withArgs(calls[0].target, calls[0].value, calls[0].callData);
 
       await expect(broadcast())
-        .to.emit(executor, "ProposalExecuted(bytes32 payloadHash)")
-        .withArgs(ethers.utils.keccak256(payload));
+        .to.emit(executor, "ProposalExecuted(bytes32)")
+        .withArgs(
+          ethers.utils.keccak256(
+            ethers.utils.defaultAbiCoder.encode(
+              ["string", "string", "address", "bytes"],
+              [chains.ethereum, signerAddress, signerAddress, payload]
+            )
+          )
+        );
     });
 
     it("should revert properly when execution failed", async function () {
