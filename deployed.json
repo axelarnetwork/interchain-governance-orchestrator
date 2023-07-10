@@ -1,0 +1,12 @@
+{
+  "InterchainProposalSender": {
+    "mainnet": {},
+    "testnet": {
+      "ethereum": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899",
+      "avalanche": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899",
+      "fantom": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899",
+      "moonbeam": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899",
+      "polygon": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899"
+    }
+  }
+}
