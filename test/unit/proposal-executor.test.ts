@@ -109,7 +109,7 @@ describe("Proposal Executor", function () {
           "Hello World",
         ]);
         const failedCallDataWithReason =
-          dummy.interface.encodeFunctionData("kaboom");
+          dummy.interface.encodeFunctionData("testRevert");
 
         const calls = [
           {

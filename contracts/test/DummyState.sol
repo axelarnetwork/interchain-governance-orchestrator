@@ -7,7 +7,7 @@ contract DummyState {
         message = _message;
     }
 
-    function kaboom() external pure {
+    function testRevert() external pure {
         revert('kaboom');
     }
 }
