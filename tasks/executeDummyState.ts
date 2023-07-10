@@ -1,13 +1,10 @@
 import { task } from "hardhat/config";
-import { InterchainProposalExecutor } from "../typechain-types/contracts/InterchainProposalExecutor";
-import {
-  DummyState__factory,
-  InterchainProposalSender,
-} from "../typechain-types";
+// import { DummyState__factory } from '../typechain-types/contracts/';
 import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import {chains as testnetChains } from "@axelar-network/axelar-contract-deployments/info/testnet.json";
 import {chains as mainnetChains} from "@axelar-network/axelar-contract-deployments/info/mainnet.json";
 import { getDeploymentAddress, getInterchainProposalSenderAddress } from "./helpers/deployment";
+import { InterchainProposalSender } from "../typechain-types";
 
 task(
   "executeDummyState",
@@ -44,10 +41,9 @@ task(
       senderContractAddress
     );
 
-    const callData = DummyState__factory.createInterface().encodeFunctionData(
-      "setState",
-      [message]
-    );
+    const callData = new ethers.utils.Interface([
+      "function setState(string)",
+    ]).encodeFunctionData("setState", [message]);
 
     const calls = [
       {
