@@ -67,15 +67,17 @@ Once you're comfortable with the process, use the deployed addresses to integrat
 
 ## Interchain Proposal Execution
 
-In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the testnet listed below. On the destination chain, deploy `InterchainProposalExecutor` and set up access control for whitelisted senders from the source chain.
+In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the **testnet** listed below. On the destination chain, deploy `InterchainProposalExecutor` and set up access control for whitelisted senders from the source chain.
 
-| Chain     | InterchainProposalSender address           |
-| --------- | ------------------------------------------ |
-| Avalanche | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 |
-| Ethereum  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 |
-| Polygon   | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 |
-| Moonbeam  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 |
-| Fantom    | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 |
+| Chain     | InterchainProposalSender                   | InterchainProposalExecutor                 |
+| --------- | ------------------------------------------ | ------------------------------------------ |
+| Avalanche | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+| Ethereum  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+| Polygon   | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+| Moonbeam  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+| Fantom    | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+
+Note: The `InterchainProposalExecutor` contract's whitelisted caller feature has been removed to simplify the testing process.
 
 ## Deployment Guide
 
