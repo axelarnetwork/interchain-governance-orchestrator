@@ -8,5 +8,15 @@
       "moonbeam": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899",
       "polygon": "0xB9d31cDc0b5c7949EcAE38E069299222FF72A899"
     }
+  },
+  "InterchainProposalExecutor": {
+    "mainnet": {},
+    "testnet": {
+      "ethereum": "0x5076782ffC839183Eaf5f68f097c6D205216F1AB",
+      "avalanche": "0x5076782ffC839183Eaf5f68f097c6D205216F1AB",
+      "fantom": "0x5076782ffC839183Eaf5f68f097c6D205216F1AB",
+      "moonbeam": "0x5076782ffC839183Eaf5f68f097c6D205216F1AB",
+      "polygon": "0x5076782ffC839183Eaf5f68f097c6D205216F1AB"
+    }
   }
 }
