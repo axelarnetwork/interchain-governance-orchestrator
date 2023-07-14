@@ -107,6 +107,33 @@ describe('InterchainProposalSender', function () {
           payload,
         );
     });
+
+    it('should not pay gas fee if msg.value is 0', async function () {
+      const target = await ethers
+        .getSigners()
+        .then((signers) => signers[1].getAddress());
+
+      const calls = [
+        {
+          target,
+          value: 0,
+          callData: ethers.utils.randomBytes(32),
+        },
+      ];
+
+      const broadcast = () =>
+        sender.sendProposal(
+          chains.avalanche,
+          ethers.constants.AddressZero,
+          calls,
+          { value: 0 },
+        );
+
+      await expect(broadcast()).to.not.emit(
+        gasService,
+        'NativeGasPaidForContractCall(address,string,string,bytes32,uint256,address)',
+      );
+    });
   });
 
   describe('sendProposals', function () {
