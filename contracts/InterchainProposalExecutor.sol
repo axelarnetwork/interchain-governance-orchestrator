@@ -21,7 +21,7 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  */
 contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecutable, Ownable {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
-    mapping(string => mapping(string => bool)) public whitelistedCallers;
+    mapping(string => mapping(address => bool)) public whitelistedCallers;
 
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(string => bool)) public whitelistedSenders;
@@ -57,7 +57,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
         );
 
         // Check that the caller is whitelisted
-        if (!whitelistedCallers[sourceChain][AddressToString.toString(interchainProposalCaller)]) {
+        if (!whitelistedCallers[sourceChain][interchainProposalCaller]) {
             revert NotWhitelistedCaller();
         }
 
@@ -94,7 +94,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
      */
     function setWhitelistedProposalCaller(
         string calldata sourceChain,
-        string calldata sourceCaller,
+        address sourceCaller,
         bool whitelisted
     ) external override onlyOwner {
         whitelistedCallers[sourceChain][sourceCaller] = whitelisted;
