@@ -2,14 +2,13 @@ import hre, { ethers } from 'hardhat';
 import {
   IAxelarGasService,
   IAxelarGateway,
-  IProposalSender__factory,
   InterchainProposalSender,
   InterchainProposalSender__factory as InterchainProposalSenderFactory,
 } from '../../typechain-types';
 import { contracts } from '../../constants';
 import { chains } from '../../constants/chains';
 import { expect } from 'chai';
-import { Signer } from 'ethers';
+import { BigNumberish, Signer } from 'ethers';
 
 describe('InterchainProposalSender', function () {
   let sender: InterchainProposalSender;
@@ -108,6 +107,33 @@ describe('InterchainProposalSender', function () {
           payload,
         );
     });
+
+    it('should not pay gas fee if msg.value is 0', async function () {
+      const target = await ethers
+        .getSigners()
+        .then((signers) => signers[1].getAddress());
+
+      const calls = [
+        {
+          target,
+          value: 0,
+          callData: ethers.utils.randomBytes(32),
+        },
+      ];
+
+      const broadcast = () =>
+        sender.sendProposal(
+          chains.avalanche,
+          ethers.constants.AddressZero,
+          calls,
+          { value: 0 },
+        );
+
+      await expect(broadcast()).to.not.emit(
+        gasService,
+        'NativeGasPaidForContractCall(address,string,string,bytes32,uint256,address)',
+      );
+    });
   });
 
   describe('sendProposals', function () {
@@ -190,6 +216,49 @@ describe('InterchainProposalSender', function () {
         sender.address,
       );
       expect(senderContractBalance).to.equal(0);
+    });
+
+    it('should be reverted with InvalidFee', async function () {
+      const target = await ethers
+        .getSigners()
+        .then((signers) => signers[1].getAddress());
+
+      const calls = [
+        {
+          target,
+          value: 0,
+          callData: ethers.utils.randomBytes(32),
+        },
+      ];
+
+      const destChains = ['avalanche', 'binance'];
+
+      const xCalls = [
+        {
+          destinationChain: destChains[0],
+          destinationContract: ethers.constants.AddressZero,
+          gas: 1,
+          calls,
+        },
+        {
+          destinationChain: destChains[1],
+          destinationContract: ethers.constants.AddressZero,
+          gas: 1,
+          calls,
+        },
+      ];
+
+      const broadcast = async (value: BigNumberish) =>
+        sender.sendProposals(xCalls, { value });
+
+      // should be reverted because the fee is overpaid
+      await expect(broadcast(1000)).to.be.revertedWithCustomError(
+        sender,
+        'InvalidFee',
+      );
+
+      // should be reverted because the fee is not enough
+      await expect(broadcast(0)).to.be.reverted;
     });
   });
 });

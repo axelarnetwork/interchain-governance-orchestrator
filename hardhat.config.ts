@@ -3,6 +3,9 @@ import 'hardhat-deploy';
 import { ethers } from 'ethers';
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
+// Even hardhat-chai-matchers has already imported in the toolbox,
+// we still need to import it here so that vscode can recognize the types
+import '@nomicfoundation/hardhat-chai-matchers';
 import {
   importNetworks,
   readJSON,
