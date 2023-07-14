@@ -23,14 +23,6 @@ contract TestProposalExecutor is InterchainProposalExecutor {
 
     constructor(address _gateway, address _owner) InterchainProposalExecutor(_gateway, _owner) {}
 
-    // function _beforeProposalExecuted(
-    //     string calldata sourceChain,
-    //     string calldata sourceAddress,
-    //     bytes calldata payload
-    // ) internal override {
-    //     emit BeforeProposalExecuted(sourceChain, sourceAddress, payload);
-    // }
-
     function forceExecute(
         string calldata sourceChain,
         string calldata sourceAddress,
