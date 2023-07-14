@@ -50,22 +50,22 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
         }
 
         // Decode the payload
-        (address interchainProposalCaller, InterchainCalls.Call[] memory calls) = abi.decode(
+        (address sourceCaller, InterchainCalls.Call[] memory calls) = abi.decode(
             payload,
             (address, InterchainCalls.Call[])
         );
 
         // Check that the caller is whitelisted
-        if (!whitelistedCallers[sourceChain][interchainProposalCaller]) {
+        if (!whitelistedCallers[sourceChain][sourceCaller]) {
             revert NotWhitelistedCaller();
         }
 
         // Execute the proposal with the given arguments
         _executeProposal(calls);
 
-        _onProposalExecuted(sourceChain, sourceAddress, interchainProposalCaller, payload);
+        _onProposalExecuted(sourceChain, sourceAddress, sourceCaller, payload);
 
-        emit ProposalExecuted(keccak256(abi.encode(sourceChain, sourceAddress, interchainProposalCaller, payload)));
+        emit ProposalExecuted(keccak256(abi.encode(sourceChain, sourceAddress, sourceCaller, payload)));
     }
 
     /**
