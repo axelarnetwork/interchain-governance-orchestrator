@@ -23,36 +23,11 @@ contract TestProposalExecutor is InterchainProposalExecutor {
 
     constructor(address _gateway, address _owner) InterchainProposalExecutor(_gateway, _owner) {}
 
-    function _beforeProposalExecuted(
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        bytes calldata payload
-    ) internal override {
-        emit BeforeProposalExecuted(sourceChain, sourceAddress, payload);
-    }
-
     function forceExecute(
         string calldata sourceChain,
         string calldata sourceAddress,
         bytes calldata payload
     ) external onlyOwner {
         _execute(sourceChain, sourceAddress, payload);
-    }
-
-    function _onTargetExecutionFailed(InterchainCalls.Call memory, bytes memory result) internal pure override {
-        // You can add your own logic here to handle the failure of the target contract execution. The code below is just an example.
-        if (result.length > 0) {
-            // The failure data is a revert reason string.
-            assembly {
-                revert(add(32, result), mload(result))
-            }
-        } else {
-            // There is no failure data, just revert with no reason.
-            revert ProposalExecuteFailed();
-        }
-    }
-
-    function _onTargetExecuted(InterchainCalls.Call memory call, bytes memory) internal override {
-        emit TargetExecuted(call.target, call.value, call.callData);
     }
 }
