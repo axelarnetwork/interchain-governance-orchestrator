@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IInterchainProposalExecutor } from './interfaces/IInterchainProposalExecutor.sol';
 import { InterchainCalls } from './lib/InterchainCalls.sol';
