@@ -32,8 +32,20 @@ jobs:
       - name: Test Unit
         run: yarn coverage
 
-      - name: Upload Coverage
-        uses: actions/upload-artifact@v2
+      # - name: Upload Coverage
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: coverage
+      #     path: coverage
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v2
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: coverage
-          path: coverage
+          path: './coverage/lcov-report'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
