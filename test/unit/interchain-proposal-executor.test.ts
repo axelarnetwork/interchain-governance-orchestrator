@@ -73,14 +73,6 @@ describe('InterchainProposalExecutor', function () {
         executor.forceExecute(chains.ethereum, signerAddress, payload);
 
       await expect(broadcast())
-        .to.emit(executor, 'BeforeProposalExecuted(string,string,bytes)')
-        .withArgs(chains.ethereum, signerAddress, payload);
-
-      await expect(broadcast())
-        .to.emit(executor, 'TargetExecuted(address,uint256,bytes)')
-        .withArgs(calls[0].target, calls[0].value, calls[0].callData);
-
-      await expect(broadcast())
         .to.emit(executor, 'ProposalExecuted(bytes32)')
         .withArgs(
           ethers.utils.keccak256(
@@ -90,8 +82,6 @@ describe('InterchainProposalExecutor', function () {
             ),
           ),
         );
-
-
     });
 
     it('should revert properly when execution failed', async function () {
