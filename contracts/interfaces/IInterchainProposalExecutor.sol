@@ -9,7 +9,11 @@ interface IInterchainProposalExecutor {
     // An event emitted when the proposal sender is whitelisted
     event WhitelistedProposalSenderSet(string indexed sourceChain, string sourceSender, bool whitelisted);
 
+    // An event emitted when the proposal is executed
     event ProposalExecuted(bytes32 indexed payloadHash);
+
+    // An event emitted when the native tokens are withdrawn to the owner
+    event Withdrawn(address indexed to, uint256 amount);
 
     // An error emitted when the proposal execution failed
     error ProposalExecuteFailed();
@@ -21,7 +25,7 @@ interface IInterchainProposalExecutor {
     error NotWhitelistedSourceAddress();
 
     // An error emitted when the caller cannot withdraw native tokens from the contract.
-    error WithdrawFailed();
+    error WithdrawFailed(string reason);
 
     /**
      * @notice set the whitelisted status of a proposal sender which is the `InterchainProposalSender` contract address on the source chain
