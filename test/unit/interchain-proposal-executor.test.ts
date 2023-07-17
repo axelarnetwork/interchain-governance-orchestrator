@@ -237,4 +237,51 @@ describe('InterchainProposalExecutor', function () {
         .withArgs(chains.ethereum, signerAddress, true);
     });
   });
+
+  describe('receive', () => {
+    it('should be able to receive native tokens', async function () {
+      const sentAmount = ethers.utils.parseEther('1');
+      await signer.sendTransaction({
+        to: executor.address,
+        value: sentAmount,
+      });
+
+      expect(await ethers.provider.getBalance(executor.address)).to.eq(
+        sentAmount,
+      );
+    });
+  });
+
+  describe('withdraw', () => {
+    it("should revert when the caller isn't the owner", async () => {
+      const [, signer2] = await ethers.getSigners();
+      await expect(executor.connect(signer2).withdraw(signer2.address)).to.be
+        .reverted;
+    });
+
+    it("should revert when the executor doesn't have any native tokens", async function () {
+      await expect(
+        executor.withdraw(signerAddress),
+      ).to.be.revertedWithCustomError(executor, 'WithdrawFailed');
+    });
+
+    it('should be able to withdraw native tokens', async function () {
+      const sentAmount = ethers.utils.parseEther('1');
+      const recipient = ethers.Wallet.createRandom();
+
+      await signer.sendTransaction({
+        to: executor.address,
+        value: sentAmount,
+      });
+
+      await expect(executor.withdraw(recipient.address))
+        .to.emit(executor, 'Withdrawn')
+        .withArgs(signerAddress, sentAmount);
+
+      expect(await ethers.provider.getBalance(executor.address)).to.eq(0);
+      expect(await ethers.provider.getBalance(recipient.address)).to.eq(
+        sentAmount,
+      );
+    });
+  });
 });
