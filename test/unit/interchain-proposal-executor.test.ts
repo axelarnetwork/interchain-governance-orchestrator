@@ -237,4 +237,18 @@ describe('InterchainProposalExecutor', function () {
         .withArgs(chains.ethereum, signerAddress, true);
     });
   });
+
+  describe('receive', () => {
+    it('should be able to receive native tokens', async function () {
+      const sentAmount = ethers.utils.parseEther('1');
+      await signer.sendTransaction({
+        to: executor.address,
+        value: sentAmount,
+      });
+
+      expect(await ethers.provider.getBalance(executor.address)).to.eq(
+        sentAmount,
+      );
+    });
+  });
 });

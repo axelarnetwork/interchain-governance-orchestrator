@@ -116,6 +116,11 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     }
 
     /**
+     * @dev Receive native tokens for the proposal that requires native tokens.
+     */
+    receive() external payable {}
+
+    /**
      * @dev A callback function that is called before the proposal is executed.
      * This function can be used to handle the payload before the proposal is executed.
      * @param sourceChain The source chain from where the proposal was sent.

@@ -9,6 +9,7 @@ interface IInterchainProposalExecutor {
     // An event emitted when the proposal sender is whitelisted
     event WhitelistedProposalSenderSet(string indexed sourceChain, string sourceSender, bool whitelisted);
 
+    // An event emitted when the proposal is executed
     event ProposalExecuted(bytes32 indexed payloadHash);
 
     // An error emitted when the proposal execution failed
