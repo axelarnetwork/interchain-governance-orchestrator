@@ -116,27 +116,6 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     }
 
     /**
-     * @dev Withdraw given balance to the recipient.
-     * This function is only callable by the owner.
-     */
-    function withdraw(address recipient, uint256 balance) public onlyOwner {
-        if (address(this).balance < balance) revert WithdrawFailed('Insufficient balance');
-
-        (bool success, ) = recipient.call{ value: balance }('');
-
-        if (!success) revert WithdrawFailed('Withdraw failed');
-        else emit Withdrawn(recipient, balance);
-    }
-
-    /**
-     * @dev Withdraw all balance to the recipient.
-     * This function is only callable by the owner.
-     */
-    function withdrawAll(address recipient) external onlyOwner {
-        withdraw(recipient, address(this).balance);
-    }
-
-    /**
      * @dev Receive native tokens for the proposal that requires native tokens.
      */
     receive() external payable {}
