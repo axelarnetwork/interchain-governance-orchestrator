@@ -236,6 +236,93 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
     expect(await dummyState3.message()).to.equal('Hello World3');
   });
 
+  it('should be able to withdraw balance from the executor contract with a proposal', async function () {
+    const depositAmount = ethers.utils.parseEther('1');
+    const destSigner = deployer.connect(executor.provider);
+
+    // Sent 1 ETH to the executor contract
+    await destSigner
+      .sendTransaction({
+        from: deployer.address,
+        to: executor.address,
+        value: depositAmount,
+      })
+      .then((tx) => tx.wait());
+
+    // Expect the executor contract to have 1 ETH balance
+    expect(await executor.provider.getBalance(executor.address)).to.equal(
+      depositAmount,
+    );
+
+    // Delegate votes the COMP token to the deployer
+    await comp.delegate(deployer.address);
+
+    // Create a random recipient address with zero balance
+    const recipient = ethers.Wallet.createRandom();
+
+    // Encode the payload to withdraw native tokens at the destination chain
+    const calls = [
+      {
+        target: recipient.address,
+        value: depositAmount,
+        callData: '0x',
+      },
+    ];
+
+    // Propose the payload to the Governor contract
+    const axelarFee = ethers.utils.parseEther('0.1');
+    await governorAlpha.propose(
+      [sender.address],
+      [axelarFee],
+      ['sendProposal(string,string,(address,uint256,bytes)[])'],
+      [
+        ethers.utils.defaultAbiCoder.encode(
+          [
+            'string',
+            'string',
+            '(address target, uint256 value, bytes callData)[]',
+          ],
+          ['Avalanche', executor.address, calls],
+        ),
+      ],
+      'Withdraw balance from executor contract',
+    );
+
+    // Read latest proposal ID created by deployer's address.
+    const proposalId = await governorAlpha.latestProposalIds(deployer.address);
+
+    // Vote, queue, and execute given proposal ID.
+    await voteQueueExecuteProposal(
+      deployer.address,
+      proposalId,
+      comp,
+      governorAlpha,
+      timelock,
+      axelarFee,
+    );
+
+    // Wait for the proposal to be executed on the destination chain
+    // Encode the payload for the destination chain
+    const payload = ethers.utils.defaultAbiCoder.encode(
+      ['address', '(address target, uint256 value, bytes callData)[]'],
+      [timelock.address, calls],
+    );
+
+    await waitProposalExecuted(
+      srcChain.name,
+      sender.address,
+      timelock.address,
+      payload,
+      executor,
+    );
+
+    // Expect the dummy state to be updated
+    expect(await executor.provider.getBalance(executor.address)).to.equal(0);
+    expect(await executor.provider.getBalance(recipient.address)).to.equal(
+      depositAmount,
+    );
+  });
+
   it('should not execute if the call is initiated by an invalid InterchainProposalSender contract address', async function () {
     const maliciousSender = await deployInterchainProposalSender(deployer);
     const dummyContract = await deployDummyState(deployer);
