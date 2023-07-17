@@ -1,6 +1,7 @@
 name: Run Coverage Tests
 
 on:
+  workflow_dispatch:
   push:
     branches: ['main']
 
