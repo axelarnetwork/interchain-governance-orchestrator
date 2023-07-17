@@ -20,6 +20,9 @@ interface IInterchainProposalExecutor {
     // An error emitted when the proposal sender is not whitelisted
     error NotWhitelistedSourceAddress();
 
+    // An error emitted when the caller cannot withdraw native tokens from the contract.
+    error WithdrawFailed();
+
     /**
      * @notice set the whitelisted status of a proposal sender which is the `InterchainProposalSender` contract address on the source chain
      * @param sourceChain The source chain
