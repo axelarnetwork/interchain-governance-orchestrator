@@ -316,8 +316,10 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
       executor,
     );
 
-    // Expect the dummy state to be updated
+    // Expect the executor contract to have 0 ETH balance
     expect(await executor.provider.getBalance(executor.address)).to.equal(0);
+
+    // Expect the recipient address to have 1 ETH balance
     expect(await executor.provider.getBalance(recipient.address)).to.equal(
       depositAmount,
     );
