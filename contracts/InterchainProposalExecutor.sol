@@ -116,11 +116,6 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     }
 
     /**
-     * @dev Receive native tokens for the proposal that requires native tokens.
-     */
-    receive() external payable {}
-
-    /**
      * @dev Withdraw given balance to the recipient.
      * This function is only callable by the owner.
      */
@@ -140,6 +135,11 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     function withdrawAll(address recipient) external onlyOwner {
         withdraw(recipient, address(this).balance);
     }
+
+    /**
+     * @dev Receive native tokens for the proposal that requires native tokens.
+     */
+    receive() external payable {}
 
     /**
      * @dev A callback function that is called before the proposal is executed.
