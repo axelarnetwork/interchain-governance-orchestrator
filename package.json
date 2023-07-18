@@ -50,7 +50,6 @@
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.6.1",
     "@axelar-network/axelar-local-dev": "^2.0.1",
     "@openzeppelin/contracts": "^4.8.3",
-    "@openzeppelin/contracts-upgradeable": "^4.8.3",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3"
   }
