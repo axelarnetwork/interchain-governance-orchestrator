@@ -8,14 +8,14 @@ import {
 import { contracts } from '../../constants';
 import { chains } from '../../constants/chains';
 import { expect } from 'chai';
-import { BigNumberish, Signer } from 'ethers';
+import { BigNumberish, Contract, Signer } from 'ethers';
 
 describe('InterchainProposalSender', function () {
   let sender: InterchainProposalSender;
   let signer: Signer;
   let signerAddress: string;
-  let gasService: IAxelarGasService;
-  let gateway: IAxelarGateway;
+  let gasService: Contract;
+  let gateway: Contract;
 
   // redefine "slow" test for this test suite
   this.slow(10000);
@@ -24,21 +24,20 @@ describe('InterchainProposalSender', function () {
   beforeEach(async () => {
     [signer] = await ethers.getSigners();
     signerAddress = await signer.getAddress();
-    const senderFactory =
-      await ethers.getContractFactory<InterchainProposalSenderFactory>(
-        'InterchainProposalSender',
-      );
-    sender = await senderFactory.deploy(
+    const senderFactory = await ethers.getContractFactory(
+      'InterchainProposalSender',
+    );
+    sender = (await senderFactory.deploy(
       contracts[chains.hardhat].gateway,
       contracts[chains.hardhat].gasService,
-    );
+    )) as InterchainProposalSender;
 
-    gasService = await ethers.getContractAt<IAxelarGasService>(
+    gasService = await ethers.getContractAt(
       'IAxelarGasService',
       contracts[chains.hardhat].gasService,
     );
 
-    gateway = await ethers.getContractAt<IAxelarGateway>(
+    gateway = await ethers.getContractAt(
       'IAxelarGateway',
       contracts[chains.hardhat].gateway,
     );
