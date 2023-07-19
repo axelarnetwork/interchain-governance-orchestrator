@@ -21,6 +21,9 @@ interface IInterchainProposalExecutor {
     // An error emitted when the proposal sender is not whitelisted
     error NotWhitelistedSourceAddress();
 
+    // An error emitted when given address is invalid
+    error InvalidAddress();
+
     /**
      * @notice set the whitelisted status of a proposal sender which is the `InterchainProposalSender` contract address on the source chain
      * @param sourceChain The source chain
