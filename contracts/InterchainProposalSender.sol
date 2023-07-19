@@ -40,6 +40,8 @@ contract InterchainProposalSender is IInterchainProposalSender {
     IAxelarGasService public gasService;
 
     constructor(address _gateway, address _gasService) {
+        if (_gateway == address(0) || _gasService == address(0)) revert InvalidAddress();
+
         gateway = IAxelarGateway(_gateway);
         gasService = IAxelarGasService(_gasService);
     }
