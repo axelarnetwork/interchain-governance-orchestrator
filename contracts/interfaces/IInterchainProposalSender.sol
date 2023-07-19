@@ -8,6 +8,9 @@ interface IInterchainProposalSender {
     // An error emitted when the given gas is invalid
     error InvalidFee();
 
+    // An error emitted when the given address is invalid
+    error InvalidAddress();
+
     /**
      * @dev Broadcast the proposal to be executed at multiple destination chains
      * @param calls An array of calls to be executed at the destination chain
