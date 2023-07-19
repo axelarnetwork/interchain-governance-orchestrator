@@ -43,6 +43,27 @@ describe('InterchainProposalSender', function () {
     );
   });
 
+  describe('deployment', function () {
+    it('should revert if given gateway or gasService address is zero', async () => {
+      const senderFactory = await ethers.getContractFactory(
+        'InterchainProposalSender',
+      );
+      await expect(
+        senderFactory.deploy(
+          ethers.constants.AddressZero,
+          contracts[chains.hardhat].gasService,
+        ),
+      ).to.be.revertedWithCustomError(sender, 'InvalidAddress');
+
+      await expect(
+        senderFactory.deploy(
+          contracts[chains.hardhat].gateway,
+          ethers.constants.AddressZero,
+        ),
+      ).to.be.revertedWithCustomError(sender, 'InvalidAddress');
+    });
+  });
+
   describe('sendProposal', function () {
     it('should be able to call gateway and gasService contracts successfully', async function () {
       const target = await ethers

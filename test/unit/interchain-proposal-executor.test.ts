@@ -39,6 +39,22 @@ describe('InterchainProposalExecutor', function () {
     dummy = await dummyStateFactory.deploy();
   });
 
+  describe('deployment', function () {
+    it('should revert if given owner address is zero', async () => {
+      const executorFactory =
+        await ethers.getContractFactory<TestProposalExecutorFactory>(
+          'TestProposalExecutor',
+        );
+
+      await expect(
+        executorFactory.deploy(
+          contracts[chains.hardhat].gateway,
+          ethers.constants.AddressZero,
+        ),
+      ).to.be.revertedWithCustomError(executor, 'InvalidAddress');
+    });
+  });
+
   describe('_execute', function () {
     it('should be able to call target contract', async function () {
       // whitelist caller and sender
