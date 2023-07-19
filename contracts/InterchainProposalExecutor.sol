@@ -26,7 +26,9 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     mapping(string => mapping(string => bool)) public whitelistedSenders;
 
     constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
-        _transferOwnership(_owner);
+        if (_owner == address(0)) revert InvalidAddress();
+
+        transferOwnership(_owner);
     }
 
     /**
