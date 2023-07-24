@@ -56,12 +56,20 @@ task(
     const env =
       process.env.ENV === "mainnet" ? Environment.MAINNET : Environment.TESTNET;
     const queryApi = new AxelarQueryAPI({ environment: env });
+
+    // TODO: Remove once exist in testnet.json file.
+    testnetChains.filecoin = {
+      id: "filecoin-2"
+    }
+
     const chains = env === Environment.MAINNET ? mainnetChains : testnetChains;
-    const chain = chains[hre.network.name];
-    const gasFee = await queryApi.estimateGasFee(chain.id, destinationChain, chain.tokenSymbol);
+    const srcChain = chains[hre.network.name];
+    const destChain = chains[destinationChain];
+
+    const gasFee = await queryApi.estimateGasFee(srcChain.id, destChain.id, srcChain.tokenSymbol);
 
     const tx = await sender.sendProposal(
-      destinationChain,
+      destChain.id,
       executorContractAddress,
       calls,
       {
