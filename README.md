@@ -76,6 +76,7 @@ In order to execute interchain proposals, deploy your instance of `InterchainPro
 | Polygon   | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
 | Moonbeam  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
 | Fantom    | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
+| Filecoin  | 0xd664612d8FAa124b1f9A8bce4376F1a5AC3909d0 | 0x1dA39C49f4ABCd7D76014F45D03F214D2eF12a0d |
 
 Note: The `InterchainProposalExecutor` contract's whitelisted caller feature has been removed to simplify the testing process.
 
