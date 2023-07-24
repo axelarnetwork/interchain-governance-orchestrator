@@ -28,7 +28,7 @@ const filecoin =
         chainId: 314159,
         id: 'filecoin-2',
         url: 'https://api.calibration.node.glif.io/rpc/v1',
-        accounts: keys.accounts,
+        accounts: keys?.accounts || [],
       }
     : mainnetChains.chains.filecoin;
 
