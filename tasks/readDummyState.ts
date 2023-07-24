@@ -1,7 +1,4 @@
 import { task } from "hardhat/config";
-import {
-  DummyState,
-} from "../typechain-types";
 import { getDeploymentAddress } from "./helpers/deployment";
 
 task(
