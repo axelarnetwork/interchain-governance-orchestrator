@@ -20,18 +20,6 @@ const isE2E = process.env.E2E === 'true' ? true : false;
 const chains = env === 'testnet' ? testnetChains : mainnetChains;
 const { networks, etherscan } = importNetworks(chains, keys);
 
-
-// TODO: Remove once exist in testnet.json file.
-const filecoin =
-  env === 'testnet'
-    ? {
-        chainId: 314159,
-        id: 'filecoin-2',
-        url: 'https://api.calibration.node.glif.io/rpc/v1',
-        accounts: keys?.accounts || [],
-      }
-    : mainnetChains.chains.filecoin;
-
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   solidity: {
@@ -45,7 +33,6 @@ const config: HardhatUserConfig = {
   },
   networks: {
     ...networks,
-    filecoin,
     hardhat: {
       forking: {
         enabled: !isE2E,
