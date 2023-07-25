@@ -18,9 +18,9 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 deploy.tags = ['Deployer'];
 deploy.skip = (env: HardhatRuntimeEnvironment) => {
   const chain = contracts[env.network.name];
-  if(chain.create3Deployer) return Promise.resolve(true);
+  if (chain.create3Deployer) return Promise.resolve(true);
 
   return env.deployments.getOrNull('Deployer').then((d) => !!d);
-}
+};
 
 export default deploy;
