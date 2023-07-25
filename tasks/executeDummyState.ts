@@ -48,7 +48,7 @@ task(
 
     const ethers = hre.ethers;
 
-    const sender = await ethers.getContractAt<InterchainProposalSender>(
+    const sender = await ethers.getContractAt(
       'InterchainProposalSender',
       senderContractAddress,
     );

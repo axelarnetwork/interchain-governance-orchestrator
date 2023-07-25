@@ -1,23 +1,28 @@
-import { task } from "hardhat/config";
-import { InterchainProposalExecutor } from "../typechain-types/contracts/InterchainProposalExecutor";
+import { task } from 'hardhat/config';
+import { InterchainProposalExecutor } from '../typechain-types/contracts/InterchainProposalExecutor';
+import { getDeploymentAddress } from './helpers/deployment';
 
-task("whitelistCaller", "Whitelist proposal caller")
-  .addPositionalParam("sourceChain")
-  .addPositionalParam("sourceCaller")
+task('whitelistCaller', 'Whitelist proposal caller')
+  .addPositionalParam('sourceChain')
+  .addPositionalParam('sourceCaller')
   .setAction(async (taskArgs, hre) => {
     const { sourceChain, sourceCaller } = taskArgs;
-    // get signer
     const ethers = hre.ethers;
 
-    // get executor contract
-    const executor = await ethers.getContract<InterchainProposalExecutor>(
-      "InterchainProposalExecutor"
+    const executorAddress = getDeploymentAddress(
+      hre,
+      'InterchainProposalExecutor',
+      hre.network.name,
+    );
+    const executor = await ethers.getContractAt(
+      'InterchainProposalExecutor',
+      executorAddress,
     );
 
     const tx = await executor.setWhitelistedProposalCaller(
       sourceChain,
       sourceCaller,
-      true
+      true,
     );
 
     console.log(`setWhitelistedProposalCaller: ${tx.hash}`);
