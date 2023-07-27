@@ -15,7 +15,7 @@ export async function deploy3(
   const { create3Deployer } = contracts[hre.network.name];
 
   const create3Address = create3Deployer || await hre.deployments
-  .get("Deployer")
+  .get("Create3Deployer")
   .then((d) => d.address);
 
   const artifact = await hre.artifacts.readArtifact(contractName);
