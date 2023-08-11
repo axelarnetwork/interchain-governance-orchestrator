@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Ownable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol';

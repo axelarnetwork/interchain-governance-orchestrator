@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
+import { Ownable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Ownable.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IInterchainProposalExecutor } from './interfaces/IInterchainProposalExecutor.sol';
 import { InterchainCalls } from './lib/InterchainCalls.sol';
@@ -28,7 +28,9 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
         if (_owner == address(0)) revert InvalidAddress();
 
-        transferOwnership(_owner);
+        assembly {
+            sstore(_OWNER_SLOT, _owner)
+        }
     }
 
     /**
