@@ -16,7 +16,7 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  * that call the InterchainProposalSender at the source chain.
  * For most governance system, the proposal caller should be the Timelock contract.
  *
- * This contract is abstract and some of its functions need to be implemented in a derived contract.
+ * Some functions need to be implemented in a derived contract.
  */
 contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecutable, Ownable {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
@@ -75,7 +75,9 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
      * @param calls The calls to execute.
      */
     function _executeProposal(InterchainCalls.Call[] memory calls) internal {
-        for (uint256 i = 0; i < calls.length; i++) {
+        uint length = calls.length;
+
+        for (uint256 i = 0; i < length; i++) {
             InterchainCalls.Call memory call = calls[i];
             (bool success, bytes memory result) = call.target.call{ value: call.value }(call.callData);
 
