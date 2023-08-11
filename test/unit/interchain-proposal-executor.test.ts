@@ -63,6 +63,7 @@ describe('InterchainProposalExecutor', function () {
         signerAddress,
         true,
       );
+
       await executor.setWhitelistedProposalSender(
         chains.ethereum,
         signerAddress,
@@ -81,7 +82,7 @@ describe('InterchainProposalExecutor', function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
         [signerAddress, calls],
       );
 
@@ -93,7 +94,7 @@ describe('InterchainProposalExecutor', function () {
         .withArgs(
           ethers.utils.keccak256(
             ethers.utils.defaultAbiCoder.encode(
-              ['string', 'string', 'address', 'bytes'],
+              ['string', 'string', 'bytes', 'bytes'],
               [chains.ethereum, signerAddress, signerAddress, payload],
             ),
           ),
@@ -131,7 +132,7 @@ describe('InterchainProposalExecutor', function () {
         ];
 
         const payload = ethers.utils.defaultAbiCoder.encode(
-          ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+          ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
           [signerAddress, calls],
         );
 
@@ -161,7 +162,7 @@ describe('InterchainProposalExecutor', function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
         [signerAddress, calls],
       );
 
@@ -194,7 +195,7 @@ describe('InterchainProposalExecutor', function () {
       ];
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
         [signerAddress, calls],
       );
 

@@ -138,7 +138,7 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ['address', '(address target, uint256 value, bytes callData)[]'],
+      ['bytes', '(address target, uint256 value, bytes callData)[]'],
       [timelock.address, calls],
     );
 
@@ -220,7 +220,7 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ['address', '(address target, uint256 value, bytes callData)[]'],
+      ['bytes', '(address target, uint256 value, bytes callData)[]'],
       [timelock.address, calls],
     );
     await waitProposalExecuted(
@@ -304,7 +304,7 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ['address', '(address target, uint256 value, bytes callData)[]'],
+      ['bytes', '(address target, uint256 value, bytes callData)[]'],
       [timelock.address, calls],
     );
 
@@ -386,7 +386,7 @@ describe('Interchain Governance Executor For Single Destination Chain [ @skip-on
 
     // Wait for the proposal to be executed on the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ['address', '(address target, uint256 value, bytes callData)[]'],
+      ['bytes', '(address target, uint256 value, bytes callData)[]'],
       [deployer.address, calls],
     );
     await waitProposalExecuted(
