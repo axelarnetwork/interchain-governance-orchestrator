@@ -36,8 +36,8 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  * contract to call the target contracts on the destination chains with the provided encoded function arguments.
  */
 contract InterchainProposalSender is IInterchainProposalSender {
-    IAxelarGateway public gateway;
-    IAxelarGasService public gasService;
+    IAxelarGateway public immutable gateway;
+    IAxelarGasService public immutable gasService;
 
     constructor(address _gateway, address _gasService) {
         if (_gateway == address(0) || _gasService == address(0)) revert InvalidAddress();
@@ -62,7 +62,9 @@ contract InterchainProposalSender is IInterchainProposalSender {
         // revert if the sum of given fees are not equal to the msg.value
         revertIfInvalidFee(interchainCalls);
 
-        for (uint i = 0; i < interchainCalls.length; ) {
+        uint length = interchainCalls.length;
+
+        for (uint i = 0; i < length; ) {
             _sendProposal(interchainCalls[i]);
             unchecked {
                 ++i;
@@ -105,7 +107,9 @@ contract InterchainProposalSender is IInterchainProposalSender {
 
     function revertIfInvalidFee(InterchainCalls.InterchainCall[] calldata interchainCalls) private {
         uint totalGas = 0;
-        for (uint i = 0; i < interchainCalls.length; ) {
+        uint length = interchainCalls.length;
+
+        for (uint i = 0; i < length; ) {
             totalGas += interchainCalls[i].gas;
             unchecked {
                 ++i;
