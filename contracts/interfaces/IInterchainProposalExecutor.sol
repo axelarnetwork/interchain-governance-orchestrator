@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 interface IInterchainProposalExecutor {
     // An event emitted when the proposal caller is whitelisted
-    event WhitelistedProposalCallerSet(string indexed sourceChain, address indexed sourceCaller, bool whitelisted);
+    event WhitelistedProposalCallerSet(string indexed sourceChain, bytes indexed sourceCaller, bool whitelisted);
 
     // An event emitted when the proposal sender is whitelisted
     event WhitelistedProposalSenderSet(string indexed sourceChain, string sourceSender, bool whitelisted);
@@ -39,5 +39,9 @@ interface IInterchainProposalExecutor {
      * @param sourceCaller The source interchain caller address
      * @param whitelisted The whitelisted status
      */
-    function setWhitelistedProposalCaller(string calldata sourceChain, address sourceCaller, bool whitelisted) external;
+    function setWhitelistedProposalCaller(
+        string calldata sourceChain,
+        bytes memory sourceCaller,
+        bool whitelisted
+    ) external;
 }

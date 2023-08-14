@@ -153,7 +153,7 @@ describe('Interchain Governance Executor for Multiple Destination Chains [ @skip
     // Wait for the proposal to be executed on the destination chain
     // Encode the payload for the destination chain
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ['address', '(address target, uint256 value, bytes callData)[]'],
+      ['bytes', '(address target, uint256 value, bytes callData)[]'],
       [timelock.address, xCalls[0].calls],
     );
 

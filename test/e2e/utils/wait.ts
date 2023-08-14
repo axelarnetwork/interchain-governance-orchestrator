@@ -12,7 +12,7 @@ export const waitProposalExecuted = (
       executorContract.filters.ProposalExecuted(
         ethers.utils.keccak256(
           ethers.utils.defaultAbiCoder.encode(
-            ['string', 'string', 'address', 'bytes'],
+            ['string', 'string', 'bytes', 'bytes'],
             [sourceChain, sourceAddress, caller, payload],
           ),
         ),

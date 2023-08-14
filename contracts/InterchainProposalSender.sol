@@ -90,7 +90,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
     }
 
     function _sendProposal(InterchainCalls.InterchainCall memory interchainCall) internal {
-        bytes memory payload = abi.encode(msg.sender, interchainCall.calls);
+        bytes memory payload = abi.encode(abi.encodePacked(msg.sender), interchainCall.calls);
 
         if (interchainCall.gas > 0) {
             gasService.payNativeGasForContractCall{ value: interchainCall.gas }(

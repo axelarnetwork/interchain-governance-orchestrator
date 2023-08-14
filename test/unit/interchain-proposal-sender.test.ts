@@ -97,7 +97,7 @@ describe('InterchainProposalSender', function () {
         );
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
         [signerAddress, calls],
       );
 
@@ -200,7 +200,7 @@ describe('InterchainProposalSender', function () {
       const broadcast = () => sender.sendProposals(xCalls, { value: 2 });
 
       const payload = ethers.utils.defaultAbiCoder.encode(
-        ['address', 'tuple(address target, uint256 value, bytes callData)[]'],
+        ['bytes', 'tuple(address target, uint256 value, bytes callData)[]'],
         [signerAddress, calls],
       );
 
