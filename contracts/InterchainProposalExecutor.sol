@@ -20,7 +20,7 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  */
 contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecutable, Ownable {
     // Whitelisted proposal callers. The proposal caller is the contract that calls the `InterchainProposalSender` at the source chain.
-    mapping(string => mapping(address => bool)) public whitelistedCallers;
+    mapping(string => mapping(bytes => bool)) public whitelistedCallers;
 
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(string => bool)) public whitelistedSenders;
@@ -52,9 +52,9 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
         }
 
         // Decode the payload
-        (address sourceCaller, InterchainCalls.Call[] memory calls) = abi.decode(
+        (bytes memory sourceCaller, InterchainCalls.Call[] memory calls) = abi.decode(
             payload,
-            (address, InterchainCalls.Call[])
+            (bytes, InterchainCalls.Call[])
         );
 
         // Check that the caller is whitelisted
@@ -99,7 +99,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
      */
     function setWhitelistedProposalCaller(
         string calldata sourceChain,
-        address sourceCaller,
+        bytes memory sourceCaller,
         bool whitelisted
     ) external override onlyOwner {
         whitelistedCallers[sourceChain][sourceCaller] = whitelisted;
@@ -137,7 +137,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     function _beforeProposalExecuted(
         string calldata sourceChain,
         string calldata sourceAddress,
-        address caller,
+        bytes memory caller,
         InterchainCalls.Call[] memory calls
     ) internal virtual {
         // You can add your own logic here to handle the payload before the proposal is executed.
@@ -154,7 +154,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     function _onProposalExecuted(
         string calldata /* sourceChain */,
         string calldata /* sourceAddress */,
-        address /* caller */,
+        bytes memory /* caller */,
         bytes calldata payload
     ) internal virtual {
         // You can add your own logic here to handle the payload after the proposal is executed.
