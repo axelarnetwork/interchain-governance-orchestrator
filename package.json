@@ -48,7 +48,6 @@
     "@axelar-network/axelar-cgp-solidity": "^4.5.0",
     "@axelar-network/axelar-gmp-sdk-solidity": "^5.0.0",
     "@axelar-network/axelar-local-dev": "^2.0.1",
-    "@openzeppelin/contracts": "^4.8.3",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3"
   },
@@ -57,7 +56,7 @@
     "minimatch": "^3.0.5",
     "protobufjs": "^7.2.4",
     "tough-cookie": "^4.1.3",
-    "@0xpolygonhermez/zkevm-commonjs": "git+https://github.com/0xpolygonhermez/zkevm-commonjs.git#ee86b868a0e2432d762bccf249016bd2051db892",
-    "@polygon-hermez/vm": "5.7.34"
+    "@polygon-hermez/zkevm-commonjs": "git+https://github.com/0xpolygonhermez/zkevm-commonjs.git#34f72fe",
+    "@polygon-hermez/vm": "5.7.30"
   }
 }
