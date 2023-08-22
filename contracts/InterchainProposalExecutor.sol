@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
-import { Ownable } from '@openzeppelin/contracts/access/Ownable.sol';
+import { Ownable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Ownable.sol';
 import { AxelarExecutable } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol';
 import { IInterchainProposalExecutor } from './interfaces/IInterchainProposalExecutor.sol';
 import { InterchainCalls } from './lib/InterchainCalls.sol';
@@ -25,11 +26,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
     // Whitelisted proposal senders. The proposal sender is the `InterchainProposalSender` contract address at the source chain.
     mapping(string => mapping(string => bool)) public whitelistedSenders;
 
-    constructor(address _gateway, address _owner) AxelarExecutable(_gateway) {
-        if (_owner == address(0)) revert InvalidAddress();
-
-        transferOwnership(_owner);
-    }
+    constructor(address _gateway, address _owner) AxelarExecutable(_gateway) Ownable(_owner) {}
 
     /**
      * @dev Executes the proposal. The source address must be a whitelisted sender.
