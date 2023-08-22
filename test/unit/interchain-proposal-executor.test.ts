@@ -51,7 +51,7 @@ describe('InterchainProposalExecutor', function () {
           contracts[chains.hardhat].gateway,
           ethers.constants.AddressZero,
         ),
-      ).to.be.revertedWithCustomError(executor, 'InvalidAddress');
+      ).to.be.revertedWithCustomError(executor, 'InvalidOwnerAddress');
     });
   });
 
