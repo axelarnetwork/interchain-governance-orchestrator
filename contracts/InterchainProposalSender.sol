@@ -36,14 +36,14 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  * contract to call the target contracts on the destination chains with the provided encoded function arguments.
  */
 contract InterchainProposalSender is IInterchainProposalSender {
-    IAxelarGateway public immutable GATEWAY;
-    IAxelarGasService public immutable GAS_SERVICE;
+    IAxelarGateway public immutable gatewy;
+    IAxelarGasService public immutable gasService;
 
     constructor(address _gateway, address _gasService) {
         if (_gateway == address(0) || _gasService == address(0)) revert InvalidAddress();
 
-        GATEWAY = IAxelarGateway(_gateway);
-        GAS_SERVICE = IAxelarGasService(_gasService);
+        gatewy = IAxelarGateway(_gateway);
+        gasService = IAxelarGasService(_gasService);
     }
 
     /**
@@ -93,7 +93,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
         bytes memory payload = abi.encode(abi.encodePacked(msg.sender), interchainCall.calls);
 
         if (interchainCall.gas > 0) {
-            GAS_SERVICE.payNativeGasForContractCall{ value: interchainCall.gas }(
+            gasService.payNativeGasForContractCall{ value: interchainCall.gas }(
                 address(this),
                 interchainCall.destinationChain,
                 interchainCall.destinationContract,
@@ -102,7 +102,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
             );
         }
 
-        GATEWAY.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
+        gatewy.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
     }
 
     function revertIfInvalidFee(InterchainCalls.InterchainCall[] calldata interchainCalls) private {
