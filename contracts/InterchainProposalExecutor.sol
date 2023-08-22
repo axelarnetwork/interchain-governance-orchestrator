@@ -72,7 +72,7 @@ contract InterchainProposalExecutor is IInterchainProposalExecutor, AxelarExecut
      * @param calls The calls to execute.
      */
     function _executeProposal(InterchainCalls.Call[] memory calls) internal {
-        uint length = calls.length;
+        uint256 length = calls.length;
 
         for (uint256 i = 0; i < length; i++) {
             InterchainCalls.Call memory call = calls[i];
