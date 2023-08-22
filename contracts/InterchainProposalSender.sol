@@ -36,13 +36,13 @@ import { InterchainCalls } from './lib/InterchainCalls.sol';
  * contract to call the target contracts on the destination chains with the provided encoded function arguments.
  */
 contract InterchainProposalSender is IInterchainProposalSender {
-    IAxelarGateway public immutable gatewy;
+    IAxelarGateway public immutable gateway;
     IAxelarGasService public immutable gasService;
 
     constructor(address _gateway, address _gasService) {
         if (_gateway == address(0) || _gasService == address(0)) revert InvalidAddress();
 
-        gatewy = IAxelarGateway(_gateway);
+        gateway = IAxelarGateway(_gateway);
         gasService = IAxelarGasService(_gasService);
     }
 
@@ -102,7 +102,7 @@ contract InterchainProposalSender is IInterchainProposalSender {
             );
         }
 
-        gatewy.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
+        gateway.callContract(interchainCall.destinationChain, interchainCall.destinationContract, payload);
     }
 
     function revertIfInvalidFee(InterchainCalls.InterchainCall[] calldata interchainCalls) private {
