@@ -47,10 +47,10 @@
   resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-4.0.3.tgz#8430b1d7db26aa33bc4eef97ba6a1eac226bf012"
   integrity sha512-7u1pGP66YXnBTRgYRb01ZCAewgYv7+0xjco5uxbG1Rj5S8Nv56GQU8zwE3Y4b424NWlajEiRyf4kmTzKrNORRA==
 
-"@axelar-network/axelar-gmp-sdk-solidity@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.0.0.tgz#f092a409f627ef5b08eab58d3412d8f397d533e3"
-  integrity sha512-qxlWa2MrjOCy16H9iNQAQVyHSAOr6ArA2b+F46Z0ryWwfh3MF5wL4Zn5/FLeGIJZsePUnzb934s0n5FZ1CV9fw==
+"@axelar-network/axelar-gmp-sdk-solidity@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.1.1.tgz#e3c8a28052b6bc302de2e021e9c4b22c20b50ea1"
+  integrity sha512-Dwt6GxZo2u5cUco9vwxwP2mhEqjpdO80M5dcrmGePHHU+pUmoI+Hc49n3D89lUCm3eE2WMVGtQ2opEQSybzv3Q==
 
 "@axelar-network/axelar-local-dev@^2.0.1":
   version "2.0.5"
