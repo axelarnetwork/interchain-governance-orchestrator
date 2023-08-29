@@ -25,9 +25,23 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.19',
     settings: {
+      evmVersion: process.env.EVM_VERSION || 'london',
       optimizer: {
         enabled: true,
-        runs: 10000,
+        runs: 1000000,
+        details: {
+          peephole: process.env.COVERAGE === undefined,
+          inliner: process.env.COVERAGE === undefined,
+          jumpdestRemover: true,
+          orderLiterals: true,
+          deduplicate: true,
+          cse: process.env.COVERAGE === undefined,
+          constantOptimizer: true,
+          yul: true,
+          yulDetails: {
+            stackAllocation: true,
+          },
+        },
       },
     },
   },
