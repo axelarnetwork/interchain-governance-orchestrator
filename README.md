@@ -46,7 +46,7 @@ Get up and running with integrating your governance system using Axelar. Here ar
 
 ### Prerequisite
 
-- Requires Node v16
+- Requires Node v16+
 
 ### 1. Local Testing
 
@@ -67,18 +67,11 @@ Once you're comfortable with the process, use the deployed addresses to integrat
 
 ## Interchain Proposal Execution
 
-In order to execute interchain proposals, deploy your instance of `InterchainProposalSender`. Alternatively, use our predefined contract for the **testnet** listed below. On the destination chain, deploy `InterchainProposalExecutor` and set up access control for whitelisted senders from the source chain.
+In order to execute interchain proposals, you can use `InterchainProposalSender` on all EVM chains supported by [Axelar](https://docs.axelar.dev/resources/mainnet). You can also deploy your own instance of it. On the destination chain, deploy `InterchainProposalExecutor` and set up access control by whitelisting the `InterchainProposalSender` sender address and the governance DAO caller address through which proposals can be received.
 
-| Chain     | InterchainProposalSender                   | InterchainProposalExecutor                 |
-| --------- | ------------------------------------------ | ------------------------------------------ |
-| Avalanche | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
-| Ethereum  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
-| Polygon   | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
-| Moonbeam  | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
-| Fantom    | 0xB9d31cDc0b5c7949EcAE38E069299222FF72A899 | 0x5076782ffC839183Eaf5f68f097c6D205216F1AB |
-| Filecoin  | 0xd664612d8FAa124b1f9A8bce4376F1a5AC3909d0 | 0x1dA39C49f4ABCd7D76014F45D03F214D2eF12a0d |
-
-Note: The `InterchainProposalExecutor` contract's whitelisted caller feature has been removed to simplify the testing process.
+| InterchainProposalSender                   |
+| ------------------------------------------ |
+| 0x29abdf2246557226f31c7f112b6030c5CAbA084b |
 
 ## Deployment Guide
 
