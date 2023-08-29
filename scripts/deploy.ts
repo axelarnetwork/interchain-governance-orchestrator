@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 const {
-  deployCreate3Contract,
+  create3DeployContract,
 } = require("@axelar-network/axelar-gmp-sdk-solidity");
 import {contracts} from '../constants'
 
@@ -19,7 +19,7 @@ export async function deploy3(
   .then((d) => d.address);
 
   const artifact = await hre.artifacts.readArtifact(contractName);
-  const result = await deployCreate3Contract(
+  const result = await create3DeployContract(
     create3Address,
     signer,
     artifact,
