@@ -28,19 +28,19 @@
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^4.0.2"
 
-"@axelar-network/axelar-contract-deployments@git+https://github.com/axelarnetwork/axelar-contract-deployments.git#acfe0fb83cc20fee11206dacbb607f1c0b048434":
+"@axelar-network/axelar-contract-deployments@git+https://github.com/axelarnetwork/axelar-contract-deployments.git#a11a260daef6a74b0a45f391d1565452ccf980d0":
   version "0.1.0"
-  resolved "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#acfe0fb83cc20fee11206dacbb607f1c0b048434"
+  resolved "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#a11a260daef6a74b0a45f391d1565452ccf980d0"
   dependencies:
     "@0xpolygonhermez/zkevm-commonjs" "github:0xpolygonhermez/zkevm-commonjs#v1.0.0"
-    "@axelar-network/axelar-gmp-sdk-solidity" "4.0.1"
+    "@axelar-network/axelar-gmp-sdk-solidity" "5.1.1"
     "@axelar-network/interchain-token-service" "0.3.0"
     ethers "^5.7.2"
 
-"@axelar-network/axelar-gmp-sdk-solidity@4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-4.0.1.tgz#4b3e20f33cbaccc3d8cca8a01445154e1b3d9227"
-  integrity sha512-3UN0RDpgGzXxmBKR9bn26ReLwCd47kbmh9RXjytRykj5WqoK4Ioi+bnL7tcZgA5TrFrk6enkCxzzQBjNG1L3uw==
+"@axelar-network/axelar-gmp-sdk-solidity@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-gmp-sdk-solidity/-/axelar-gmp-sdk-solidity-5.1.1.tgz#e3c8a28052b6bc302de2e021e9c4b22c20b50ea1"
+  integrity sha512-Dwt6GxZo2u5cUco9vwxwP2mhEqjpdO80M5dcrmGePHHU+pUmoI+Hc49n3D89lUCm3eE2WMVGtQ2opEQSybzv3Q==
 
 "@axelar-network/axelar-gmp-sdk-solidity@^4.0.0", "@axelar-network/axelar-gmp-sdk-solidity@^4.0.2":
   version "4.0.3"
