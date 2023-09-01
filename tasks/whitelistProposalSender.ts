@@ -6,7 +6,7 @@ import {
 
 task('whitelistSender', 'Whitelist proposal sender')
   .addPositionalParam('sourceChain')
-  .addOptionalParam('sourceSender')
+  .addPositionalParam('sourceSender')
   .setAction(async (taskArgs, hre) => {
     const { sourceChain, sourceSender } = taskArgs;
     const ethers = hre.ethers;
