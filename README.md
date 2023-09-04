@@ -71,7 +71,7 @@ In order to execute interchain proposals, you can use `InterchainProposalSender`
 
 | InterchainProposalSender                   |
 | ------------------------------------------ |
-| 0x29abdf2246557226f31c7f112b6030c5CAbA084b |
+| 0x1f8A4d195B647647c7dD45650CBd553FD33cCAA6 |
 
 ## Deployment Guide
 
