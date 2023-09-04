@@ -28,13 +28,6 @@
   dependencies:
     "@axelar-network/axelar-gmp-sdk-solidity" "^4.0.2"
 
-"@axelar-network/axelar-cgp-solidity@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-6.1.0.tgz#503d3007eb425a4ff6a183595b00265b176e679b"
-  integrity sha512-NHoJySnSujCmytYQIXtT760oPd4G8HSxH9qDhK6xd64soGLT6cnoMpZzQuhfonSqZRc/XWW7VJnvVX2AlgQ0Aw==
-  dependencies:
-    "@axelar-network/axelar-gmp-sdk-solidity" "^5.3.0"
-
 "@axelar-network/axelar-contract-deployments@git+https://github.com/axelarnetwork/axelar-contract-deployments.git#a2d15e823692284a48b53bb2566755995467a203":
   version "0.1.0"
   resolved "git+https://github.com/axelarnetwork/axelar-contract-deployments.git#a2d15e823692284a48b53bb2566755995467a203"

@@ -45,7 +45,6 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@axelar-network/axelar-cgp-solidity": "^6.1.0",
     "@axelar-network/axelar-gmp-sdk-solidity": "^5.3.0",
     "@axelar-network/axelar-local-dev": "^2.0.1",
     "cross-env": "^7.0.3",
